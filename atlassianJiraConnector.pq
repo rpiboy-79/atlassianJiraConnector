@@ -1,5 +1,5 @@
 // This file contains your Data Connector logic
-[Version = "1.0.1"]
+[Version = "1.0.2"]
 section atlassianJiraConnector;
 
 [DataSource.Kind="Atlassian_Jira_Connector.Kind", Publish="Atlassian_Jira_Connector.Publish"]
@@ -25,7 +25,7 @@ Atlassian_Jira_Connector.Publish = [
     Beta = true,
     Category = "Other",
     ButtonText = { Extension.LoadString("ButtonTitle"), Extension.LoadString("ButtonHelp") },
-    LearnMoreUrl = "https://powerbi.microsoft.com/",
+    LearnMoreUrl = "https://github.com/rpiboy-79/atlassianJiraConnector",
     SourceImage = atlassianJiraConnector.Icons,
     SourceTypeImage = atlassianJiraConnector.Icons
 ];

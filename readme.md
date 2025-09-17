@@ -83,18 +83,22 @@ Project Keys: PROJ1,PROJ2,WEBDEV
 ## 🏗️ Architecture
 
 ### Project Structure
+'''
 atlassianJiraConnector/
-├── readme.md # this document
+├── README.md # this document
 ├── atlassianJiraConnector.pq # Main connector logic
 ├── atlassianJiraConnector.proj # Project file
 ├── atlassianJiraConnector.query.pq # Test queries (legacy)
 ├── resources.resx # Localization resources
 ├── *.png # Connector icons
-└── bin/AnyCPU/Debug/
-   └── atlassianJiraConnector.mez # Compiled connector
-└── released
-   └── version1.0
-      └── atlassianJiraConnector.mez # Officially Published connector
+├── bin/
+│ └── AnyCPU/
+│ └── Debug/
+│ └── atlassianJiraConnector.mez # Compiled connector
+└── released/
+│ └──version1.0/
+│ └──atlassianJiraConnector.mez # Officially published connector
+'''
 
 ### Key Components
 
@@ -109,7 +113,7 @@ atlassianJiraConnector/
 
 ## 🧪 Testing
 
-Unit Tests as seperated as per Microsoft SDK.
+Unit Tests are seperated as per Microsoft SDK.
 
 ## 📈 Performance Considerations
 
