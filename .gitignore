@@ -1,0 +1,210 @@
+# Credentials - NEVER commit these!
+credentials.json
+*.credentials
+.credential-cache
+credential-cache.json
+auth-tokens.json
+secrets.json
+.env
+.env.local
+.env.production
+*.key
+*.pem
+
+# Released connector versions
+!released/
+!released/**/*.mez
+!released/**/*.pqx
+
+# Power Query SDK Build outputs
+bin/
+obj/
+*.mez
+*.pqx
+
+# Visual Studio Code
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+.vscode/c_cpp_properties.json
+.vscode/sftp.json
+.vscode/tasks.json
+
+# Test outputs and temporary files
+test-results/
+test-output/
+*.test.json
+*.test.xml
+TestResults/
+coverage/
+
+# Power Query temporary files
+*.tmp
+*.temp
+*.cache
+*.log
+
+# Mock data with sensitive information (if any)
+MockData/*sensitive*
+MockData/*production*
+**/MockData/**/*.credentials.*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Windows
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*~
+
+# Package files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Visual Studio
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Power BI
+*.pbix
+*.pbit
+# Keep template files but exclude working files
+!templates/*.pbix
+!templates/*.pbit
+
+# Node.js (if you use any Node tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python (if you use any Python tools)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDE files
+*.swp
+*.swo
+*~
+
+# Local configuration files
+config.local.json
+appsettings.local.json
+local.settings.json
+
+# Documentation build
+docs/_build/
+site/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+
+# Translations
+*.mo
+*.pot
+
+# Personal notes and documentation
+NOTES.md
+TODO.md
+PERSONAL_*.md
+scratch/
+notes/
+
+# Temporary PowerShell files
+*.ps1~
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Atom
+.atom/
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
