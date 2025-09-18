@@ -83,7 +83,7 @@ Project Keys: PROJ1,PROJ2,WEBDEV
 ## 🏗️ Architecture
 
 ### Project Structure
-'''
+\'\'\'
 atlassianJiraConnector/
 ├── README.md # this document
 ├── atlassianJiraConnector.pq # Main connector logic
@@ -98,7 +98,7 @@ atlassianJiraConnector/
 └── released/
 │ └──version1.0/
 │ └──atlassianJiraConnector.mez # Officially published connector
-'''
+\'\'\'
 
 ### Key Components
 
