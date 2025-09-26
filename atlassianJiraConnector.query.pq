@@ -3,7 +3,7 @@ section GenericTests;
 
 TestFunction = () as record =>
 let
-    navTable = atlassianJiraConnector.Contents("drofus"),
+    navTable = Jira("drofus"),
     issuesTable = navTable{[Name="Issues"]}[Data],
     projectsTable = navTable{[Name="Projects"]}[Data],
 
@@ -15,7 +15,7 @@ let
 in
     result;
 
-section atlassianJiraConnectorTests;
+
 
 /// COMMON UNIT TESTING CODE
 Fact = (_subject as text, _expected, _actual) as record =>

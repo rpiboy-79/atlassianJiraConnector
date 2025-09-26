@@ -3,7 +3,19 @@
 section atlassianJiraConnector;
 
 [DataSource.Kind="Atlassian_Jira_Connector.Kind", Publish="Atlassian_Jira_Connector.Publish"]
-shared Jira = (#"Company URL Identifier (as specified in your Jira URL)" as text, optional #"Field List (comma separated, e.g., summary,created)" as text, optional #"Project Keys (comma separated, e.g., PROJ1,PROJ2)" as text, optional #"Max Number of Results (default: 1000)" as text) => jiraNavTbl(#"Company URL Identifier (as specified in your Jira URL)", #"Field List (comma separated, e.g., summary,created)", #"Project Keys (comma separated, e.g., PROJ1,PROJ2)", #"Max Number of Results (default: 1000)");
+shared Jira = (
+    #"Company URL Identifier (as specified in your Jira URL)" as text,
+    optional #"Field List (comma separated, e.g., summary,created)" as text,
+    optional #"Project Keys (comma separated, e.g., PROJ1,PROJ2)" as text,
+    optional #"Max Number of Results (default: 1000)" as text,
+    optional TestDataOverride as nullable record
+) => jiraNavTbl(
+    #"Company URL Identifier (as specified in your Jira URL)",
+    #"Field List (comma separated, e.g., summary,created)",
+    #"Project Keys (comma separated, e.g., PROJ1,PROJ2)",
+    #"Max Number of Results (default: 1000)",
+    TestDataOverride
+);
 
 // Data Source Kind description
 Atlassian_Jira_Connector.Kind = [
@@ -12,7 +24,9 @@ Atlassian_Jira_Connector.Kind = [
         UsernamePassword = []
         // Windows = [],
         // Anonymous = []
-    ]
+    ],
+    TestConnection = (dataSourcePath as text) as list =>
+        { dataSourcePath }
 ];
 
 atlassianJiraConnector.Icons = [
@@ -30,29 +44,79 @@ Atlassian_Jira_Connector.Publish = [
     SourceTypeImage = atlassianJiraConnector.Icons
 ];
 
+// TEST DATA OVERRIDE FUNCTIONS (Optimized for your JSON structure)
+// Function to extract issues from test data
+ExtractTestIssuesData = (testData as record) as list =>
+    let
+        // Your JSON structure has "issues" as the main array
+        issuesArray = if Record.HasFields(testData, "issues") then 
+            testData[issues]
+        else 
+            // Fallback for other possible structures
+            if Record.HasFields(testData, "values") then testData[values]
+            else if Record.HasFields(testData, "results") then testData[results]
+            else if Value.Is(testData, type list) then testData
+            else {}
+    in
+        issuesArray;
+
+// Function to create mock projects from test issues (Optimized for your data)
+CreateMockProjects = (testIssues as list) as table =>
+    let
+        // Extract project data from the first few issues to get project info
+        projectRecords = List.Transform(
+            List.FirstN(testIssues, 10), // Just sample first 10 issues
+            each 
+                if Record.HasFields(_, "fields") and Record.HasFields([fields], "project") then
+                    [fields][project]
+                else null
+        ),
+        
+        // Remove nulls and get unique projects
+        validProjects = List.RemoveNulls(projectRecords),
+        uniqueProjects = List.Distinct(validProjects, each [key]),
+        
+        // Convert to table - your test data already has proper project structure
+        projectTable = Table.FromRecords(uniqueProjects)
+    in
+        if Table.RowCount(projectTable) > 0 then 
+            projectTable 
+        else 
+            // Fallback mock project if extraction fails
+            #table(
+                {"key", "name", "id", "projectTypeKey"}, 
+                {{"PB", "Product Bugs", "10000", "software"}}
+            );
+
 
 // Discover API limits for maxResults
-DiscoverMaxResults = (url as text, jqlQuery as text) =>
+DiscoverMaxResults = (url as text, jqlQuery as text, optional testOverride as nullable record) =>
     let
-        testMaxResults = "5000",
-        queryHeaders = [Accept = "application/json"],
-        queryParameters = [
-            jql = jqlQuery,
-            fields = "id,key",
-            maxResults = testMaxResults,
-            startAt = "0"
-        ],
-        source = Web.Contents(
-            url, [
-                RelativePath = "rest/api/3/search/jql",
-                Headers = queryHeaders,
-                Query = queryParameters
-            ]
-        ),
-        jsonDoc = Json.Document(source),
-        actualMaxResults = jsonDoc[maxResults]
+        result = if testOverride <> null then
+            1000 //return default for test mode
+        else
+            let
+                testMaxResults = "5000",
+                queryHeaders = [Accept = "application/json"],
+                queryParameters = [
+                    jql = jqlQuery,
+                    fields = "id,key",
+                    maxResults = testMaxResults,
+                    startAt = "0"
+                ],
+                source = Web.Contents(
+                    url, [
+                        RelativePath = "rest/api/3/search/jql",
+                        Headers = queryHeaders,
+                        Query = queryParameters
+                    ]
+                ),
+                jsonDoc = Json.Document(source),
+                actualMaxResults = jsonDoc[maxResults]
+            in
+                actualMaxResults
     in
-        actualMaxResults;
+        result;
 
 
 //Query Fields List
@@ -72,7 +136,6 @@ JiraKnownFields = #table({"Name", "Type"}, {
     {"key", type text},
     {"self", type text},
     {"summary", type text},
-    {"description", type text},
     {"created", type datetimezone},
     {"updated", type datetimezone}
 });
@@ -84,35 +147,44 @@ jiraDataRetrievalSimple = (
     queryPath as text,
     actualJql as nullable text,
     fieldsText as nullable text,
-    maxResultsText as text
+    maxResultsText as text,
+    optional testOverride as nullable record
 ) =>
     let
-        // Build query parameters (only include non-null values)
-        baseParams = [
-            jql = actualJql,
-            fields = fieldsText,
-            maxResults = maxResultsText
-        ],
-        queryParams = Record.RemoveFields(baseParams, 
-            List.Select(Record.FieldNames(baseParams), each Record.Field(baseParams, _) = null)),
+        dataArray = if testOverride <> null then
+            // TEST MODE: Use provided test data
+            ExtractTestIssuesData(testOverride)
+        else
+            let
+                // Build query parameters (only include non-null values)
+                baseParams = [
+                    jql = actualJql,
+                    fields = fieldsText,
+                    maxResults = maxResultsText
+                ],
+                queryParams = Record.RemoveFields(baseParams, 
+                    List.Select(Record.FieldNames(baseParams), each Record.Field(baseParams, _) = null)),
 
-        // Single API call
-        source = Web.Contents(url, [
-            RelativePath = queryPath,
-            Headers = [Accept = "application/json"],
-            Query = queryParams
-        ]),
-        
-        response = Json.Document(source),
-        
-        // Extract data array
-        dataArray = if Record.HasFields(response, "issues") then response[issues]
-                   else if Record.HasFields(response, "values") then response[values]  
-                   else if Record.HasFields(response, "results") then response[results]
-                   else if Value.Is(response, type list) then response
-                   else {}
+                // Single API call
+                source = Web.Contents(url, [
+                    RelativePath = queryPath,
+                    Headers = [Accept = "application/json"],
+                    Query = queryParams
+                ]),
+                
+                response = Json.Document(source),
+                
+                // Extract data array
+                extractedArray = if Record.HasFields(response, "issues") then response[issues]
+                        else if Record.HasFields(response, "values") then response[values]  
+                        else if Record.HasFields(response, "results") then response[results]
+                        else if Value.Is(response, type list) then response
+                        else {}
+            in
+                extractedArray
     in
         dataArray;
+
 
 // Phase 2: Full pagination data retrieval (for OAuth)
 jiraDataRetrievalPaginated = (
@@ -121,68 +193,76 @@ jiraDataRetrievalPaginated = (
     actualJql as nullable text,
     fieldsText as nullable text,
     maxResultsText as text,
-    maxResultsNumber as number
+    maxResultsNumber as number,
+    optional testOverride as nullable record
 ) =>
     let
-        // Build query parameters dynamically, excluding null values
-        BuildQueryParameters = (startAt as number) =>
-            let
-                baseParams = [
-                    startAt = Number.ToText(startAt),
-                    maxResults = maxResultsText
-                ],
-                withJql = if actualJql <> null then Record.AddField(baseParams, "jql", actualJql) else baseParams,
-                withFields = if fieldsText <> null then Record.AddField(withJql, "fields", fieldsText) else withJql
-            in
-                withFields,
-
-        GetPage = (startAt as number) =>
-            let
-                queryHeaders = [Accept = "application/json"],
-                queryParameters = BuildQueryParameters(startAt),
-                source = Web.Contents(
-                    url, [
-                        RelativePath = queryPath,
-                        Headers = queryHeaders,
-                        Query = queryParameters
-                    ]
-                ),
-                jsonDoc = Json.Document(source)
-            in
-                jsonDoc,
-
-        firstResponse = GetPage(0),
-        isDirectArrayResponse = Value.Is(firstResponse, type list),
-
-        GetAllPages = if isDirectArrayResponse then
-            {firstResponse}
+        result = if testOverride <> null then
+            // TEST MODE: Use provided test data
+            ExtractTestIssuesData(testOverride)
         else
             let
-                ExtractDataArray = (pageResponse as record) =>
-                    if Record.HasFields(pageResponse, "issues") then pageResponse[issues]
-                    else if Record.HasFields(pageResponse, "values") then pageResponse[values]  
-                    else if Record.HasFields(pageResponse, "results") then pageResponse[results]
-                    else null,
-                
-                isPaginated = Record.HasFields(firstResponse, "isLast") or Record.HasFields(firstResponse, "total")
-            in
-                if isPaginated then
-                    List.Generate(
-                        () => [Page = firstResponse, StartAt = 0],
-                        each [Page] <> null and 
-                             ExtractDataArray([Page]) <> null and
-                             ([Page][isLast]? <> true),
-                        each 
-                            let
-                                nextStartAt = [StartAt] + maxResultsNumber
-                            in
-                                [Page = GetPage(nextStartAt), StartAt = nextStartAt],
-                        each ExtractDataArray([Page])
-                    )
+                // Build query parameters dynamically, excluding null values
+                BuildQueryParameters = (startAt as number) =>
+                    let
+                        baseParams = [
+                            startAt = Number.ToText(startAt),
+                            maxResults = maxResultsText
+                        ],
+                        withJql = if actualJql <> null then Record.AddField(baseParams, "jql", actualJql) else baseParams,
+                        withFields = if fieldsText <> null then Record.AddField(withJql, "fields", fieldsText) else withJql
+                    in
+                        withFields,
+
+                GetPage = (startAt as number) =>
+                    let
+                        queryHeaders = [Accept = "application/json"],
+                        queryParameters = BuildQueryParameters(startAt),
+                        source = Web.Contents(
+                            url, [
+                                RelativePath = queryPath,
+                                Headers = queryHeaders,
+                                Query = queryParameters
+                            ]
+                        ),
+                        jsonDoc = Json.Document(source)
+                    in
+                        jsonDoc,
+
+                firstResponse = GetPage(0),
+                isDirectArrayResponse = Value.Is(firstResponse, type list),
+
+                GetAllPages = if isDirectArrayResponse then
+                    {firstResponse}
                 else
-                    {ExtractDataArray(firstResponse)}
+                    let
+                        ExtractDataArray = (pageResponse as record) =>
+                            if Record.HasFields(pageResponse, "issues") then pageResponse[issues]
+                            else if Record.HasFields(pageResponse, "values") then pageResponse[values]  
+                            else if Record.HasFields(pageResponse, "results") then pageResponse[results]
+                            else null,
+                        
+                        isPaginated = Record.HasFields(firstResponse, "isLast") or Record.HasFields(firstResponse, "total")
+                    in
+                        if isPaginated then
+                            List.Generate(
+                                () => [Page = firstResponse, StartAt = 0],
+                                each [Page] <> null and 
+                                    ExtractDataArray([Page]) <> null and
+                                    ([Page][isLast]? <> true),
+                                each 
+                                    let
+                                        nextStartAt = [StartAt] + maxResultsNumber
+                                    in
+                                        [Page = GetPage(nextStartAt), StartAt = nextStartAt],
+                                each ExtractDataArray([Page])
+                            )
+                        else
+                            {ExtractDataArray(firstResponse)}
+            in
+                List.Combine(List.RemoveNulls(GetAllPages))
     in
-        List.Combine(List.RemoveNulls(GetAllPages));
+        result;
 
 // Infer types from field names and sample data
 InferJiraFieldType = (fieldName as text, sampleValue as any) as type =>
@@ -262,7 +342,8 @@ jiraQuery = (
     optional fieldList as nullable list,
     optional maxResults as nullable text,
     optional discoverLimits as nullable logical,
-    optional useSimpleRetrieval as nullable logical
+    optional useSimpleRetrieval as nullable logical,
+    optional testOverride as nullable record
 ) =>
     let
     // Handle optional parameters with defaults
@@ -284,9 +365,9 @@ jiraQuery = (
         
     // DATA RETRIEVAL: Choose between simple or paginated
         CombinedData = if useSimple then
-            jiraDataRetrievalSimple(url, queryPath, actualJql, fieldsText, maxResultsText)
+            jiraDataRetrievalSimple(url, queryPath, actualJql, fieldsText, maxResultsText, testOverride)
         else
-            jiraDataRetrievalPaginated(url, queryPath, actualJql, fieldsText, maxResultsText, maxResultsNumber),
+            jiraDataRetrievalPaginated(url, queryPath, actualJql, fieldsText, maxResultsText, maxResultsNumber, testOverride),
 
     // TRANSFORMATION LOGIC:
         ConvertToTable = Table.FromList(CombinedData, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
@@ -348,7 +429,13 @@ createIssuesNavigationTable = (projectTables as list) as table =>
         navTable;
 
 // Navigation Table
-jiraNavTbl = (company as text, optional fields as text, optional projectKeys as text, optional maxResults as text) =>
+jiraNavTbl = (
+    company as text,
+    optional fields as text,
+    optional projectKeys as text,
+    optional maxResults as text,
+    optional testOverride as nullable record
+) =>
     let
         fieldsDynamic =
             if fields = null
@@ -375,7 +462,13 @@ jiraNavTbl = (company as text, optional fields as text, optional projectKeys as 
                 ),
         URL = ValidateUrlScheme("https://" & company & ".atlassian.net"),
             
-        allProjects = jiraQuery(URL, "rest/api/3/project", null, null, null, null, false),//uses advanced query since project retrieval is not paginated to begin with
+        allProjects = if testOverride <> null then
+            let
+                testIssues = ExtractTestIssuesData(testOverride)
+            in
+                CreateMockProjects(testIssues)
+        else
+            jiraQuery(URL, "rest/api/3/project", null, null, null, null, false),//uses advanced query since project retrieval is not paginated to begin with
 
         projectValidation = 
             let
@@ -424,7 +517,8 @@ jiraNavTbl = (company as text, optional fields as text, optional projectKeys as 
                         fieldsDynamic,
                         maxResults,
                         false, // Don't discover limits in Phase 1
-                        true   // Use simple retrieval
+                        true,   // Use simple retrieval
+                        testOverride // PASS TEST OVERRIDE
                     )
                 ),
                 removeErrors = Table.RemoveRowsWithErrors(getIssues, {"Issues"})

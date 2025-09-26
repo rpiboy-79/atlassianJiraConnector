@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Dashboard Server (Multi-Folder)",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/testResultsServer/dashboard_server.py",
+            "console": "integratedTerminal",
+            "args": ["--no-browser"],
+            "cwd": "${workspaceFolder}/testResultsServer"
+        }
+    ]
+}

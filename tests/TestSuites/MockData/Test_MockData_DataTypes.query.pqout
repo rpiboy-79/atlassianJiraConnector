@@ -1,0 +1,1 @@
+#table( type table [ColumnName = any, ExpectedType = any, ValidationResult = any] , {{"id", "text", "Fail"} , {"key", "text", "Fail"} , {"summary", "text", "Fail"} , {"created", "datetimezone", "Fail"} , {"description", "any", "Pass"} , {"issuetype", "any", "Pass"} , {"components", "any", "Pass"} } ) 

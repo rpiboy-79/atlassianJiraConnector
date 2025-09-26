@@ -1,0 +1,11 @@
+{
+  "PQTestExePath": "",
+  "_comments": {
+        "PQTestExePath": "Leave blank to auto-discover from VS Code extensions, or specify full path to PQTest.exe"
+    },
+  "ExtensionPath": "../bin/AnyCPU/Debug/atlassianJiraConnector.mez",
+  "TestSettingsDirectoryPath": "./ConnectorConfigs/atlassianJiraConnector/Settings",
+  "ValidateQueryFolding": "False",
+  "DetailedResults": "True",
+  "JSONResults": "False"
+}

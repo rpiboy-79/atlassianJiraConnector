@@ -1,0 +1,1001 @@
+id,key,status,summary,description,issuetype,created,components
+10001,PB-1,To Do,Login button not responding,"Users report that the login button doesn’t trigger authentication when clicked.",Bug,2024-01-02,Authentication
+10002,PB-2,In Progress,Slow report generation,"Reports for room programming take over 2 minutes to load when data sets exceed 500 entries.",Task,2024-01-03,Reporting
+10003,PB-3,Done,User cannot export to Revit,"Export option for Revit integration fails and produces corrupted files.",Bug,2024-01-03,Revit Integration
+10004,PB-4,To Do,UI overlap in dashboard,"Dashboard widgets overlap on smaller laptop screens, making some information unreadable.",Bug,2024-01-05,User Interface
+10005,PB-5,In Review,Analytics misaligned with categories,"Custom categories do not appear properly in analytics dashboards.",Bug,2024-01-07,Analytics
+10006,PB-6,To Do,Archicad sync failing,"Archicad connector times out for projects over 1 GB.",Bug,2024-01-09,Archicad Integration
+10007,PB-7,In Progress,Add new chart option,"Request to add facility square-footage distribution chart to reports.",Story,2024-01-10,Reporting
+10008,PB-8,To Do,Search filters not persisting,"Search filters reset whenever a user switches between project tabs.",Bug,2024-01-11,Search
+10009,PB-9,Done,Improve mobile responsiveness,"Pages render poorly on tablets used by architects on-site.",Task,2024-01-11,Mobile
+10010,PB-10,To Do,Crash on saving large project,"Application crashes when saving hospital projects with more than 20 floors.",Bug,2024-01-12,Data Storage
+10011,PB-11,To Do,Permissions not updating,"Role changes for project members don’t take effect until logout/login.",Bug,2024-01-13,Authentication
+10012,PB-12,In Review,New export format for schedules,"Add CSV export option for scheduling data requested by end users.",Story,2024-01-14,Reporting
+10013,PB-13,Blocked,Integration with Archicad freezes,"Sync with Archicad locks the app if Revit plugin is also enabled.",Bug,2024-01-15,Archicad Integration
+10014,PB-14,To Do,Error in data categorization,"Project data is sorted incorrectly under custom filter views.",Bug,2024-01-16,Data Storage
+10015,PB-15,In Progress,API rate limit warning,"Frequent API calls to external AEC tools trigger rate limit errors.",Bug,2024-01-17,Revit Integration
+10016,PB-16,Done,Facility space calculator update,"Space calculation updated to include multi-floor overlap handling.",Improvement,2024-01-18,Analytics
+10017,PB-17,To Do,Add SSO support,"Enable Single Sign-On using company SAML endpoint.",Story,2024-01-19,Authentication
+10018,PB-18,In Review,Revit bidirectional sync,"Implement capability for Revit to pull updates from app.",Story,2024-01-20,Revit Integration
+10019,PB-19,To Do,Dashboard date formatting bug,"Calendar widget uses US date format, request for international format.",Bug,2024-01-21,User Interface
+10020,PB-20,Done,Redesign help menu,"Redesigned help menu for improved user guidance.",Improvement,2024-01-22,User Interface
+10021,PB-21,Blocked,Large file upload freezes app,"Uploading project files >5GB causes app to freeze for all users.",Bug,2024-01-23,Data Storage
+10022,PB-22,In Progress,Analytics query optimization,"Improve backend query speed for dashboard analytics.",Task,2024-01-24,Analytics
+10023,PB-23,To Do,Search by room number,"Enable searching projects by room number.",Story,2024-01-25,Search
+10024,PB-24,In Review,Crash on filter change,"Rapidly changing filter values causes app crash.",Bug,2024-01-26,User Interface
+10025,PB-25,To Do,Reporting permissions bug,"User with admin rights can't edit report templates.",Bug,2024-01-27,Reporting
+10026,PB-26,Done,Archicad connector upgrade,"Archicad connector upgraded to v3 for better compatibility.",Improvement,2024-01-28,Archicad Integration
+10027,PB-27,To Do,Add audit log feature,"Implement user activity audit logs for compliance.",Story,2024-01-29,Authentication
+10028,PB-28,In Progress,Sorting by project type,"Sorting by project type does not persist across sessions.",Bug,2024-01-30,Data Storage
+10029,PB-29,Done,Multi-lingual support,"App now supports Spanish and French UI.",Improvement,2024-01-31,User Interface
+10030,PB-30,To Do,Edit history not saving,"Edits to requirements are intermittently not saved.",Bug,2024-02-01,Data Storage
+10031,PB-31,Blocked,Lost connection to AEC tools,"Connection timeout to Archicad and Revit APIs after 1 hour.",Bug,2024-02-02,Revit Integration
+10032,PB-32,Done,Facility reporting export,"New PDF export features for facility reports.",Improvement,2024-02-03,Reporting
+10033,PB-33,In Review,Accessibility improvement request,"Screen readers struggle with project navigation layout.",Story,2024-02-04,User Interface
+10034,PB-34,To Do,Incorrect user role edit,"Users with editor role can mistakenly change others' permissions.",Bug,2024-02-05,Authentication
+10035,PB-35,In Progress,Custom categories,"Add support for admin-defined project categories.",Story,2024-02-06,Analytics
+10036,PB-36,To Do,Revit sync missing parameters,"Sync with Revit misses custom parameter fields.",Bug,2024-02-07,Revit Integration
+10037,PB-37,Blocked,Mobile export crashes,"App crashes during CSV export process from mobile device.",Bug,2024-02-08,Mobile
+10038,PB-38,In Progress,Room search typeahead,"Typeahead added to room number search.",Improvement,2024-02-09,Search
+10039,PB-39,Done,Data retention updates,"Retention policy updated to 12 months.",Improvement,2024-02-10,Data Storage
+10040,PB-40,To Do,Dashboard auto-refresh failure,"Dashboard widgets stop updating after 30 minutes.",Bug,2024-02-11,Analytics
+10041,PB-41,Blocked,Project duplication issues,"Duplicated projects lose assigned categories.",Bug,2024-02-12,Data Storage
+10042,PB-42,Done,Project name filter,"Ability to filter projects by name.",Improvement,2024-02-13,Search
+10043,PB-43,In Progress,Revit mapping tool,"Add mapping tool for Revit room associations.",Story,2024-02-14,Revit Integration
+10044,PB-44,To Do,Notification email failures,"System notification emails are sent with blank subjects.",Bug,2024-02-15,Authentication
+10045,PB-45,In Review,Update Archicad integration,"Fix minor bugs in Archicad connector.",Improvement,2024-02-16,Archicad Integration
+10046,PB-46,Done,Reporting by facility type,"Added report sorting by facility type.",Improvement,2024-02-17,Reporting
+10047,PB-47,To Do,UI icon overlap,"Navigation icons overlap on 1440px monitors.",Bug,2024-02-18,User Interface
+10048,PB-48,Blocked,Room category edits lost,"Edits to room categories not saved when switching tabs.",Bug,2024-02-19,Analytics
+10049,PB-49,In Progress,Custom reporting fields,"Support new custom fields in reports.",Story,2024-02-20,Reporting
+10050,PB-50,Done,Mobile login security,"Mobile login token now enforced for authentication.",Improvement,2024-02-21,Mobile
+10051,PB-51,To Do,API call duplication,"API requests duplicated for every sync event.",Bug,2024-02-22,Revit Integration
+10052,PB-52,In Review,Responsive dashboard widgets,"Make dashboard widgets adaptive based on device size.",Improvement,2024-02-23,User Interface
+10053,PB-53,Done,Add shareable report links,"Generate limited time URLs to share reports externally.",Story,2024-02-24,Reporting
+10054,PB-54,Blocked,Facility map not loading,"App fails to render map on Windows machines.",Bug,2024-02-25,User Interface
+10055,PB-55,To Do,Room assignment caching,"Room assignments not cached, causing slow performance.",Bug,2024-02-26,Data Storage
+10056,PB-56,Done,Upgrade analytics backend,"Backend upgraded for faster analytics.",Improvement,2024-02-27,Analytics
+10057,PB-57,In Progress,Archicad room mapping,"Improve mapping accuracy for Archicad connector.",Story,2024-02-28,Archicad Integration
+10058,PB-58,To Do,Quick filter error,"Quick filter on dashboard throws JS error.",Bug,2024-02-29,User Interface
+10059,PB-59,Blocked,Project export timeout,"Exporting large projects times out after 5 minutes.",Bug,2024-03-01,Reporting
+10060,PB-60,Done,Add date filter to reports,"Enable filtering by creation date in facility reports.",Improvement,2024-03-02,Reporting
+10061,PB-61,In Review,Revit parameter export,"Export Revit parameters to JSON.",Story,2024-03-03,Revit Integration
+10062,PB-62,To Do,Auto-save not triggered,"Edits to project data not saved unless explicitly confirmed.",Bug,2024-03-04,Data Storage
+10063,PB-63,Done,Authentication cache bug,"Authentication cache flushed when switching projects.",Improvement,2024-03-05,Authentication
+10064,PB-64,In Progress,Add healthcare planner API,"Public API for healthcare planners.",Story,2024-03-06,Analytics
+10065,PB-65,To Do,UI modal blocking actions,"Modals block other actions until closed.",Bug,2024-03-07,User Interface
+10066,PB-66,In Review,New export for Archicad,"Add XML export format for Archicad.",Story,2024-03-08,Archicad Integration
+10067,PB-67,Done,Mobile app bug fixes,"Fixed minor bugs in mobile app.",Improvement,2024-03-09,Mobile
+10068,PB-68,To Do,Revit room sync mismatch,"Syncing rooms with Revit fails for multi-floor projects.",Bug,2024-03-10,Revit Integration
+10069,PB-69,Blocked,Search not returning results,"Search function returns empty responses for valid queries.",Bug,2024-03-11,Search
+10070,PB-70,Done,Reporting dashboard refresh,"Reporting dashboard now auto-refreshes.",Improvement,2024-03-12,Reporting
+10071,PB-71,In Progress,Analytics data pipeline,"Improve analytics data ingestion pipeline.",Story,2024-03-13,Analytics
+10072,PB-72,To Do,Archicad connector error,"JavaScript error thrown on Archicad sync event.",Bug,2024-03-14,Archicad Integration
+10073,PB-73,In Review,User permission matrix,"Add detailed permission matrix to admin portal.",Story,2024-03-15,Authentication
+10074,PB-74,Done,Upgrade UI icons,"New icons for dashboard navigation.",Improvement,2024-03-16,User Interface
+10075,PB-75,To Do,Add search component,"Implement search bar across all modules.",Story,2024-03-17,Search
+10076,PB-76,Done,Mobile notifications update,"Mobile notifications now include context of change.",Improvement,2024-03-18,Mobile
+10077,PB-77,In Progress,Data export for analytics,"Generate weekly analytics data exports.",Story,2024-03-19,Analytics
+10078,PB-78,Blocked,Room type categorization error,"Assigning room types sometimes not saved.",Bug,2024-03-20,Analytics
+10079,PB-79,To Do,Fix dashboard sorting,"Dashboard does not sort reports by date.",Bug,2024-03-21,Reporting
+10080,PB-80,Done,User credentials reset,"Implement credentials reset via admin interface.",Improvement,2024-03-22,Authentication
+10081,PB-81,Blocked,Project analytics missing,"Analytics data unavailable for projects created before 2025.",Bug,2024-03-23,Analytics
+10082,PB-82,To Do,Mobile export not formatting,"CSV exports from mobile app missing headers.",Bug,2024-03-24,Mobile
+10083,PB-83,In Review,Reporting by room usage,"Add usage-based reporting filter.",Story,2024-03-25,Reporting
+10084,PB-84,Done,User role management,"Role management UI improved.",Improvement,2024-03-26,Authentication
+10085,PB-85,In Progress,Search API upgrade,"Upgrade internal Search API for faster lookups.",Story,2024-03-27,Search
+10086,PB-86,To Do,Archicad export missing fields,"Archicad export option missing room area fields.",Bug,2024-03-28,Archicad Integration
+10087,PB-87,Done,Upgrade reporting templates,"Reporting templates revised for internal compliance.",Improvement,2024-03-29,Reporting
+10088,PB-88,Blocked,User search by project fails,"User search API returns 500 error for multi-project filter.",Bug,2024-03-30,Search
+10089,PB-89,To Do,UI element not visible,"Certain UI elements do not appear on high-res screens.",Bug,2024-03-31,User Interface
+10090,PB-90,Done,Enable SSO for mobile,"Mobile devices now support SSO authentication.",Improvement,2024-04-01,Authentication
+10091,PB-91,In Progress,Archicad dependency update,"Archicad connector dependency update for new release.",Task,2024-04-02,Archicad Integration
+10092,PB-92,To Do,Revit connector bug,"Connector fails for projects with >300 rooms.",Bug,2024-04-03,Revit Integration
+10093,PB-93,Done,Add multi-project analytics,"Analytics now supports multi-project dashboards.",Improvement,2024-04-04,Analytics
+10094,PB-94,In Review,Reporting output PDF,"Generate PDF output for project reports.",Story,2024-04-05,Reporting
+10095,PB-95,Blocked,Missing authentication tokens,"Missing access tokens for Revit plugin.",Bug,2024-04-06,Revit Integration
+10096,PB-96,To Do,Search autocomplete fails,"Autocomplete suggestions don’t populate reliably.",Bug,2024-04-07,Search
+10097,PB-97,In Progress,Custom analytics dashboard,"Build analytics dashboard for room usage trends.",Story,2024-04-08,Analytics
+10098,PB-98,Done,Facility map update,"Remodel section added to facility maps.",Improvement,2024-04-09,User Interface
+10099,PB-99,To Do,Reporting dates wrong,"Reported facility construction dates are off by one year.",Bug,2024-04-10,Reporting
+10100,PB-100,Blocked,User session lost,"User session lost on mobile after long inactivity.",Bug,2024-04-11,Mobile
+10101,PB-101,To Do,Search results delay,"Search function response time exceeds 4 seconds under load.",Bug,2024-04-12,Search
+10102,PB-102,In Progress,Archicad room sync bug,"Rooms mapped with Archicad are mismatched for some projects.",Bug,2024-04-13,Archicad Integration
+10103,PB-103,Done,Analytics update by department,"Analytics dashboard now supports department-level filtering.",Improvement,2024-04-14,Analytics
+10104,PB-104,To Do,Mobile app update issue,"Notifications do not appear after recent mobile app update.",Bug,2024-04-15,Mobile
+10105,PB-105,Blocked,Exported report blank,"Exported report files are empty for custom queries.",Bug,2024-04-16,Reporting
+10106,PB-106,In Progress,Authentication status API,"API refactor to show real-time authentication status.",Task,2024-04-17,Authentication
+10107,PB-107,Done,Data storage speed boost,"Backend optimized for faster save operations.",Improvement,2024-04-18,Data Storage
+10108,PB-108,To Do,Revit connector performance,"Connector slows down for changes in furniture category.",Bug,2024-04-19,Revit Integration
+10109,PB-109,In Progress,Archicad connector UI,"New UI for easier Archicad connector configuration.",Improvement,2024-04-20,Archicad Integration
+10110,PB-110,Blocked,Analytics schedule crash,"Scheduled analytics jobs crash on weekend runs.",Bug,2024-04-21,Analytics
+10111,PB-111,To Do,Reporting section error,"Section filter throws JS error in reporting module.",Bug,2024-04-22,Reporting
+10112,PB-112,Done,Mobile login improvements,"Login workflow streamlined for mobile devices.",Improvement,2024-04-23,Mobile
+10113,PB-113,In Review,Project summary export,"Export entire project summary to PDF.",Story,2024-04-24,Reporting
+10114,PB-114,To Do,User interface translation,"UI elements translation missing in Spanish view.",Bug,2024-04-25,User Interface
+10115,PB-115,Blocked,Add reporting warning,"Warning not displayed for incomplete reports.",Bug,2024-04-26,Reporting
+10116,PB-116,Done,Data storage retention,"Retention policy for data storage set to 24 months.",Improvement,2024-04-27,Data Storage
+10117,PB-117,In Progress,Search bar enhancements,"Search supports typeahead and error correction.",Story,2024-04-28,Search
+10118,PB-118,To Do,Analytics graph rendering bug,"Analytics graphs do not render under Safari browser.",Bug,2024-04-29,Analytics
+10119,PB-119,In Review,Revit room export option,"Export rooms as CSV for Revit connector.",Story,2024-04-30,Revit Integration
+10120,PB-120,Done,Archicad schedule sync,"Schedule synchronization added to Archicad integration.",Improvement,2024-05-01,Archicad Integration
+10121,PB-121,Blocked,UI modal not closing,"Modals in user interface remain open after action.",Bug,2024-05-02,User Interface
+10122,PB-122,To Do,Reporting filter option missing,"Cannot filter reports by facility type currently.",Bug,2024-05-03,Reporting
+10123,PB-123,In Progress,Authentication API update,"API endpoint updated for multi-factor authentication.",Story,2024-05-04,Authentication
+10124,PB-124,Done,Mobile export bug fix,"Mobile export to PDF issue resolved.",Improvement,2024-05-05,Mobile
+10125,PB-125,Blocked,Room mapping loss,"Room mappings lost after Archicad import.",Bug,2024-05-06,Archicad Integration
+10126,PB-126,To Do,Analytics report failure,"Analytics on multi-project report fails.",Bug,2024-05-07,Analytics
+10127,PB-127,In Review,User interface dark mode,"Implement dark mode for all main dashboard views.",Story,2024-05-08,User Interface
+10128,PB-128,Done,Revit connector cache,"Connector cache improves performance for frequent syncs.",Improvement,2024-05-09,Revit Integration
+10129,PB-129,To Do,Reporting template error,"Custom templates for reports not saved correctly.",Bug,2024-05-10,Reporting
+10130,PB-130,Blocked,Authentication token loss,"Token lost during long session after mobile login.",Bug,2024-05-11,Authentication
+10131,PB-131,Done,Archicad integration update,"Bug fixes for Archicad connector v3.",Improvement,2024-05-12,Archicad Integration
+10132,PB-132,In Progress,Search filter upgrade,"Upgrade filters for searching by room type.",Story,2024-05-13,Search
+10133,PB-133,To Do,User interface scaling","UI scaling errors on ultra-wide monitors.",Bug,2024-05-14,User Interface
+10134,PB-134,Blocked,Project summary missing,"Project summary page fails to load details.",Bug,2024-05-15,Reporting
+10135,PB-135,Done,Room assignment fixes,"Bugs in room assignment workflows corrected.",Improvement,2024-05-16,Data Storage
+10136,PB-136,In Progress,Analytics query UI,"Improvement to query builder in analytics dashboard.",Story,2024-05-17,Analytics
+10137,PB-137,To Do,Revit export error,"Export option for Revit connector fails on large files.",Bug,2024-05-18,Revit Integration
+10138,PB-138,In Review,Archicad schedule export,"Export schedules to CSV for Archicad.",Story,2024-05-19,Archicad Integration
+10139,PB-139,Done,User authentication upgrade,"Added OAuth2 to authentication system.",Improvement,2024-05-20,Authentication
+10140,PB-140,Blocked,Reporting conflict error,"Report conflicts when two users edit template simultaneously.",Bug,2024-05-21,Reporting
+10141,PB-141,To Do,Mobile search not working,"Searching projects from mobile device fails.",Bug,2024-05-22,Mobile
+10142,PB-142,In Progress,Archicad bug fixes,"Assorted bug fixes for Archicad integration.",Task,2024-05-23,Archicad Integration
+10143,PB-143,Done,Analytics export formats,"Added HTML and PDF formats for analytics exports.",Improvement,2024-05-24,Analytics
+10144,PB-144,In Review,Revit connector error logs,"Connector sends error logs to cloud dashboard.",Story,2024-05-25,Revit Integration
+10145,PB-145,To Do,Data storage export fail,"Export fails for projects with missing rooms.",Bug,2024-05-26,Data Storage
+10146,PB-146,Blocked,Authentication UI warning,"Warning missing for invalid credentials in authentication UI.",Bug,2024-05-27,Authentication
+10147,PB-147,Done,User interface multi-language,"UI now supports German and Italian.",Improvement,2024-05-28,User Interface
+10148,PB-148,In Progress,Reporting multi-sort,"Enable multiple columns sort in reports.",Story,2024-05-29,Reporting
+10149,PB-149,To Do,Analytics data loss,"Analytics data not updated on weekly rollup.",Bug,2024-05-30,Analytics
+10150,PB-150,In Review,Archicad connector speedup,"Optimize Sync speed for Archicad connector.",Story,2024-05-31,Archicad Integration
+10151,PB-151,Done,Mobile session logs,"Session logs added for mobile version.",Improvement,2024-06-01,Mobile
+10152,PB-152,Blocked,Search tab crash,"Switching search tabs crashes the app.",Bug,2024-06-02,Search
+10153,PB-153,To Do,Reporting filter persistence,"Reporting filters reset after closing app.",Bug,2024-06-03,Reporting
+10154,PB-154,In Progress,Authentication upgrade API,"Authentication API supports SSO and MFA.",Story,2024-06-04,Authentication
+10155,PB-155,Done,Data storage encryption,"All data storage is encrypted end-to-end.",Improvement,2024-06-05,Data Storage
+10156,PB-156,To Do,Revit import issues,"Revit connector doesn't import room planning data.",Bug,2024-06-06,Revit Integration
+10157,PB-157,Blocked,Analytics UI freeze,"Analytics chart UI freezes under large data.",Bug,2024-06-07,Analytics
+10158,PB-158,Done,Reporting API docs,"Public documentation released for Reporting API.",Improvement,2024-06-08,Reporting
+10159,PB-159,In Review,Mobile export UI change,"Update UI for mobile export options.",Story,2024-06-09,Mobile
+10160,PB-160,To Do,Archicad export rooms bug,"Room export to Archicad connector fails with error 406.",Bug,2024-06-10,Archicad Integration
+10161,PB-161,Blocked,Authentication click error,"Clicking login resets entered credentials.",Bug,2024-06-11,Authentication
+10162,PB-162,Done,User interface redesign,"UI redesign for compliance with accessibility standards.",Improvement,2024-06-12,User Interface
+10163,PB-163,In Progress,Reporting version history,"Add version history for report templates.",Story,2024-06-13,Reporting
+10164,PB-164,To Do,Data storage lag,"Data storage module lags for >10 simultaneous users.",Bug,2024-06-14,Data Storage
+10165,PB-165,Done,Analytics model upgrade,"New predictive models for analytics dashboard.",Improvement,2024-06-15,Analytics
+10166,PB-166,Blocked,Revit room mismatches,"Room mapping mismatches between app and Revit connector.",Bug,2024-06-16,Revit Integration
+10167,PB-167,To Do,Archicad import fail,"Archicad connector import fails under Windows 11.",Bug,2024-06-17,Archicad Integration
+10168,PB-168,In Progress,Authentication session timeout,"Session timeout feature added to authentication API.",Story,2024-06-18,Authentication
+10169,PB-169,Done,Search filter redesign,"Filter UI for search redesigned for clarity.",Improvement,2024-06-19,Search
+10170,PB-170,To Do,Analytics export missing fields,"PDF export for analytics missing chart images.",Bug,2024-06-20,Analytics
+10171,PB-171,Blocked,Reporting multi-download error,"Bulk report downloads lead to server lock.",Bug,2024-06-21,Reporting
+10172,PB-172,In Review,Data storage API expansion,"Data storage API supports facility categorization.",Story,2024-06-22,Data Storage
+10173,PB-173,To Do,User interface save warning,"No warning when leaving page with unsaved UI edits.",Bug,2024-06-23,User Interface
+10174,PB-174,Done,Mobile API bug fixes,"API controller bug fixes for mobile.",Improvement,2024-06-24,Mobile
+10175,PB-175,In Progress,Revit connector UI update,"Update UI for Revit connector config.",Story,2024-06-25,Revit Integration
+10176,PB-176,Blocked,Analytics real-time data crash,"Real-time analytics UI not loading new data.",Bug,2024-06-26,Analytics
+10177,PB-177,To Do,Reporting data collision,"Concurrent report edits over-write data.",Bug,2024-06-27,Reporting
+10178,PB-178,Done,Authentication experience upgrades,"Improved authentication flows for app.",Improvement,2024-06-28,Authentication
+10179,PB-179,In Progress,Archicad connector dashboards,"Archicad connector dashboard UI improvements.",Story,2024-06-29,Archicad Integration
+10180,PB-180,Blocked,Mobile session timeout error,"Mobile session times out prematurely.",Bug,2024-06-30,Mobile
+10181,PB-181,Done,Search filter performance boost,"Boosted performance for search filter logic.",Improvement,2024-07-01,Search
+10182,PB-182,To Do,Data storage parse error,"Project data parsing issues in storage.",Bug,2024-07-02,Data Storage
+10183,PB-183,In Review,Analytics export to Excel,"Excel export supported for analytics dashboard.",Story,2024-07-03,Analytics
+10184,PB-184,In Progress,Reporting module refactor,"Code refactor for reporting backend.",Task,2024-07-04,Reporting
+10185,PB-185,Blocked,Archicad connector error,"JSON parse error on Archicad connector.",Bug,2024-07-05,Archicad Integration
+10186,PB-186,Done,Mobile notifications docs,"Startup guide updated for mobile notifications.",Improvement,2024-07-06,Mobile
+10187,PB-187,To Do,Revit connector duplicate rooms,"Duplicate rooms imported from Revit connector.",Bug,2024-07-07,Revit Integration
+10188,PB-188,In Progress,Authentication audit logs,"Add full audit logging to authentication module.",Story,2024-07-08,Authentication
+10189,PB-189,Done,Data storage batch actions,"Batch actions supported for project data storage.",Improvement,2024-07-09,Data Storage
+10190,PB-190,Blocked,Analytics dashboard not loading,"Dashboard analytics not displaying any chart data.",Bug,2024-07-10,Analytics
+10191,PB-191,To Do,Reporting export duplicates,"Multiple PDF exports create duplicate files.",Bug,2024-07-11,Reporting
+10192,PB-192,In Review,User interface chart labels,"Improve clarity and contrast, chart labels.",Story,2024-07-12,User Interface
+10193,PB-193,Done,Archicad room mapping fixes,"Archicad connector maps rooms with new routines.",Improvement,2024-07-13,Archicad Integration
+10194,PB-194,To Do,Search filter bug,"Filters in search module do not persist.",Bug,2024-07-14,Search
+10195,PB-195,Blocked,Revit connector offline,"Connector remains offline after planned upgrades.",Bug,2024-07-15,Revit Integration
+10196,PB-196,In Progress,Reporting preview,"Add reporting preview to main dashboard.",Story,2024-07-16,Reporting
+10197,PB-197,Done,User authentication session logs,"Session logs supported for admin users.",Improvement,2024-07-17,Authentication
+10198,PB-198,Blocked,Mobile export timeout,"Export from mobile app times out after 2 minutes.",Bug,2024-07-18,Mobile
+10199,PB-199,To Do,Data storage export options,"Missing XML format for exported project data.",Bug,2024-07-19,Data Storage
+10200,PB-200,In Progress,Archicad connector update,"New update fixes issue with external file paths.",Task,2024-07-20,Archicad Integration
+10201,PB-201,Blocked,Analytics export freezes,"PDF export for analytics hangs at 75% progress.",Bug,2024-07-21,Analytics
+10202,PB-202,To Do,Reporting multi-export bug,"Bulk reports fail to export when scheduled via API.",Bug,2024-07-22,Reporting
+10203,PB-203,Done,Search category filter,"Added category filters to project search.",Improvement,2024-07-23,Search
+10204,PB-204,In Review,Archicad connector translation,"Implement translation for Archicad UI fields.",Story,2024-07-24,Archicad Integration
+10205,PB-205,To Do,Revit connector missing permissions,"User permission requirements not enforced for Revit sync.",Bug,2024-07-25,Revit Integration
+10206,PB-206,Blocked,Authentication refresh token loss,"Lost refresh token after mobile sign-in.",Bug,2024-07-26,Authentication
+10207,PB-207,In Progress,Mobile export API,"New API endpoint for mobile data export.",Task,2024-07-27,Mobile
+10208,PB-208,Done,User interface scalable icons,"Icons now scale for high-DPI screens.",Improvement,2024-07-28,User Interface
+10209,PB-209,In Review,Reporting by geographic area,"Enable facility reporting by location.",Story,2024-07-29,Reporting
+10210,PB-210,To Do,Data storage backup error,"Backup fails if project name contains Unicode.",Bug,2024-07-30,Data Storage
+10211,PB-211,Blocked,Analytics facet filtering bug,"Facet filters in analytics dashboard crash module.",Bug,2024-07-31,Analytics
+10212,PB-212,Done,Archicad room schedule export,"Room schedules now export for Archicad integrations.",Improvement,2024-08-01,Archicad Integration
+10213,PB-213,To Do,Search box not responsive,"Search box does not resize with browser window.",Bug,2024-08-02,Search
+10214,PB-214,In Progress,Authentication group management,"Add group management UI for authentication.",Story,2024-08-03,Authentication
+10215,PB-215,Blocked,Mobile notifications gap,"Some notifications not delivered on Android.",Bug,2024-08-04,Mobile
+10216,PB-216,To Do,Reporting schedule conflict,"Report scheduling conflicts for projects with similar names.",Bug,2024-08-05,Reporting
+10217,PB-217,In Review,Archicad mapping history,"Include mapping history for Archicad connector.",Story,2024-08-06,Archicad Integration
+10218,PB-218,Done,User interface voice prompts,"UI now offers voice prompt feature.",Improvement,2024-08-07,User Interface
+10219,PB-219,To Do,Revit analytics mismatch,"Analytics for Revit projects show incorrect counts.",Bug,2024-08-08,Revit Integration
+10220,PB-220,In Progress,Mobile session re-authentication,"Prompt re-authentication after mobile session expires.",Story,2024-08-09,Authentication
+10221,PB-221,Done,Data storage import filters,"Added import filters for project data storage.",Improvement,2024-08-10,Data Storage
+10222,PB-222,Blocked,Search module JS crash,"Search module throws JavaScript error on submit.",Bug,2024-08-11,Search
+10223,PB-223,To Do,Analytics pie chart error,"Pie chart incorrectly displays percentage values.",Bug,2024-08-12,Analytics
+10224,PB-224,In Review,Reporting CSV customization,"Enable custom column selection for CSV exports.",Story,2024-08-13,Reporting
+10225,PB-225,Done,Archicad integration error logging,"Added advanced error logging to Archicad integration.",Improvement,2024-08-14,Archicad Integration
+10226,PB-226,To Do,User interface color contrast,"Dashboard panels have poor color contrast for accessibility.",Bug,2024-08-15,User Interface
+10227,PB-227,Blocked,Revit connector duplicate sync,"Syncing twice in a row creates duplicate entries.",Bug,2024-08-16,Revit Integration
+10228,PB-228,In Progress,Mobile search upgrade,"Improve Boolean search logic for mobile.",Story,2024-08-17,Mobile
+10229,PB-229,Done,Authentication audit summary,"Summary view of authentication activity logs added.",Improvement,2024-08-18,Authentication
+10230,PB-230,To Do,Reporting chart layout bug,"Chart layout breaks on printed reports.",Bug,2024-08-19,Reporting
+10231,PB-231,Blocked,Data storage duplicate IDs,"Duplicate IDs found in data storage export.",Bug,2024-08-20,Data Storage
+10232,PB-232,In Review,Search by date range,"Enable search filtering by custom date ranges.",Story,2024-08-21,Search
+10233,PB-233,Done,Analytics dashboard quick links,"Quick link navigation added to analytics dashboard.",Improvement,2024-08-22,Analytics
+10234,PB-234,To Do,Archicad connector room split,"Room split actions not synced correctly in Archicad.",Bug,2024-08-23,Archicad Integration
+10235,PB-235,In Progress,User interface map widget,"Add interactive maps for location-based planning.",Story,2024-08-24,User Interface
+10236,PB-236,Blocked,Mobile filter persistence,"Filters reset every time on mobile dashboard.",Bug,2024-08-25,Mobile
+10237,PB-237,Done,Reporting PDF preview,"Preview PDFs in reporting module before download.",Improvement,2024-08-26,Reporting
+10238,PB-238,To Do,Authentication group rename error,"Cannot rename authentication groups with reserved names.",Bug,2024-08-27,Authentication
+10239,PB-239,Blocked,Analytics CSV mismatch,"Exported CSV analytics files show incorrect values.",Bug,2024-08-28,Analytics
+10240,PB-240,In Progress,Revit connector plugin update,"Plugin update adds additional mapping features.",Story,2024-08-29,Revit Integration
+10241,PB-241,Done,Archicad integration batch sync,"Batch sync added to Archicad connector feature.",Improvement,2024-08-30,Archicad Integration
+10242,PB-242,To Do,User interface date selector bug,"Date selectors display wrong years in some browsers.",Bug,2024-08-31,User Interface
+10243,PB-243,Blocked,Reporting duplicate rows,"Reporting exports contain duplicate rows after re-import.",Bug,2024-09-01,Reporting
+10244,PB-244,In Review,Data storage backup API,"New API for automated weekly data backups.",Story,2024-09-02,Data Storage
+10245,PB-245,Done,Analytics export by filter,"Export analytics by custom filter groups.",Improvement,2024-09-03,Analytics
+10246,PB-246,To Do,Revit connector missing rooms,"Room records missing after sync with Revit plugin.",Bug,2024-09-04,Revit Integration
+10247,PB-247,In Progress,Mobile accessibility upgrade,"Improve mobile app accessibility for reading tools.",Story,2024-09-05,Mobile
+10248,PB-248,Blocked,Authentication header empty,"Headers in authentication API post are empty.",Bug,2024-09-06,Authentication
+10249,PB-249,Done,Search autocomplete performance,"Autocomplete responses improved in speed.",Improvement,2024-09-07,Search
+10250,PB-250,To Do,Reporting analytics correlation bug,"Correlations shown in analytics dashboard incorrect.",Bug,2024-09-08,Reporting
+10251,PB-251,Blocked,Archicad export crash,"Exporting from Archicad integration crashes on Mac.",Bug,2024-09-09,Archicad Integration
+10252,PB-252,In Review,User interface zoom,"Enable zoom feature for dashboard charts.",Story,2024-09-10,User Interface
+10253,PB-253,Done,Mobile export file type support,"Mobile export now supports both PDF and CSV.",Improvement,2024-09-11,Mobile
+10254,PB-254,To Do,Search logic mismatch,"Search results logic does not match filter query.",Bug,2024-09-12,Search
+10255,PB-255,Blocked,Reporting date range error,"Date ranges disabled in reporting wizard.",Bug,2024-09-13,Reporting
+10256,PB-256,To Do,Analytics missing source data,"Analytics charts missing input data from recent imports.",Bug,2024-09-14,Analytics
+10257,PB-257,In Progress,Revit connector batch import,"Enable batch import for Revit room data.",Story,2024-09-15,Revit Integration
+10258,PB-258,Done,Data storage quick filters,"Apply quick filters to data storage exports.",Improvement,2024-09-16,Data Storage
+10259,PB-259,In Review,Archicad connector quick sync,"Quick sync feature for small Archicad projects.",Story,2024-09-17,Archicad Integration
+10260,PB-260,Blocked,Authentication role mismatch,"Roles assigned on authentication do not persist.",Bug,2024-09-18,Authentication
+10261,PB-261,To Do,Mobile UI flicker on rotate,"UI flickers when rotating mobile device.",Bug,2024-09-19,Mobile
+10262,PB-262,Done,Reporting dashboard themes,"Multiple themes for reporting dashboard view.",Improvement,2024-09-20,Reporting
+10263,PB-263,In Progress,Search filters batch update,"Batch update supported for search filters.",Story,2024-09-21,Search
+10264,PB-264,Blocked,Analytics UI translation gap,"Missing translation for several UI analytics terms.",Bug,2024-09-22,Analytics
+10265,PB-265,To Do,Revit connector data export bug,"Data fields missing in connector export.",Bug,2024-09-23,Revit Integration
+10266,PB-266,In Review,Mobile notifications scheduling,"User-scheduled alerts for mobile app.",Story,2024-09-24,Mobile
+10267,PB-267,Done,User interface sorting,"Sorting options expanded for dashboard panels.",Improvement,2024-09-25,User Interface
+10268,PB-268,Blocked,Reporting dashboard blank,"Dashboard doesn't render report data.",Bug,2024-09-26,Reporting
+10269,PB-269,To Do,Data storage not syncing,"Data storage stops syncing after 20 minutes.",Bug,2024-09-27,Data Storage
+10270,PB-270,In Progress,Archicad connector error reporting,"Advanced error reporting for Archicad integration.",Story,2024-09-28,Archicad Integration
+10271,PB-271,Done,Authentication role edit,"Administrator can now edit roles from dashboard.",Improvement,2024-09-29,Authentication
+10272,PB-272,Blocked,Analytics dashboard filter bug,"Filters not saving on analytics dashboard.",Bug,2024-09-30,Analytics
+10273,PB-273,To Do,Search by room function,"Search missing functionality to filter by room function.",Bug,2024-10-01,Search
+10274,PB-274,In Progress,Mobile UI copy/paste,"Enable copy-paste for mobile fields.",Story,2024-10-02,Mobile
+10275,PB-275,Done,Reporting category export,"Export reports by facility category.",Improvement,2024-10-03,Reporting
+10276,PB-276,In Review,Archicad integration improvements,"Assorted upgrades for better integration.",Story,2024-10-04,Archicad Integration
+10277,PB-277,Blocked,Authentication CAPTCHA fail,"CAPTCHA errors during logins detected.",Bug,2024-10-05,Authentication
+10278,PB-278,To Do,User interface help icon,"Missing help icon in navigation panel.",Bug,2024-10-06,User Interface
+10279,PB-279,Done,Analytics export new type,"Analytics export supports JSON output type.",Improvement,2024-10-07,Analytics
+10280,PB-280,In Progress,Search ranking logic,"Improve project search ranking logic.",Story,2024-10-08,Search
+10281,PB-281,Blocked,Reporting export file empty,"Report export files are empty under certain conditions.",Bug,2024-10-09,Reporting
+10282,PB-282,To Do,Mobile session duplication,"Multiple mobile sessions sometimes overlap.",Bug,2024-10-10,Mobile
+10283,PB-283,Done,Archicad connector map preview,"Added map preview to Archicad connector UI.",Improvement,2024-10-11,Archicad Integration
+10284,PB-284,In Review,Analytics export recall,"Recall previous exports from analytics history.",Story,2024-10-12,Analytics
+10285,PB-285,To Do,Reporting PDF bookmarks bug,"Bookmarks not added in exported PDFs.",Bug,2024-10-13,Reporting
+10286,PB-286,Blocked,Revit connector version error,"Connector fails post-plugin version update.",Bug,2024-10-14,Revit Integration
+10287,PB-287,Done,User interface hints,"Added contextual hints throughout dashboards.",Improvement,2024-10-15,User Interface
+10288,PB-288,In Progress,Mobile authentication notifications,"Push notifications for authentication change on mobile.",Task,2024-10-16,Mobile
+10289,PB-289,To Do,Search filter autocomplete bug,"Autocomplete for search filters fails to trigger.",Bug,2024-10-17,Search
+10290,PB-290,Blocked,Reporting module access error,"Access error for reporting module for guest accounts.",Bug,2024-10-18,Reporting
+10291,PB-291,To Do,Analytics chart export bug,"Exported analytics charts lose formatting.",Bug,2024-10-19,Analytics
+10292,PB-292,In Progress,Archicad mapping preview,"Preview mapping for Archicad connector in dashboard.",Story,2024-10-20,Archicad Integration
+10293,PB-293,Done,Authentication login reporting,"Report login data through authentication API.",Improvement,2024-10-21,Authentication
+10294,PB-294,Blocked,Mobile UI navigation error,"Navigation menu not loading in mobile view.",Bug,2024-10-22,Mobile
+10295,PB-295,To Do,Data storage type filter,"Missing filter for type in storage dashboard.",Bug,2024-10-23,Data Storage
+10296,PB-296,In Review,Archicad connector schedule sync,"Sync connector schedules for facility mapping.",Story,2024-10-24,Archicad Integration
+10297,PB-297,Done,Search field highlights,"Search field auto-highlights matching text.",Improvement,2024-10-25,Search
+10298,PB-298,Blocked,Reporting multi-column error,"Export with multi-column fails to complete.",Bug,2024-10-26,Reporting
+10299,PB-299,To Do,Mobile icon scaling bug,"Some icons on mobile display incorrectly at 2x zoom.",Bug,2024-10-27,Mobile
+10300,PB-300,In Progress,Analytics data context,"Show data context for analytics dashboard items.",Story,2024-10-28,Analytics
+10301,PB-301,Blocked,Revit connector import fail,"Import from Revit connector does not complete for large projects.",Bug,2024-10-29,Revit Integration
+10302,PB-302,To Do,Reporting auto-save bug,"Auto-save fails in reporting editor.",Bug,2024-10-30,Reporting
+10303,PB-303,Done,Mobile session info,"Mobile app session info displayed on settings.",Improvement,2024-10-31,Mobile
+10304,PB-304,In Progress,User interface feedback,"Dashboard feedback buttons added.",Task,2024-11-01,User Interface
+10305,PB-305,Blocked,Archicad schedule mismatch,"Archicad connector schedule out of sync after update.",Bug,2024-11-02,Archicad Integration
+10306,PB-306,To Do,Search results ranking bug,"Relevance ranking not applied to search results.",Bug,2024-11-03,Search
+10307,PB-307,In Review,Analytics export filter,"Apply new filters for exporting dashboard analytics.",Story,2024-11-04,Analytics
+10308,PB-308,Done,Authentication token improvements,"Token handling improved for persistent logins.",Improvement,2024-11-05,Authentication
+10309,PB-309,In Progress,Reporting export scheduler,"Export scheduler refactor for reporting module.",Task,2024-11-06,Reporting
+10310,PB-310,To Do,Data storage backup fail,"Backup fails for projects with null room names.",Bug,2024-11-07,Data Storage
+10311,PB-311,Blocked,Mobile export file lost,"Exported files not found in mobile app directory.",Bug,2024-11-08,Mobile
+10312,PB-312,In Review,Archicad connector room filter,"Filter rooms before exporting to Archicad.",Story,2024-11-09,Archicad Integration
+10313,PB-313,Done,User interface help overlay,"Help overlays for first-time users activated.",Improvement,2024-11-10,User Interface
+10314,PB-314,To Do,Reporting session error,"Session IDs not tracked in reporting exports.",Bug,2024-11-11,Reporting
+10315,PB-315,Blocked,Analytics module offline,"Analytics dashboard offline after plugin update.",Bug,2024-11-12,Analytics
+10316,PB-316,In Progress,Revit search UI upgrade,"Upgrade UI for Revit search filters.",Story,2024-11-13,Revit Integration
+10317,PB-317,Done,Mobile authentication MFA,"MFA option added for mobile login.",Improvement,2024-11-14,Authentication
+10318,PB-318,To Do,User interface theme bug,"Theme switcher doesn't change dashboard background.",Bug,2024-11-15,User Interface
+10319,PB-319,Blocked,Reporting scheduled run fail,"Scheduled reporting runs fail to complete.",Bug,2024-11-16,Reporting
+10320,PB-320,In Review,Archicad synced mapping tool,"Mapping tool sync now enabled via Archicad connector.",Story,2024-11-17,Archicad Integration
+10321,PB-321,Done,Analytics tag support,"Tag support for analytics records added.",Improvement,2024-11-18,Analytics
+10322,PB-322,In Progress,Mobile UI redesign,"Major redesign for mobile dashboard.",Task,2024-11-19,Mobile
+10323,PB-323,To Do,Authentication login history bug,"Login history not retained for more than 7 days.",Bug,2024-11-20,Authentication
+10324,PB-324,Blocked,Data storage delete fail,"Deleting some old projects does not remove all data.",Bug,2024-11-21,Data Storage
+10325,PB-325,In Review,User interface table widget,"Table widget addition for dashboard reporting.",Story,2024-11-22,User Interface
+10326,PB-326,Done,Reporting template sync,"Templates sync automatically to cloud dashboard.",Improvement,2024-11-23,Reporting
+10327,PB-327,In Progress,Analytics UI transition,"Add new transitions when switching analytics charts.",Story,2024-11-24,Analytics
+10328,PB-328,To Do,Archicad connector batch error,"Batch actions for Archicad connector fail under load.",Bug,2024-11-25,Archicad Integration
+10329,PB-329,Blocked,Revit connector data gap,"Data gap when importing complex projects.",Bug,2024-11-26,Revit Integration
+10330,PB-330,Done,User interface notification bell,"Added notification bell icon to dashboard UI.",Improvement,2024-11-27,User Interface
+10331,PB-331,In Progress,Reporting incremental export,"Incremental export for reporting data.",Task,2024-11-28,Reporting
+10332,PB-332,To Do,Mobile login screen bug,"Login screen doesn't center content on iOS.",Bug,2024-11-29,Mobile
+10333,PB-333,Blocked,Authentication API call lag,"API calls for authentication take over 3 seconds.",Bug,2024-11-30,Authentication
+10334,PB-334,In Review,Data storage backup retention,"Retention policies for backup data storage.",Story,2024-12-01,Data Storage
+10335,PB-335,Done,Analytics connector integration,"Connector support for external analytics tools.",Improvement,2024-12-02,Analytics
+10336,PB-336,To Do,Reporting form field bug,"Form fields do not validate in reporting module.",Bug,2024-12-03,Reporting
+10337,PB-337,In Progress,Archicad connector UI tweak,"Tweak UI for Archicad area mapping.",Story,2024-12-04,Archicad Integration
+10338,PB-338,Blocked,Mobile notifications overload,"Too many notifications sent on mobile events.",Bug,2024-12-05,Mobile
+10339,PB-339,Done,User interface avatar support,"Avatar images now shown for all users.",Improvement,2024-12-06,User Interface
+10340,PB-340,To Do,Search advanced settings bug,"Advanced search settings not retained after save.",Bug,2024-12-07,Search
+10341,PB-341,Blocked,Reporting chart export fail,"Exporting dashboard charts gets 502 error.",Bug,2024-12-08,Reporting
+10342,PB-342,In Review,Analytics connector audit logs,"Add audit logging to analytics connector.",Story,2024-12-09,Analytics
+10343,PB-343,Done,Archicad integration UI,"UI for Archicad integration improved for clarity.",Improvement,2024-12-10,Archicad Integration
+10344,PB-344,To Do,Authentication group sync error,"Group sync fails after user is removed.",Bug,2024-12-11,Authentication
+10345,PB-345,Blocked,Data storage import lag,"Large batch data imports take too long.",Bug,2024-12-12,Data Storage
+10346,PB-346,Done,Analytics module quick start,"Quick start guide for analytics dashboard released.",Improvement,2024-12-13,Analytics
+10347,PB-347,In Progress,Reporting multi-project preview,"Enable multi-project preview for reporting.",Task,2024-12-14,Reporting
+10348,PB-348,To Do,Archicad mapping filter bug,"Filter for mapping rooms in Archicad connector not applied.",Bug,2024-12-15,Archicad Integration
+10349,PB-349,Blocked,Search module multi-error,"Multiple errors when filtering search results.",Bug,2024-12-16,Search
+10350,PB-350,Done,Mobile authentication settings,"Authentication settings added to mobile app config.",Improvement,2024-12-17,Mobile
+10351,PB-351,To Do,Reporting dashboard sync bug,"Sync between reporting dashboard and cloud fails.",Bug,2024-12-18,Reporting
+10352,PB-352,Blocked,Revit connector timeout,"Connector times out after 2 minutes syncing.",Bug,2024-12-19,Revit Integration
+10353,PB-353,In Progress,User interface chart themes,"Chart themes now customizable in UI.",Story,2024-12-20,User Interface
+10354,PB-354,Done,Data storage sync boost,"Sync performance in data storage increased.",Improvement,2024-12-21,Data Storage
+10355,PB-355,To Do,Analytics sorting error,"Sorting on analytics dashboard not correct.",Bug,2024-12-22,Analytics
+10356,PB-356,Blocked,Reporting template disconnect,"Template editor disconnects after long inactivity.",Bug,2024-12-23,Reporting
+10357,PB-357,Done,Archicad connector upgrade,"Connector upgraded to new mapping engine.",Improvement,2024-12-24,Archicad Integration
+10358,PB-358,In Progress,Authentication session transfer,"Session transfer across devices enabled.",Task,2024-12-25,Authentication
+10359,PB-359,To Do,User interface graph axis bug,"Graph axes not labeled in dashboard charts.",Bug,2024-12-26,User Interface
+10360,PB-360,Blocked,Data storage sync error,"Sync stops on projects with empty value sets.",Bug,2024-12-27,Data Storage
+10361,PB-361,Done,Analytics dashboard widget,"New widget for room utilization analytics.",Improvement,2024-12-28,Analytics
+10362,PB-362,To Do,Revit connector auto-map bug,"Auto-mapping fails for connector under multi-building use.",Bug,2024-12-29,Revit Integration
+10363,PB-363,Blocked,Mobile export path fail,"File path incorrect for mobile exports.",Bug,2024-12-30,Mobile
+10364,PB-364,In Review,Reporting API endpoints,"New endpoints added to reporting API.",Story,2024-12-31,Reporting
+10365,PB-365,Done,Archicad connector role support,"Role-based access expanded for Archicad connector.",Improvement,2025-01-01,Archicad Integration
+10366,PB-366,To Do,Authentication password reset bug,"Password reset fails with non-ASCII characters.",Bug,2025-01-02,Authentication
+10367,PB-367,Blocked,User interface dashboard freeze,"Dashboard graphs freeze when accessing analytics.",Bug,2025-01-03,User Interface
+10368,PB-368,In Progress,Analytics pie chart upgrade,"Pie charts updated to new design model.",Task,2025-01-04,Analytics
+10369,PB-369,Done,Reporting category selector,"Added project category selector for reports.",Improvement,2025-01-05,Reporting
+10370,PB-370,To Do,Data storage missing room data,"Some room records missing in storage exports.",Bug,2025-01-06,Data Storage
+10371,PB-371,Blocked,Archicad connector image error,"Image field fails to render for connector maps.",Bug,2025-01-07,Archicad Integration
+10372,PB-372,Done,Mobile export by category,"Export files by category from mobile dashboard.",Improvement,2025-01-08,Mobile
+10373,PB-373,In Review,Authentication role matrix,"New role matrix added for admin dashboard.",Story,2025-01-09,Authentication
+10374,PB-374,To Do,Search API field error,"Missing returned fields from search API call.",Bug,2025-01-10,Search
+10375,PB-375,Blocked,Reporting form UI not loading,"Form UI elements missing from reporting editor.",Bug,2025-01-11,Reporting
+10376,PB-376,Done,Analytics report highlights,"Highlights added to summary analytics reports.",Improvement,2025-01-12,Analytics
+10377,PB-377,To Do,Revit connector wrong type,"Type fields mismatched for imported rooms.",Bug,2025-01-13,Revit Integration
+10378,PB-378,Blocked,Data storage multi-edit error,"Multi-edit fails for projects with custom parameters.",Bug,2025-01-14,Data Storage
+10379,PB-379,In Progress,Archicad mapping group,"Mapping group feature for Archicad connector.",Task,2025-01-15,Archicad Integration
+10380,PB-380,Done,User interface instructional text,"Added instructional tooltips throughout dashboard.",Improvement,2025-01-16,User Interface
+10381,PB-381,To Do,Reporting export by region bug,"Export by geographic region omits some entries.",Bug,2025-01-17,Reporting
+10382,PB-382,Blocked,Analytics dashboard unload error,"Dashboard fails to unload previous analytics view.",Bug,2025-01-18,Analytics
+10383,PB-383,Done,Revit connector plan preview,"Preview plan added for rooms from Revit connector.",Improvement,2025-01-19,Revit Integration
+10384,PB-384,In Review,Mobile session location,"Add log location for each mobile session.",Story,2025-01-20,Mobile
+10385,PB-385,Blocked,Archicad multi-room crash,"Multi-room mapping crashes connector.",Bug,2025-01-21,Archicad Integration
+10386,PB-386,To Do,Authentication UI role filter,"Incorrect role shown in authentication UI.",Bug,2025-01-22,Authentication
+10387,PB-387,Done,Data storage export summary,"Summary added to project data exports.",Improvement,2025-01-23,Data Storage
+10388,PB-388,In Review,Analytics dashboard time filter,"Add new time filter to analytics dashboard.",Story,2025-01-24,Analytics
+10389,PB-389,In Progress,Search enrichment fields,"Add enrichment fields for advanced project search.",Task,2025-01-25,Search
+10390,PB-390,Blocked,Reporting bulk export fail,"Bulk export of project reports interrupted.",Bug,2025-01-26,Reporting
+10391,PB-391,Done,User interface grid lines,"Grid lines added to dashboard widgets.",Improvement,2025-01-27,User Interface
+10392,PB-392,To Do,Mobile export field bug,"Export omits fields for certain mobile record types.",Bug,2025-01-28,Mobile
+10393,PB-393,Blocked,Archicad connector object lag,"Lag on object placement into mapping connector.",Bug,2025-01-29,Archicad Integration
+10394,PB-394,Done,Revit connector dashboard icon,"Added dashboard icon for Revit connector status.",Improvement,2025-01-30,Revit Integration
+10395,PB-395,To Do,Reporting category import error,"Import fails for new categories added to facility type.",Bug,2025-01-31,Reporting
+10396,PB-396,Blocked,Analytics dashboard update bug,"Dashboard does not refresh on new imports.",Bug,2025-02-01,Analytics
+10397,PB-397,In Progress,Data storage backup improvements,"Improved reliability for backup jobs.",Task,2025-02-02,Data Storage
+10398,PB-398,Done,Archicad connector import preview,"Preview added for connector import screens.",Improvement,2025-02-03,Archicad Integration
+10399,PB-399,In Review,Mobile export performance,"Optimize performance of export files for mobile.",Story,2025-02-04,Mobile
+10400,PB-400,To Do,User interface load spinner bug,"Spinner doesn't show on loading heavy dashboard data.",Bug,2025-02-05,User Interface
+10401,PB-401,Blocked,Revit connector export bug,"Export via Revit connector creates unreadable files.",Bug,2025-02-06,Revit Integration
+10402,PB-402,In Progress,Reporting filter design,"Redesign filter UI in reporting module.",Task,2025-02-07,Reporting
+10403,PB-403,Done,Mobile UI touch response,"Improved touch response on mobile app dashboard.",Improvement,2025-02-08,Mobile
+10404,PB-404,To Do,User interface clickable area bug,"Clickable regions in dashboard widgets too small.",Bug,2025-02-09,User Interface
+10405,PB-405,Blocked,Archicad mapping cache fail,"Mapping cache not retained under heavy load.",Bug,2025-02-10,Archicad Integration
+10406,PB-406,In Review,Analytics drill-down charts,"Add drill-down features to analytics charts.",Story,2025-02-11,Analytics
+10407,PB-407,Done,Authentication session expiry,"Session expiry warning added to authentication API.",Improvement,2025-02-12,Authentication
+10408,PB-408,To Do,Reporting table resize bug,"Tables do not resize properly when window size changes.",Bug,2025-02-13,Reporting
+10409,PB-409,Blocked,Data storage audit log fail,"Audit log does not capture all delete events.",Bug,2025-02-14,Data Storage
+10410,PB-410,Done,Archicad connector menu update,"Updated connector menu for easier navigation.",Improvement,2025-02-15,Archicad Integration
+10411,PB-411,In Progress,Mobile category tagging,"Add tagging features for mobile dashboard.",Task,2025-02-16,Mobile
+10412,PB-412,To Do,Search missing translation,"Translation not applied to search UI elements.",Bug,2025-02-17,Search
+10413,PB-413,Blocked,Reporting template update error,"Updating templates fails with 400 error.",Bug,2025-02-18,Reporting
+10414,PB-414,Done,Analytics dashboard refresh,"Dashboard refresh rate improved for analytics module.",Improvement,2025-02-19,Analytics
+10415,PB-415,In Review,Archicad connector full mapping,"Full mapping export feature for Archicad.",Story,2025-02-20,Archicad Integration
+10416,PB-416,To Do,Authentication password entry bug,"Password field clears on incorrect entry.",Bug,2025-02-21,Authentication
+10417,PB-417,Blocked,User interface chart lag,"Dashboard chart widgets lag under high traffic.",Bug,2025-02-22,User Interface
+10418,PB-418,Done,Reporting import optimization,"Optimized import of large Excel report files.",Improvement,2025-02-23,Reporting
+10419,PB-419,To Do,Data storage project merge bug,"Merge projects in storage fails for multi-room records.",Bug,2025-02-24,Data Storage
+10420,PB-420,Blocked,Analytics plugin load error,"Plugin fails to load analytics data on restart.",Bug,2025-02-25,Analytics
+10421,PB-421,In Progress,Revit connector config,"Config screen updates for Revit connector.",Task,2025-02-26,Revit Integration
+10422,PB-422,Done,Mobile export quick save,"Quick save added to mobile export options.",Improvement,2025-02-27,Mobile
+10423,PB-423,To Do,Search results filter loss,"Filters lost after sorting search results.",Bug,2025-02-28,Search
+10424,PB-424,Blocked,Reporting batch print error,"Batch printing fails when exporting multiple reports.",Bug,2025-03-01,Reporting
+10425,PB-425,Done,Archicad connector backup sync,"Backup sync now available for Archicad integration.",Improvement,2025-03-02,Archicad Integration
+10426,PB-426,In Review,User interface button customization,"Custom button options for dashboard.",Story,2025-03-03,User Interface
+10427,PB-427,To Do,Reporting export file rename bug,"Files cannot be renamed after exporting.",Bug,2025-03-04,Reporting
+10428,PB-428,Blocked,Data storage API authorization fail,"API rejects authorized users for backup endpoint.",Bug,2025-03-05,Data Storage
+10429,PB-429,Done,Analytics dashboard grid,"Grid layout added to analytics dashboard.",Improvement,2025-03-06,Analytics
+10430,PB-430,In Progress,Archicad connector region sync,"Region-specific sync options for connector.",Task,2025-03-07,Archicad Integration
+10431,PB-431,To Do,Authentication user invite bug,"Invitations fail for new user emails.",Bug,2025-03-08,Authentication
+10432,PB-432,Blocked,Mobile notifications popup error,"Push notifications popup not displayed on Android.",Bug,2025-03-09,Mobile
+10433,PB-433,Done,Reporting CSV import verify,"CSV import verification logic added to reporting.",Improvement,2025-03-10,Reporting
+10434,PB-434,In Review,Analytics comparison chart,"Build comparison chart feature for analytics view.",Story,2025-03-11,Analytics
+10435,PB-435,To Do,Search autocomplete lag,"Lag on autocomplete for large project lists.",Bug,2025-03-12,Search
+10436,PB-436,Blocked,Revit connector multi-project crash,"Crash on syncing multiple projects in connector.",Bug,2025-03-13,Revit Integration
+10437,PB-437,Done,User interface alert badges,"Alert badges added for dashboard alerts.",Improvement,2025-03-14,User Interface
+10438,PB-438,In Progress,Reporting multi-user edit,"Enable multi-user editing of reports.",Task,2025-03-15,Reporting
+10439,PB-439,To Do,Data storage bulk action bug,"Bulk actions fail for large data storage batches.",Bug,2025-03-16,Data Storage
+10440,PB-440,Blocked,Analytics source data error,"Source data flagged as incomplete in dashboard.",Bug,2025-03-17,Analytics
+10441,PB-441,Done,Archicad connector project search,"Connector now supports searching projects by name.",Improvement,2025-03-18,Archicad Integration
+10442,PB-442,To Do,Mobile export file access bug,"Mobile exported files not accessible offline.",Bug,2025-03-19,Mobile
+10443,PB-443,In Progress,Authentication token refresh,"Improve logic for token refresh on login.",Task,2025-03-20,Authentication
+10444,PB-444,Done,User interface tab order,"Dashboard tab order customizable.",Improvement,2025-03-21,User Interface
+10445,PB-445,Blocked,Reporting template save error,"Saving reporting templates fails after new update.",Bug,2025-03-22,Reporting
+10446,PB-446,To Do,Analytics pie chart slice bug,"Pie chart slices do not match legend entries.",Bug,2025-03-23,Analytics
+10447,PB-447,In Progress,Archicad connector data validation,"Add validation logic before exporting mapping data.",Task,2025-03-24,Archicad Integration
+10448,PB-448,Done,Mobile dashboard icon update,"New icon pack for mobile dashboard widgets.",Improvement,2025-03-25,Mobile
+10449,PB-449,To Do,Search filter reset bug,"Filters reset when switching project tabs.",Bug,2025-03-26,Search
+10450,PB-450,Blocked,Data storage category mismatch,"Category mismatches found after room reassignments.",Bug,2025-03-27,Data Storage
+10451,PB-451,Done,Reporting dashboard asset links,"Link assets directly from reporting dashboard.",Improvement,2025-03-28,Reporting
+10452,PB-452,In Progress,Analytics dashboard export,"Export dashboard widgets as images.",Task,2025-03-29,Analytics
+10453,PB-453,To Do,Revit search filter bug,"Search filters don’t apply properly in Revit connector.",Bug,2025-03-30,Revit Integration
+10454,PB-454,Blocked,Mobile import data error,"Data import fails for certain room lists on mobile.",Bug,2025-03-31,Mobile
+10455,PB-455,Done,User interface login hints,"Login hints now displayed in authentication window.",Improvement,2025-04-01,User Interface
+10456,PB-456,To Do,Reporting conflict bug,"Conflicts occur when editing the same report by two users.",Bug,2025-04-02,Reporting
+10457,PB-457,Blocked,Analytics number formatting bug,"Analytics charts lose number formatting.",Bug,2025-04-03,Analytics
+10458,PB-458,In Progress,Archicad connector date mapping,"Map dates accurately for room scheduling.",Task,2025-04-04,Archicad Integration
+10459,PB-459,Done,Mobile API upgrade,"Mobile API upgraded to support latest OS features.",Improvement,2025-04-05,Mobile
+10460,PB-460,To Do,Search truncated results bug,"Long lists get truncated in search responses.",Bug,2025-04-06,Search
+10461,PB-461,Blocked,Reporting file type loss,"Exported reporting files lose type metadata.",Bug,2025-04-07,Reporting
+10462,PB-462,Done,Archicad connector import speed,"Import process now 50% faster for large files.",Improvement,2025-04-08,Archicad Integration
+10463,PB-463,In Progress,User interface dark theme upgrade,"Dark theme expanded for all UI panels.",Task,2025-04-09,User Interface
+10464,PB-464,To Do,Authentication external login bug,"External logins do not retain session tokens.",Bug,2025-04-10,Authentication
+10465,PB-465,Blocked,Data storage mapping loss,"Mapping records lost for some project merges.",Bug,2025-04-11,Data Storage
+10466,PB-466,Done,Analytics dashboard quick filters,"Quick filter options added to analytics dashboard.",Improvement,2025-04-12,Analytics
+10467,PB-467,In Review,Reporting bulk template export,"Bulk export added for report templates.",Story,2025-04-13,Reporting
+10468,PB-468,To Do,Revit connector plugin timeout,"Plugin times out after 5 minutes on large sync.",Bug,2025-04-14,Revit Integration
+10469,PB-469,Blocked,Mobile user avatar bug,"User avatars not loading in mobile application.",Bug,2025-04-15,Mobile
+10470,PB-470,Done,User interface panel drag,"Drag to rearrange dashboard panels enabled.",Improvement,2025-04-16,User Interface
+10471,PB-471,In Progress,Analytics module comparison filter,"Comparison filter logic added for analytics charts.",Task,2025-04-17,Analytics
+10472,PB-472,To Do,Reporting preview error,"Preview for reporting dashboard not loading.",Bug,2025-04-18,Reporting
+10473,PB-473,Blocked,Archicad mapping plugin fail,"Plugin fails for some room types in mapping tool.",Bug,2025-04-19,Archicad Integration
+10474,PB-474,Done,Mobile export ZIP archive,"Export now available as ZIP archival file.",Improvement,2025-04-20,Mobile
+10475,PB-475,To Do,Search scheduling calendar bug,"Scheduling calendar does not sync with search filters.",Bug,2025-04-21,Search
+10476,PB-476,Blocked,Reporting dashboard filter disconnect,"Dashboard filters disabled after session timeout.",Bug,2025-04-22,Reporting
+10477,PB-477,Done,Archicad connector map legend,"Legend added to mapping screen on connector.",Improvement,2025-04-23,Archicad Integration
+10478,PB-478,To Do,Authentication cloud sync bug,"Cloud login credentials not synced to local device.",Bug,2025-04-24,Authentication
+10479,PB-479,Blocked,User interface grid snap error,"Grid snapping not functioning on dashboard widgets.",Bug,2025-04-25,User Interface
+10480,PB-480,Done,Analytics export type list,"Widgets can export previously used export file types.",Improvement,2025-04-26,Analytics
+10481,PB-481,In Progress,Reporting dashboard tab logic,"New logic for switching dashboard tabs.",Task,2025-04-27,Reporting
+10482,PB-482,To Do,Data storage sort order bug,"Sort order not retained after page reload.",Bug,2025-04-28,Data Storage
+10483,PB-483,Blocked,Archicad import multi-error,"Multiple import errors in mapping module.",Bug,2025-04-29,Archicad Integration
+10484,PB-484,Done,Mobile reporting export filters,"Reporting exports now match dashboard filters.",Improvement,2025-04-30,Mobile
+10485,PB-485,To Do,Search filter wildcard bug,"Wildcard filters not accepted in project search.",Bug,2025-05-01,Search
+10486,PB-486,In Progress,Authentication policy management,"Policy management UI for authentication roles.",Task,2025-05-02,Authentication
+10487,PB-487,Blocked,Reporting markdown export error,"Markdown format reporting exports not supported.",Bug,2025-05-03,Reporting
+10488,PB-488,Done,Archicad export API,"API for Archicad export now released.",Improvement,2025-05-04,Archicad Integration
+10489,PB-489,To Do,Mobile filter UI lag,"Filter options slow to load on mobile export screen.",Bug,2025-05-05,Mobile
+10490,PB-490,Blocked,Revit connector room mapping failure,"Mapping fails for non-standard room types.",Bug,2025-05-06,Revit Integration
+10491,PB-491,Done,User interface tab saved state,"Tab state now saved between dashboard visits.",Improvement,2025-05-07,User Interface
+10492,PB-492,To Do,Reporting dashboard export template bug,"Export templates don't apply for new users.",Bug,2025-05-08,Reporting
+10493,PB-493,Blocked,Analytics dashboard loss,"Dashboard widgets disappear under high traffic.",Bug,2025-05-09,Analytics
+10494,PB-494,Done,Archicad integration mapping table,"Mapping data shown in table for connector imports.",Improvement,2025-05-10,Archicad Integration
+10495,PB-495,In Progress,Mobile dashboard theme swap,"Swap dashboard themes from mobile settings.",Task,2025-05-11,Mobile
+10496,PB-496,To Do,User interface export CSV bug,"Export CSV button not working in dashboard.",Bug,2025-05-12,User Interface
+10497,PB-497,Blocked,Reporting timeline not loading,"Timeline in reporting dashboard frozen.",Bug,2025-05-13,Reporting
+10498,PB-498,Done,Analytics export new formats,"Added TXT and XLS format to analytics exports.",Improvement,2025-05-14,Analytics
+10499,PB-499,To Do,Archicad connector category filter bug,"Category filter missing for mapping screen.",Bug,2025-05-15,Archicad Integration
+10500,PB-500,Blocked,Mobile session log error,"Incorrect timestamps on mobile session logs.",Bug,2025-05-16,Mobile
+10501,PB-501,To Do,Reporting asset preview bug,"Assets not visible in reporting preview mode.",Bug,2025-05-17,Reporting
+10502,PB-502,Blocked,Analytics plugin crash,"Plugin crashes on analytics module update.",Bug,2025-05-18,Analytics
+10503,PB-503,Done,Archicad connector mapping preview,"Preview mapping screen for Archicad connector.",Improvement,2025-05-19,Archicad Integration
+10504,PB-504,In Progress,Mobile dashboard save logic,"Refined save logic for mobile dashboards.",Task,2025-05-20,Mobile
+10505,PB-505,To Do,User interface chart legend bug,"Legend missing from dashboard charts.",Bug,2025-05-21,User Interface
+10506,PB-506,Blocked,Reporting export file duplication,"Duplicate files created on reporting export.",Bug,2025-05-22,Reporting
+10507,PB-507,Done,Analytics dashboard custom sort,"Allow custom sorting of analytics widgets.",Improvement,2025-05-23,Analytics
+10508,PB-508,To Do,Archicad connector plan import bug,"Importing plans fails for empty maps.",Bug,2025-05-24,Archicad Integration
+10509,PB-509,In Review,Search field history,"Show previous searches for project filter field.",Story,2025-05-25,Search
+10510,PB-510,To Do,Authentication OTP error,"OTP expired warning not displayed to users.",Bug,2025-05-26,Authentication
+10511,PB-511,Blocked,Data storage import timeout,"Timeout error importing large datasets.",Bug,2025-05-27,Data Storage
+10512,PB-512,Done,Mobile notifications import,"Import notifications from desktop to mobile.",Improvement,2025-05-28,Mobile
+10513,PB-513,To Do,Reporting multi-room export bug,"Exports with multi-room filter skip some records.",Bug,2025-05-29,Reporting
+10514,PB-514,Blocked,Analytics dashboard chart lag,"Charts lag after large data imports.",Bug,2025-05-30,Analytics
+10515,PB-515,Done,Archicad connector multi-export,"Export multiple mappings together in Archicad connector.",Improvement,2025-05-31,Archicad Integration
+10516,PB-516,In Progress,User interface button swap,"Swap source for toolbar buttons.",Task,2025-06-01,User Interface
+10517,PB-517,To Do,Search text input bug,"Text input disables itself after paste.",Bug,2025-06-02,Search
+10518,PB-518,Blocked,Reporting template import fail,"Templates fail to import after format changes.",Bug,2025-06-03,Reporting
+10519,PB-519,Done,Analytics dashboard dual view,"Enable dual analytics dashboard views.",Improvement,2025-06-04,Analytics
+10520,PB-520,In Review,Archicad connector area merge,"Merge mapping areas for Archicad connector.",Story,2025-06-05,Archicad Integration
+10521,PB-521,To Do,Authentication SSO setup bug,"SSO setup not saved for multi-user orgs.",Bug,2025-06-06,Authentication
+10522,PB-522,Blocked,Mobile export missing data,"Exported mobile files missing additional fields.",Bug,2025-06-07,Mobile
+10523,PB-523,Done,Reporting dashboard pin feature,"Pin favorite reports to top of dashboard.",Improvement,2025-06-08,Reporting
+10524,PB-524,In Progress,Analytics export filter extra,"Add extra filter options to analytics exports.",Task,2025-06-09,Analytics
+10525,PB-525,To Do,Data storage column loss bug,"Column data lost after editing project header.",Bug,2025-06-10,Data Storage
+10526,PB-526,Blocked,Archicad connector area mismatch,"Area data does not match between connector and UI.",Bug,2025-06-11,Archicad Integration
+10527,PB-527,Done,Mobile dashboard export image,"Export dashboard as image from mobile.",Improvement,2025-06-12,Mobile
+10528,PB-528,To Do,User interface navigation bug,"Navigation fails after switching dashboard context.",Bug,2025-06-13,User Interface
+10529,PB-529,Blocked,Reporting filter field lag,"Filter fields slow to respond in reporting module.",Bug,2025-06-14,Reporting
+10530,PB-530,Done,Analytics dashboard color coding,"Color code dashboard analytics for facility type.",Improvement,2025-06-15,Analytics
+10531,PB-531,In Review,Search toolbar edit,"Enable edits to search toolbar for admins.",Story,2025-06-16,Search
+10532,PB-532,To Do,Revit connector project missing,"Some projects not visible in connector import.",Bug,2025-06-17,Revit Integration
+10533,PB-533,Blocked,Authentication multi-factor fail,"Multi-factor authentication fails for some users.",Bug,2025-06-18,Authentication
+10534,PB-534,Done,User interface export settings,"Export settings remembered between sessions.",Improvement,2025-06-19,User Interface
+10535,PB-535,To Do,Reporting form validation bug,"Validation error not displayed for malformed forms.",Bug,2025-06-20,Reporting
+10536,PB-536,Blocked,Data storage table missing rows,"Missing rows reported in data storage tables.",Bug,2025-06-21,Data Storage
+10537,PB-537,Done,Archicad connector project search,"Project search added to connector main view.",Improvement,2025-06-22,Archicad Integration
+10538,PB-538,In Progress,Mobile notifications group,"Group notifications for multi-user mobile report.",Task,2025-06-23,Mobile
+10539,PB-539,To Do,Search connector error,"Connector fails on searching by facility number.",Bug,2025-06-24,Search
+10540,PB-540,Blocked,Reporting dashboard export error,"Exporting dashboard reports throws error.",Bug,2025-06-25,Reporting
+10541,PB-541,Done,Analytics dashboard widget tiles,"Tile-style widget layout for analytics dashboard.",Improvement,2025-06-26,Analytics
+10542,PB-542,To Do,Archicad mapping group bug,"Mapping group not shown for connector area mapping.",Bug,2025-06-27,Archicad Integration
+10543,PB-543,Blocked,Mobile API request loss,"API requests not captured from mobile app.",Bug,2025-06-28,Mobile
+10544,PB-544,Done,User interface accessibility reports,"Added accessibility compliance reports.",Improvement,2025-06-29,User Interface
+10545,PB-545,In Progress,Reporting scheduler logic,"Revamp scheduler logic for report exports.",Task,2025-06-30,Reporting
+10546,PB-546,To Do,Authentication policy delete bug,"Deleted policies not removed from authentication log.",Bug,2025-07-01,Authentication
+10547,PB-547,Blocked,Analytics batch chart error,"Batch export for charts produces corrupt files.",Bug,2025-07-02,Analytics
+10548,PB-548,Done,Archicad connector UI update,"UI design updated for connector configuration.",Improvement,2025-07-03,Archicad Integration
+10549,PB-549,To Do,Search export cache bug,"Cached search results not exported for re-import.",Bug,2025-07-04,Search
+10550,PB-550,Blocked,Reporting template user loss,"Templates assign to wrong users on export.",Bug,2025-07-05,Reporting
+10551,PB-551,Done,Mobile import preview,"Preview import data before final mobile export.",Improvement,2025-07-06,Mobile
+10552,PB-552,In Review,Analytics facility tagging,"Enable tagging projects by facility type.",Story,2025-07-07,Analytics
+10553,PB-553,To Do,Archicad connector mapping error,"Some mapping options not saved in connector dialog.",Bug,2025-07-08,Archicad Integration
+10554,PB-554,Blocked,Authentication cloud login error,"Cloud login attempt redirects to wrong endpoint.",Bug,2025-07-09,Authentication
+10555,PB-555,Done,User interface project list,"Improved dashboard project list accuracy.",Improvement,2025-07-10,User Interface
+10556,PB-556,To Do,Reporting output error,"Error in output file for reporting dashboard.",Bug,2025-07-11,Reporting
+10557,PB-557,Blocked,Data storage column sort bug,"Sorting columns in storage module fails.",Bug,2025-07-12,Data Storage
+10558,PB-558,Done,Analytics dashboard export icon,"Export icon now available on analytics widgets.",Improvement,2025-07-13,Analytics
+10559,PB-559,In Progress,Archicad connector export logic,"Revise export logic for connector mapping.",Task,2025-07-14,Archicad Integration
+10560,PB-560,To Do,Mobile form field bug,"Form fields not saved on mobile app export.",Bug,2025-07-15,Mobile
+10561,PB-561,Blocked,Reporting PDF attachment error,"PDF reports missing attachments on export.",Bug,2025-07-16,Reporting
+10562,PB-562,Done,User interface help menu updates,"Help menu added per dashboard panel.",Improvement,2025-07-17,User Interface
+10563,PB-563,To Do,Search filter session loss,"Filter session not retained after dashboard reload.",Bug,2025-07-18,Search
+10564,PB-564,Blocked,Revit connector import schema fail,"Import schema error for multi-building projects.",Bug,2025-07-19,Revit Integration
+10565,PB-565,Done,Analytics dashboard error logs,"Error logs now viewable by admins in dashboard.",Improvement,2025-07-20,Analytics
+10566,PB-566,In Review,Mobile dashboard export ZIP,"ZIP export for dashboard data in mobile.",Story,2025-07-21,Mobile
+10567,PB-567,To Do,User interface dark mode filter bug,"Filters missing styling in dark mode.",Bug,2025-07-22,User Interface
+10568,PB-568,Blocked,Reporting widget import bug,"Importing reporting widgets disables dashboard.",Bug,2025-07-23,Reporting
+10569,PB-569,Done,Archicad dashboard asset sync,"Asset sync feature added to Archicad dashboard.",Improvement,2025-07-24,Archicad Integration
+10570,PB-570,To Do,Authentication login timestamp bug,"Login timestamps not saved for returning users.",Bug,2025-07-25,Authentication
+10571,PB-571,Blocked,Data storage audit mismatch,"Audit log shows mismatched data entries.",Bug,2025-07-26,Data Storage
+10572,PB-572,Done,Mobile API version display,"API version displayed on mobile app settings.",Improvement,2025-07-27,Mobile
+10573,PB-573,In Progress,Analytics dashboard region export,"Export dashboard data by region group.",Task,2025-07-28,Analytics
+10574,PB-574,To Do,Search advanced logic bug,"Advanced search logic does not match UI filters.",Bug,2025-07-29,Search
+10575,PB-575,Blocked,Reporting chart preview fail,"Preview for chart does not load for reports.",Bug,2025-07-30,Reporting
+10576,PB-576,Done,Archicad connector sync timer,"Sync timer added to connector dashboard.",Improvement,2025-07-31,Archicad Integration
+10577,PB-577,To Do,Mobile import autocomplete bug,"Autocomplete missing for import fields.",Bug,2025-08-01,Mobile
+10578,PB-578,Blocked,User interface dashboard transition fail,"Transition animations fail on dashboard reload.",Bug,2025-08-02,User Interface
+10579,PB-579,Done,Reporting export dashboard status,"Export dashboard status visible per report.",Improvement,2025-08-03,Reporting
+10580,PB-580,In Progress,Search tag logic upgrade,"Upgrade tag logic for project search.",Task,2025-08-04,Search
+10581,PB-581,To Do,Analytics legend export bug,"Legend omitted from export for analytics charts.",Bug,2025-08-05,Analytics
+10582,PB-582,Blocked,Archicad connector project swap fail,"Project swap fails in mapping screen.",Bug,2025-08-06,Archicad Integration
+10583,PB-583,Done,Authentication mobile audit logs,"Audit logs viewable on mobile authentication.",Improvement,2025-08-07,Authentication
+10584,PB-584,To Do,Reporting export filter type bug,"Type filters not applied to exported files.",Bug,2025-08-08,Reporting
+10585,PB-585,Blocked,Data storage group edit bug,"Editing groups in storage module disables access.",Bug,2025-08-09,Data Storage
+10586,PB-586,Done,Archicad connector plugin docs,"Plugin documentation released for mapping connector.",Improvement,2025-08-10,Archicad Integration
+10587,PB-587,In Review,Mobile dashboard group logic,"Group logic expanded for mobile dashboard.",Story,2025-08-11,Mobile
+10588,PB-588,To Do,User interface export icon bug,"Export icon missing from some dashboard panels.",Bug,2025-08-12,User Interface
+10589,PB-589,Blocked,Analytics connector group loss,"Group data lost in analytics connector export.",Bug,2025-08-13,Analytics
+10590,PB-590,Done,Reporting scheduled backup,"Scheduled backup now available in reporting.",Improvement,2025-08-14,Reporting
+10591,PB-591,Blocked,Archicad room import loss,"Some rooms lost after Archicad mapping import.",Bug,2025-08-15,Archicad Integration
+10592,PB-592,To Do,Search dashboard blank bug,"Blank dashboard returned to search results.",Bug,2025-08-16,Search
+10593,PB-593,Blocked,Mobile export attachment error,"Attachments missing from exported mobile files.",Bug,2025-08-17,Mobile
+10594,PB-594,Done,User interface dashboard tabs,"Tabs expanded for dashboard widgets.",Improvement,2025-08-18,User Interface
+10595,PB-595,To Do,Reporting wizard progress bug,"Wizard progress bar not updating in reports.",Bug,2025-08-19,Reporting
+10596,PB-596,Blocked,Analytics export field error,"Missing export fields in analytics downloads.",Bug,2025-08-20,Analytics
+10597,PB-597,Done,Archicad connector data mapping,"Improved mapping for connector plugin.",Improvement,2025-08-21,Archicad Integration
+10598,PB-598,In Progress,Mobile session history search,"Search session history in mobile dashboard.",Task,2025-08-22,Mobile
+10599,PB-599,To Do,User interface accessibility menu bug,"Accessibility menu not loading for dashboard.",Bug,2025-08-23,User Interface
+10600,PB-600,Blocked,Reporting batch save error,"Batch saving fails for multi-export projects.",Bug,2025-08-24,Reporting
+10601,PB-601,To Do,Analytics dashboard percent bug,"Percentages displayed incorrectly in analytics dashboard.",Bug,2025-08-25,Analytics
+10602,PB-602,Blocked,Archicad connector login error,"Login fails when accessing connector settings.",Bug,2025-08-26,Archicad Integration
+10603,PB-603,Done,Mobile dashboard update icon,"Dashboard update icon added to mobile interface.",Improvement,2025-08-27,Mobile
+10604,PB-604,In Progress,Reporting group exports,"Enable group exports in reporting module.",Task,2025-08-28,Reporting
+10605,PB-605,To Do,User interface field resize bug,"Fields do not resize when dashboard changes.",Bug,2025-08-29,User Interface
+10606,PB-606,Blocked,Data storage backup delay,"Backup events delayed for large project sets.",Bug,2025-08-30,Data Storage
+10607,PB-607,Done,Analytics dashboard summary pop-up,"Summary pop-up added to analytics widgets.",Improvement,2025-08-31,Analytics
+10608,PB-608,To Do,Mobile report export logic bug,"Logic fails for multi-file export from mobile.",Bug,2025-09-01,Mobile
+10609,PB-609,Blocked,Revit connector report fail,"Connector fails to report errors after crash.",Bug,2025-09-02,Revit Integration
+10610,PB-610,Done,User interface info panel,"Added info panel for dashboard widgets.",Improvement,2025-09-03,User Interface
+10611,PB-611,In Progress,Authentication edit log,"Expand edit logging for authentication changes.",Task,2025-09-04,Authentication
+10612,PB-612,To Do,Reporting form session bug,"Reporting form session not saved on timeout.",Bug,2025-09-05,Reporting
+10613,PB-613,Blocked,Analytics metadata export error,"Exported metadata missing for analytics charts.",Bug,2025-09-06,Analytics
+10614,PB-614,Done,Archicad connector save settings,"Connector settings now saved between sessions.",Improvement,2025-09-07,Archicad Integration
+10615,PB-615,To Do,Search dashboard error,"Search dashboard returns generic error message.",Bug,2025-09-08,Search
+10616,PB-616,Blocked,Mobile report preview loss,"Report previews not displayed on mobile.",Bug,2025-09-09,Mobile
+10617,PB-617,Done,Reporting wizard export,"Export wizard guides user through report creation.",Improvement,2025-09-10,Reporting
+10618,PB-618,To Do,User interface badge display bug,"Badges not displayed for completed tasks.",Bug,2025-09-11,User Interface
+10619,PB-619,Blocked,Archicad export permission error,"Insufficient permission error thrown on export.",Bug,2025-09-12,Archicad Integration
+10620,PB-620,Done,Analytics dashboard pie chart upgrade,"Pie charts upgraded for dashboard analytics.",Improvement,2025-09-13,Analytics
+10621,PB-621,In Progress,Revit connector error message,"Improve error messages during room mapping imports.",Task,2025-09-14,Revit Integration
+10622,PB-622,To Do,Authentication session log bug,"Session logs not saved on user logout.",Bug,2025-09-15,Authentication
+10623,PB-623,Blocked,Reporting module login error,"Login fails when accessing reporting dashboard.",Bug,2025-09-16,Reporting
+10624,PB-624,Done,User interface panel resize,"Panel resize supported for dashboard view.",Improvement,2025-09-17,User Interface
+10625,PB-625,To Do,Mobile export file naming bug,"Exported files have duplicate names on mobile.",Bug,2025-09-18,Mobile
+10626,PB-626,Blocked,Analytics connector sorting loss,"Sorting options missing in analytics connector.",Bug,2025-09-19,Analytics
+10627,PB-627,Done,Archicad connector mapping asset,"Assets included in connector mapping preview.",Improvement,2025-09-20,Archicad Integration
+10628,PB-628,In Progress,Reporting export preview,"Preview export feature for reporting tool.",Task,2025-09-21,Reporting
+10629,PB-629,To Do,Search import history bug,"Search import history not shown for all projects.",Bug,2025-09-22,Search
+10630,PB-630,Blocked,Data storage session loss,"Session lost during large data backups.",Bug,2025-09-23,Data Storage
+10631,PB-631,Done,User interface icon set,"New icon set for dashboard interface.",Improvement,2025-09-24,User Interface
+10632,PB-632,To Do,Analytics export format bug,"Export format option missing in dashboard.",Bug,2025-09-25,Analytics
+10633,PB-633,Blocked,Reporting output loss,"Output records missing after export.",Bug,2025-09-26,Reporting
+10634,PB-634,Done,Archicad connector sort maps,"Sort maps by room category in connector.",Improvement,2025-09-27,Archicad Integration
+10635,PB-635,To Do,Authentication external token bug,"External session tokens not validated.",Bug,2025-09-28,Authentication
+10636,PB-636,Blocked,Mobile dashboard widget error,"Widget panel reports error after redeployment.",Bug,2025-09-29,Mobile
+10637,PB-637,Done,Reporting dashboard group filter,"Group filter now works on all types of reports.",Improvement,2025-09-30,Reporting
+10638,PB-638,To Do,User interface export view bug,"Export view not available for dashboard widgets.",Bug,2025-10-01,User Interface
+10639,PB-639,Blocked,Analytics dashboard null error,"Null error on analytics dashboard data.",Bug,2025-10-02,Analytics
+10640,PB-640,Done,Archicad connector sync icon,"Sync icon displayed for ongoing connector actions.",Improvement,2025-10-03,Archicad Integration
+10641,PB-641,In Progress,Mobile timeline export,"Export timeline events from mobile app.",Task,2025-10-04,Mobile
+10642,PB-642,To Do,Search dashboard invisible bug,"Some search results invisible on dashboard.",Bug,2025-10-05,Search
+10643,PB-643,Blocked,Archicad mapping tool loss,"Missing mapping tools on connector update.",Bug,2025-10-06,Archicad Integration
+10644,PB-644,Done,Analytics dashboard column sort,"Column sorting enabled in analytics dashboard.",Improvement,2025-10-07,Analytics
+10645,PB-645,To Do,Reporting room filter bug,"Room filter does not apply in reporting tool.",Bug,2025-10-08,Reporting
+10646,PB-646,Blocked,Revit connector field mapping error,"Field order changed for exported Revit connector data.",Bug,2025-10-09,Revit Integration
+10647,PB-647,Done,User interface facilities overview,"Facilities overview dashboard added to UI.",Improvement,2025-10-10,User Interface
+10648,PB-648,To Do,Authentication failed login bug,"Failed login attempts not logged in UI.",Bug,2025-10-11,Authentication
+10649,PB-649,Blocked,Mobile dashboard field mismatch,"Dashboard field display mismatch on mobile device.",Bug,2025-10-12,Mobile
+10650,PB-650,Done,Archicad connector smart sync,"Smart sync logic added to connector.",Improvement,2025-10-13,Archicad Integration
+10651,PB-651,In Progress,Analytics dashboard legend,"Legend display toggle for dashboard analytics.",Task,2025-10-14,Analytics
+10652,PB-652,To Do,User interface header bug,"Header not visible on reporting dashboard.",Bug,2025-10-15,User Interface
+10653,PB-653,Blocked,Data storage import version error,"Incorrect version imported for data storage.",Bug,2025-10-16,Data Storage
+10654,PB-654,Done,Mobile reporting custom filter,"Custom filters now supported for reporting exports.",Improvement,2025-10-17,Mobile
+10655,PB-655,To Do,Reporting export PDF bug,"PDF files not generated for reporting exports.",Bug,2025-10-18,Reporting
+10656,PB-656,Blocked,Analytics dashboard graph error,"Graphs not rendering on analytics dashboard.",Bug,2025-10-19,Analytics
+10657,PB-657,Done,Archicad connector room selector,"Room selector added to mapping view.",Improvement,2025-10-20,Archicad Integration
+10658,PB-658,To Do,Search result order bug,"Incorrect sort order for project search results.",Bug,2025-10-21,Search
+10659,PB-659,Blocked,Reporting dashboard saved state loss,"Saved state lost after dashboard reload.",Bug,2025-10-22,Reporting
+10660,PB-660,Done,User interface sidebar upgrades,"Sidebar now supports favorites.",Improvement,2025-10-23,User Interface
+10661,PB-661,To Do,Mobile session export bug,"Exporting session logs fails for mobile device.",Bug,2025-10-24,Mobile
+10662,PB-662,Blocked,Archicad connector export column error,"Export column mismatch in mapping connector.",Bug,2025-10-25,Archicad Integration
+10663,PB-663,Done,Reporting group asset export,"Export assets by group from reporting tool.",Improvement,2025-10-26,Reporting
+10664,PB-664,To Do,Analytics dashboard export logic bug,"Export logic for analytics dashboard needs fix.",Bug,2025-10-27,Analytics
+10665,PB-665,Blocked,Revit connector filter fail,"Filters fail on exported connector file.",Bug,2025-10-28,Revit Integration
+10666,PB-666,Done,User interface quick note,"Quick notes now supported in dashboard.",Improvement,2025-10-29,User Interface
+10667,PB-667,In Progress,Reporting dashboard color scheme,"Color scheme options added for dashboard.",Task,2025-10-30,Reporting
+10668,PB-668,To Do,Archicad connector group mismatch,"Groups lost after connector sync.",Bug,2025-10-31,Archicad Integration
+10669,PB-669,Blocked,Mobile notification repeat error,"Repeated notifications on same mobile event.",Bug,2025-11-01,Mobile
+10670,PB-670,Done,Analytics dashboard facility links,"Facility links enabled on dashboard analytics.",Improvement,2025-11-02,Analytics
+10671,PB-671,To Do,Search form mismatch bug,"Mismatch error after filtering search by form.",Bug,2025-11-03,Search
+10672,PB-672,Blocked,User interface backup error,"Backup fails for dashboard settings.",Bug,2025-11-04,User Interface
+10673,PB-673,Done,Mobile export sorting options,"Sorting results by room type in mobile exports.",Improvement,2025-11-05,Mobile
+10674,PB-674,In Progress,Reporting export backup integration,"Integrate backup logic for exporting reports.",Task,2025-11-06,Reporting
+10675,PB-675,To Do,Analytics connector quick export bug,"Quick export fails for analytics connector data.",Bug,2025-11-07,Analytics
+10676,PB-676,Blocked,Archicad mapping data error,"Some mapping data lost during export.",Bug,2025-11-08,Archicad Integration
+10677,PB-677,Done,Reporting dashboard export method,"Choose export method from dashboard settings.",Improvement,2025-11-09,Reporting
+10678,PB-678,To Do,Data storage room type bug,"Wrong room types exported from storage.",Bug,2025-11-10,Data Storage
+10679,PB-679,Blocked,Authentication import fail,"Import fails for multi-org login setup.",Bug,2025-11-11,Authentication
+10680,PB-680,Done,User interface edit notes,"Edit notes feature added to dashboard widgets.",Improvement,2025-11-12,User Interface
+10681,PB-681,In Progress,Mobile dashboard reporting filter,"Reporting filter expanded for mobile dashboard.",Task,2025-11-13,Mobile
+10682,PB-682,To Do,Reporting dashboard plugin bug,"Plugin logic does not match dashboard settings.",Bug,2025-11-14,Reporting
+10683,PB-683,Blocked,Analytics import file format error,"Wrong file format imported for dashboard analytics.",Bug,2025-11-15,Analytics
+10684,PB-684,Done,Archicad connector mapping notes,"Room notes now mapped in connector.",Improvement,2025-11-16,Archicad Integration
+10685,PB-685,To Do,Search filter auto-clear bug,"Filters auto-clear after project search refresh.",Bug,2025-11-17,Search
+10686,PB-686,Blocked,Reporting dashboard icon fail,"Icons disappear after dashboard data reload.",Bug,2025-11-18,Reporting
+10687,PB-687,Done,Analytics dashboard filter tags,"Tag filters for analytics dashboard search.",Improvement,2025-11-19,Analytics
+10688,PB-688,In Review,Archicad connector bulk import,"Bulk import options for connector mapping.",Story,2025-11-20,Archicad Integration
+10689,PB-689,To Do,User interface content menu bug,"Content menu not loading under dashboard toolbar.",Bug,2025-11-21,User Interface
+10690,PB-690,Blocked,Mobile dashboard loss mismatch,"Data loss for dashboard sessions on mobile reload.",Bug,2025-11-22,Mobile
+10691,PB-691,Done,Reporting export batch verify,"Batch verification for reporting dashboard exports.",Improvement,2025-11-23,Reporting
+10692,PB-692,To Do,Analytics dashboard group asset bug,"Group assets not shown in analytics widgets.",Bug,2025-11-24,Analytics
+10693,PB-693,Blocked,Archicad connector missing dialog,"Dialog window missing in connector main view.",Bug,2025-11-25,Archicad Integration
+10694,PB-694,Done,User interface project snapshot,"Project snapshot feature added to dashboard.",Improvement,2025-11-26,User Interface
+10695,PB-695,To Do,Reporting dashboard import bug,"Imports fail for certain dashboard configurations.",Bug,2025-11-27,Reporting
+10696,PB-696,Blocked,Data storage session timestamp error,"Wrong timestamps in storage session logs.",Bug,2025-11-28,Data Storage
+10697,PB-697,Done,Analytics dashboard improved sorting,"Improved sorting logic for dashboard analytics.",Improvement,2025-11-29,Analytics
+10698,PB-698,In Progress,Archicad connector style editor,"Editor for mapping style in connector dashboard.",Task,2025-11-30,Archicad Integration
+10699,PB-699,To Do,Mobile export custom field bug,"Custom fields not exported from mobile app.",Bug,2025-12-01,Mobile
+10700,PB-700,Blocked,Reporting dashboard asset import error,"Asset import fails on reporting dashboard.",Bug,2025-12-02,Reporting
+10701,PB-701,Done,Archicad connector filter settings,"Filter settings now configurable for Archicad connector.",Improvement,2025-12-03,Archicad Integration
+10702,PB-702,To Do,Search dashboard mapping bug,"Mapping tool not loading search results.",Bug,2025-12-04,Search
+10703,PB-703,Blocked,Analytics export data loss,"Exports for analytics dashboard missing data.",Bug,2025-12-05,Analytics
+10704,PB-704,In Progress,Mobile dashboard design upgrade,"UI design upgrade in progress for mobile dashboard.",Task,2025-12-06,Mobile
+10705,PB-705,Done,User interface bulk actions,"Bulk actions now supported for dashboard panels.",Improvement,2025-12-07,User Interface
+10706,PB-706,To Do,Reporting timeline mismatch bug,"Timeline events mismatch in exported reports.",Bug,2025-12-08,Reporting
+10707,PB-707,Blocked,Revit connector database error,"Database connection missing for Revit import.",Bug,2025-12-09,Revit Integration
+10708,PB-708,Done,Archicad connector style preview,"Preview style changes in mapping connector.",Improvement,2025-12-10,Archicad Integration
+10709,PB-709,To Do,Mobile reporting export error,"Exported reports missing fields from reporting app.",Bug,2025-12-11,Mobile
+10710,PB-710,Blocked,Analytics dashboard report fail,"Dashboard fails to render full analytics report.",Bug,2025-12-12,Analytics
+10711,PB-711,Done,User interface favorites panel,"Panel for favorite dashboard widgets added.",Improvement,2025-12-13,User Interface
+10712,PB-712,In Progress,Reporting wizard validations,"Add validation logic for reporting wizard.",Task,2025-12-14,Reporting
+10713,PB-713,To Do,Authentication mobile sync bug,"Mobile sync fails for authentication records.",Bug,2025-12-15,Authentication
+10714,PB-714,Blocked,Data storage import format error,"Wrong format used on import for project data.",Bug,2025-12-16,Data Storage
+10715,PB-715,Done,Archicad connector sync status,"Sync status added to connector dashboard.",Improvement,2025-12-17,Archicad Integration
+10716,PB-716,To Do,Search autocomplete preview bug,"Preview not shown for search autocomplete results.",Bug,2025-12-18,Search
+10717,PB-717,Blocked,Reporting dashboard batch loss,"Batch edits lost in reporting dashboard after timeout.",Bug,2025-12-19,Reporting
+10718,PB-718,Done,Analytics dashboard new chart type,"New chart type enabled for analytics dashboard.",Improvement,2025-12-20,Analytics
+10719,PB-719,To Do,Archicad connector group preview bug,"Preview group mapping fails in connector.",Bug,2025-12-21,Archicad Integration
+10720,PB-720,Blocked,Mobile dashboard sync error,"Sync fails for mobile dashboard on iOS.",Bug,2025-12-22,Mobile
+10721,PB-721,Done,User interface mobile switch,"Enable desktop/mobile switch in dashboard UI.",Improvement,2025-12-23,User Interface
+10722,PB-722,In Progress,Reporting dashboard tag editor,"Tag editor for dashboard reporting tool.",Task,2025-12-24,Reporting
+10723,PB-723,To Do,Authentication dashboard login bug,"Dashboard not logging failed authentication attempts.",Bug,2025-12-25,Authentication
+10724,PB-724,Blocked,Analytics dashboard row export fail,"Row export fails in dashboard widgets.",Bug,2025-12-26,Analytics
+10725,PB-725,Done,Archicad connector mapping merge,"Merge mappings option for connector dashboard.",Improvement,2025-12-27,Archicad Integration
+10726,PB-726,To Do,Search dashboard input bug,"Input not cleared after dashboard search results.",Bug,2025-12-28,Search
+10727,PB-727,Blocked,Reporting dashboard quick filter bug,"Quick filter missing for batch exports.",Bug,2025-12-29,Reporting
+10728,PB-728,Done,User interface date filter range,"Date range filter added for dashboard panels.",Improvement,2025-12-30,User Interface
+10729,PB-729,To Do,Analytics connector room type bug,"Room types missing in connector analytics export.",Bug,2025-12-31,Analytics
+10730,PB-730,Blocked,Mobile dashboard asset loss,"Assets missing on mobile dashboard reload.",Bug,2026-01-01,Mobile
+10731,PB-731,Done,Archicad connector notes asset,"Asset notes viewable in connector dashboard.",Improvement,2026-01-02,Archicad Integration
+10732,PB-732,In Progress,Reporting dashboard column mapping,"Enable column mapping for reporting dashboard.",Task,2026-01-03,Reporting
+10733,PB-733,To Do,User interface button group bug,"Button group not shown on dashboard after refresh.",Bug,2026-01-04,User Interface
+10734,PB-734,Blocked,Analytics dashboard sync fail,"Sync errors in new analytics dashboard view.",Bug,2026-01-05,Analytics
+10735,PB-735,Done,Archicad connector mapping types,"Mapping types expanded in connector dashboard.",Improvement,2026-01-06,Archicad Integration
+10736,PB-736,To Do,Reporting export preview bug,"Preview option not available for exports.",Bug,2026-01-07,Reporting
+10737,PB-737,Blocked,Revit connector dashboard fail,"Revit connector dashboard not displaying imported rooms.",Bug,2026-01-08,Revit Integration
+10738,PB-738,Done,Mobile dashboard export notes,"Export notes added for mobile dashboard files.",Improvement,2026-01-09,Mobile
+10739,PB-739,To Do,Search dashboard numeric bug,"Numeric values displayed as text in dashboard search.",Bug,2026-01-10,Search
+10740,PB-740,Blocked,Reporting dashboard export timeout,"Dashboard export times out for large reports.",Bug,2026-01-11,Reporting
+10741,PB-741,Done,Archicad connector mapping sync,"Sync progress shown for all connector mapping.",Improvement,2026-01-12,Archicad Integration
+10742,PB-742,To Do,Mobile dashboard notification bug,"Dashboard notifications not clearing on mobile app.",Bug,2026-01-13,Mobile
+10743,PB-743,Blocked,Data storage import duplicate error,"Duplicate records on import for data storage.",Bug,2026-01-14,Data Storage
+10744,PB-744,Done,User interface export preview,"Preview option now available on export dialog.",Improvement,2026-01-15,User Interface
+10745,PB-745,In Progress,Reporting dashboard import review,"Review imported data in reporting dashboard.",Task,2026-01-16,Reporting
+10746,PB-746,To Do,Authentication dashboard timeout bug,"Timeout settings not displayed for dashboard users.",Bug,2026-01-17,Authentication
+10747,PB-747,Blocked,Analytics dashboard mapping error,"Mapping data not shown in dashboard analytics.",Bug,2026-01-18,Analytics
+10748,PB-748,Done,Archicad connector color coding,"Color codes added for connector mappings.",Improvement,2026-01-19,Archicad Integration
+10749,PB-749,To Do,User interface filter loss bug,"Filters not retained after dashboard session reset.",Bug,2026-01-20,User Interface
+10750,PB-750,Blocked,Reporting dashboard PDF asset loss,"PDF assets not exporting from dashboard reporting.",Bug,2026-01-21,Reporting
+10751,PB-751,Done,Mobile dashboard preview panel,"Preview panel added to dashboard mobile view.",Improvement,2026-01-22,Mobile
+10752,PB-752,To Do,Archicad connector asset preview bug,"Preview not shown for asset mapping in connector.",Bug,2026-01-23,Archicad Integration
+10753,PB-753,Blocked,Search dashboard record lookup fail,"Record lookup fails for dashboard search tool.",Bug,2026-01-24,Search
+10754,PB-754,Done,User interface asset group,"Asset grouping supported in dashboard widgets.",Improvement,2026-01-25,User Interface
+10755,PB-755,In Progress,Reporting dashboard asset preview,"Enable asset previews in reporting dashboard.",Task,2026-01-26,Reporting
+10756,PB-756,To Do,Analytics dashboard UI bug,"UI buttons missing from some analytics reports.",Bug,2026-01-27,Analytics
+10757,PB-757,Blocked,Archicad connector license error,"License field not captured in connector exports.",Bug,2026-01-28,Archicad Integration
+10758,PB-758,Done,Mobile dashboard export column menu,"Column menu added to dashboard mobile export.",Improvement,2026-01-29,Mobile
+10759,PB-759,To Do,Reporting batch export bug,"Batch export creates additional records.",Bug,2026-01-30,Reporting
+10760,PB-760,Blocked,User interface export field loss,"Exported dashboard view missing export fields.",Bug,2026-01-31,User Interface
+10761,PB-761,Done,Archicad connector project category,"Category added to connector mapping projects.",Improvement,2026-02-01,Archicad Integration
+10762,PB-762,To Do,Search dashboard sorting bug,"Sorting dashboard search by column not enabled.",Bug,2026-02-02,Search
+10763,PB-763,Blocked,Mobile reporting field error,"Missing fields in exported mobile reporting.",Bug,2026-02-03,Mobile
+10764,PB-764,Done,Analytics dashboard asset tags,"Tag assets for dashboard analytics reports.",Improvement,2026-02-04,Analytics
+10765,PB-765,In Progress,Revit connector field logic,"Logic for mapping fields on connector import.",Task,2026-02-05,Revit Integration
+10766,PB-766,To Do,Archicad connector settings bug,"Settings panel not accessible in connector.",Bug,2026-02-06,Archicad Integration
+10767,PB-767,Blocked,Reporting dashboard column export fail,"Exporting columns fails for multi-report selection.",Bug,2026-02-07,Reporting
+10768,PB-768,Done,User interface dashboard tags,"Dashboard supports color tags for widget panels.",Improvement,2026-02-08,User Interface
+10769,PB-769,To Do,Analytics dashboard logic error,"Logic mismatch in dashboard analytics filters.",Bug,2026-02-09,Analytics
+10770,PB-770,Blocked,Mobile dashboard preview loss,"Preview lost when switching panels in mobile dashboard.",Bug,2026-02-10,Mobile
+10771,PB-771,Done,Reporting dashboard sync logic,"Sync logic improved for reporting dashboard filters.",Improvement,2026-02-11,Reporting
+10772,PB-772,To Do,Archicad connector map export bug,"Exporting mapping screen fails for connector.",Bug,2026-02-12,Archicad Integration
+10773,PB-773,Blocked,Search dashboard result fail,"Result set fails in dashboard search.",Bug,2026-02-13,Search
+10774,PB-774,Done,User interface dashboard help widget,"Help widget added for dashboard context.",Improvement,2026-02-14,User Interface
+10775,PB-775,In Progress,Reporting dashboard audit log,"Audit log for dashboard reporting actions in progress.",Task,2026-02-15,Reporting
+10776,PB-776,To Do,Analytics dashboard widget loss bug,"Widget records lost on dashboard analytics export.",Bug,2026-02-16,Analytics
+10777,PB-777,Blocked,Archicad connector asset mismatch,"Asset mismatch on mapping connector dashboard.",Bug,2026-02-17,Archicad Integration
+10778,PB-778,Done,Mobile export dashboard links,"Export supports dashboard links for mobile exports.",Improvement,2026-02-18,Mobile
+10779,PB-779,To Do,User interface dashboard refresh bug,"Dashboard does not refresh after export.",Bug,2026-02-19,User Interface
+10780,PB-780,Blocked,Reporting dashboard import error,"Import fails for dashboard reporting batch.",Bug,2026-02-20,Reporting
+10781,PB-781,Done,Archicad connector UI tab,"UI tab added for mapping connector widget.",Improvement,2026-02-21,Archicad Integration
+10782,PB-782,To Do,Search dashboard multi-filter bug,"More than one filter disables dashboard search.",Bug,2026-02-22,Search
+10783,PB-783,Blocked,Analytics dashboard preview fail,"Preview option not loading on dashboard analytics.",Bug,2026-02-23,Analytics
+10784,PB-784,Done,Reporting dashboard PDF status,"Status bar visible for PDF status in dashboard.",Improvement,2026-02-24,Reporting
+10785,PB-785,In Progress,User interface dashboard history,"Dashboard history view in progress for widgets.",Task,2026-02-25,User Interface
+10786,PB-786,To Do,Mobile reporting category bug,"Category lost in imported mobile reports.",Bug,2026-02-26,Mobile
+10787,PB-787,Blocked,Archicad dashboard mapping error,"Refreshed mapping screen displays blank in dashboard.",Bug,2026-02-27,Archicad Integration
+10788,PB-788,Done,Analytics dashboard historic export,"Historic export option in analytics dashboard widgets.",Improvement,2026-02-28,Analytics
+10789,PB-789,To Do,Reporting dashboard session error,"Session error reported on reporting dashboard.",Bug,2026-03-01,Reporting
+10790,PB-790,Blocked,Mobile reporting export fail,"Export fails for multiple reporting dashboard items.",Bug,2026-03-02,Mobile
+10791,PB-791,Done,Archicad connector area mapping,"Area mapping expanded for connector dashboard.",Improvement,2026-03-03,Archicad Integration
+10792,PB-792,To Do,User interface dashboard widget bug,"Widgets not loading for some dashboard configurations.",Bug,2026-03-04,User Interface
+10793,PB-793,Blocked,Reporting dashboard group asset error,"Group asset export not supported in dashboard reporting.",Bug,2026-03-05,Reporting
+10794,PB-794,Done,Analytics dashboard summary widget,"Summary widget for major analytics views.",Improvement,2026-03-06,Analytics
+10795,PB-795,To Do,Archicad connector mapping record bug,"Mapping records missing for new projects.",Bug,2026-03-07,Archicad Integration
+10796,PB-796,Blocked,Search dashboard status loss,"Lost status reporting after dashboard search.",Bug,2026-03-08,Search
+10797,PB-797,Done,Mobile dashboard historic notes,"Historic notes added for exported dashboard reports.",Improvement,2026-03-09,Mobile
+10798,PB-798,To Do,User interface dashboard edit bug,"Editing dashboard widgets not saving changes.",Bug,2026-03-10,User Interface
+10799,PB-799,Blocked,Analytics dashboard field error,"Field error loading analytics data.",Bug,2026-03-11,Analytics
+10800,PB-800,Done,Archicad connector preview images,"Preview images available in mapping connector.",Improvement,2026-03-12,Archicad Integration
+10801,PB-801,To Do,Search dashboard tag mismatch,"Tag mismatches in search results dashboard.",Bug,2026-03-13,Search
+10802,PB-802,Blocked,Reporting dashboard export batch fail,"Export batch fail for large reporting dashboards.",Bug,2026-03-14,Reporting
+10803,PB-803,Done,Archicad connector dashboard merge,"Merge dashboard items in mapping connector view.",Improvement,2026-03-15,Archicad Integration
+10804,PB-804,To Do,Mobile dashboard time zone bug,"Time zone not updated for dashboard exports.",Bug,2026-03-16,Mobile
+10805,PB-805,Blocked,Analytics dashboard export sorting fail,"Sorting fails in analytics exports from dashboard.",Bug,2026-03-17,Analytics
+10806,PB-806,Done,User interface dashboard split view,"Split view available for dashboard widgets.",Improvement,2026-03-18,User Interface
+10807,PB-807,In Progress,Reporting dashboard sort logic,"Add new sort logic for dashboard report widgets.",Task,2026-03-19,Reporting
+10808,PB-808,To Do,Authentication dashboard panel bug,"Panel does not retain authentication state.",Bug,2026-03-20,Authentication
+10809,PB-809,Blocked,Archicad dashboard import asset error,"Asset error during dashboard import in connector.",Bug,2026-03-21,Archicad Integration
+10810,PB-810,Done,Analytics dashboard mapping export,"Export mapping tables in dashboard analytics.",Improvement,2026-03-22,Analytics
+10811,PB-811,To Do,Reporting dashboard note bug,"Notes missing in exported dashboard reports.",Bug,2026-03-23,Reporting
+10812,PB-812,Blocked,Mobile dashboard sorting export fail,"Export fails to sort records from dashboard.",Bug,2026-03-24,Mobile
+10813,PB-813,Done,Archicad connector dashboard tags,"Tags viewable in dashboard mapping connector.",Improvement,2026-03-25,Archicad Integration
+10814,PB-814,To Do,User interface dashboard bulk edit bug,"Dashboard bulk edit fails for large room sets.",Bug,2026-03-26,User Interface
+10815,PB-815,Blocked,Reporting dashboard room category fail,"Room category field missing in reporting dashboard.",Bug,2026-03-27,Reporting
+10816,PB-816,Done,Analytics dashboard color scheme,"Added support for color schemes dashboard analytics.",Improvement,2026-03-28,Analytics
+10817,PB-817,In Progress,Archicad dashboard export preview,"Preview dashboard exports for mapping connector.",Task,2026-03-29,Archicad Integration
+10818,PB-818,To Do,Mobile export dashboard mapping bug,"Mapping data missing from export files.",Bug,2026-03-30,Mobile
+10819,PB-819,Blocked,User interface dashboard tooltips bug,"Tooltips missing for new dashboard widgets.",Bug,2026-03-31,User Interface
+10820,PB-820,Done,Reporting dashboard historic exports,"Export historic reports in dashboard view.",Improvement,2026-04-01,Reporting
+10821,PB-821,To Do,Analytics dashboard summary bug,"Summary lost in analytics dashboard for group exports.",Bug,2026-04-02,Analytics
+10822,PB-822,Blocked,Archicad dashboard filter fail,"Filter logic fails for dashboard connector assets.",Bug,2026-04-03,Archicad Integration
+10823,PB-823,Done,User interface dashboard import modal,"Import modal improved for dashboard widgets.",Improvement,2026-04-04,User Interface
+10824,PB-824,To Do,Reporting dashboard batch import bug,"Batch imports duplicate records in reporting dashboard.",Bug,2026-04-05,Reporting
+10825,PB-825,Blocked,Data storage dashboard mismatch,"Mismatch error for dashboard storage exports.",Bug,2026-04-06,Data Storage
+10826,PB-826,Done,Archicad connector dashboard filter,"Dashboard filters enabled connector mapping.",Improvement,2026-04-07,Archicad Integration
+10827,PB-827,In Progress,Mobile dashboard import review,"Add review step before importing dashboard data.",Task,2026-04-08,Mobile
+10828,PB-828,To Do,Search dashboard error icon bug,"Error icon missing for dashboard search fails.",Bug,2026-04-09,Search
+10829,PB-829,Blocked,Reporting dashboard session timeout,"Dashboard reporting session times out on slow connection.",Bug,2026-04-10,Reporting
+10830,PB-830,Done,Analytics dashboard export schedule,"Scheduled export available for dashboard analytics.",Improvement,2026-04-11,Analytics
+10831,PB-831,To Do,Archicad dashboard import category bug,"Category field not updated on dashboard import.",Bug,2026-04-12,Archicad Integration
+10832,PB-832,Blocked,Mobile dashboard batch edit bug,"Batch dashboard edits lost after app restart.",Bug,2026-04-13,Mobile
+10833,PB-833,Done,User interface dashboard export options,"Export option enables additional dashboard formats.",Improvement,2026-04-14,User Interface
+10834,PB-834,To Do,Reporting dashboard mapping import bug,"Mapping import fails for new dashboard reporting.",Bug,2026-04-15,Reporting
+10835,PB-835,Blocked,Analytics dashboard icon error,"Icons showing incorrect status on dashboard analytics.",Bug,2026-04-16,Analytics
+10836,PB-836,Done,Archicad connector dashboard save,"Dashboard mapping states now auto-saved.",Improvement,2026-04-17,Archicad Integration
+10837,PB-837,In Progress,Mobile dashboard group export,"Enable group exports for mobile dashboard.",Task,2026-04-18,Mobile
+10838,PB-838,To Do,Search dashboard grouping bug,"Grouping search by room category fails.",Bug,2026-04-19,Search
+10839,PB-839,Blocked,Reporting dashboard graph crash,"Dashboards crash when loading multiple reporting graphs.",Bug,2026-04-20,Reporting
+10840,PB-840,Done,User interface dashboard time filter,"Filtering by time now enabled for dashboard widgets.",Improvement,2026-04-21,User Interface
+10841,PB-841,To Do,Archicad connector dashboard notes bug,"Notes field not displaying on dashboard.",Bug,2026-04-22,Archicad Integration
+10842,PB-842,Blocked,Mobile dashboard mapping timeout,"Mapping times out due to dashboard load.",Bug,2026-04-23,Mobile
+10843,PB-843,Done,Analytics dashboard percentage view,"Widget shows percentage views in dashboard analytics.",Improvement,2026-04-24,Analytics
+10844,PB-844,To Do,Reporting dashboard summary bug,"Summary field not updating in reports dashboard.",Bug,2026-04-25,Reporting
+10845,PB-845,Blocked,Archicad dashboard search loss,"Dashboards lose search state after connector updates.",Bug,2026-04-26,Archicad Integration
+10846,PB-846,Done,Mobile dashboard export attachments,"Exported dashboard files include attachments.",Improvement,2026-04-27,Mobile
+10847,PB-847,To Do,User interface dashboard project bug,"Project search shows wrong room list in dashboard.",Bug,2026-04-28,User Interface
+10848,PB-848,Blocked,Reporting dashboard map import error,"Map imports fail from dashboard reporting widget.",Bug,2026-04-29,Reporting
+10849,PB-849,Done,Archicad connector dashboard view presets,"View preset options enabled for mapping connect.",Improvement,2026-04-30,Archicad Integration
+10850,PB-850,In Progress,Analytics dashboard export modal,"Modal logic refactor for analytics export options.",Task,2026-05-01,Analytics
+10851,PB-851,To Do,Search dashboard project drop bug,"Project summaries dropped in search view.",Bug,2026-05-02,Search
+10852,PB-852,Blocked,Mobile dashboard mapping notes loss,"Mapping notes lost on export from dashboard.",Bug,2026-05-03,Mobile
+10853,PB-853,Done,User interface dashboard filter presets,"Preset filter options for dashboard widgets.",Improvement,2026-05-04,User Interface
+10854,PB-854,To Do,Reporting dashboard import icon bug,"Icons missing on dashboard reporting imports.",Bug,2026-05-05,Reporting
+10855,PB-855,Blocked,Analytics dashboard export format error,"Wrong format produced during dashboard analytics export.",Bug,2026-05-06,Analytics
+10856,PB-856,Done,Archicad connector dashboard import tips,"Tips shown on dashboard connector imports.",Improvement,2026-05-07,Archicad Integration
+10857,PB-857,To Do,Mobile dashboard import export bug,"Import/export fails for large mobile dashboard files.",Bug,2026-05-08,Mobile
+10858,PB-858,Blocked,User interface dashboard settings bug,"Settings not saved for dashboards widgets.",Bug,2026-05-09,User Interface
+10859,PB-859,Done,Reporting dashboard historic mapping,"Historic mapping records supported in dashboard reports.",Improvement,2026-05-10,Reporting
+10860,PB-860,In Progress,Archicad connector dashboard asset preview,"Preview assets in mapping connector dashboard.",Task,2026-05-11,Archicad Integration
+10861,PB-861,To Do,Analytics dashboard notes bug,"Notes not shown on dashboards analytics.",Bug,2026-05-12,Analytics
+10862,PB-862,Blocked,Reporting dashboard export hidden bug,"Exported dashboard reports hidden from some users.",Bug,2026-05-13,Reporting
+10863,PB-863,Done,Mobile dashboard input export,"Input fields now exported from mobile dashboard.",Improvement,2026-05-14,Mobile
+10864,PB-864,To Do,User interface dashboard edit icon bug,"Edit icon not showing on dashboard widgets.",Bug,2026-05-15,User Interface
+10865,PB-865,Blocked,Archicad connector dashboard import error,"Dashboard import fails for asset mapping.",Bug,2026-05-16,Archicad Integration
+10866,PB-866,Done,Reporting dashboard mapping compare,"Compare mapping in dashboard reporting exports.",Improvement,2026-05-17,Reporting
+10867,PB-867,To Do,Analytics dashboard tag edit bug,"Edit tag logic not applied in analytics dashboard.",Bug,2026-05-18,Analytics
+10868,PB-868,Blocked,Mobile dashboard widget refresh error,"Widget refresh fails after dashboard export.",Bug,2026-05-19,Mobile
+10869,PB-869,Done,Archicad connector dashboard mapping summary,"Summary logic added for dashboard mapping.",Improvement,2026-05-20,Archicad Integration
+10870,PB-870,In Progress,User interface dashboard export verify,"Verify export logic for dashboard widgets.",Task,2026-05-21,User Interface
+10871,PB-871,To Do,Reporting dashboard note tag bug,"Note tags not exported in dashboard reporting.",Bug,2026-05-22,Reporting
+10872,PB-872,Blocked,Analytics dashboard retention bug,"Retention status not shown on analytics dashboard.",Bug,2026-05-23,Analytics
+10873,PB-873,Done,Mobile dashboard mapping import tags,"Import tags supported in mobile dashboard mapping.",Improvement,2026-05-24,Mobile
+10874,PB-874,To Do,Archicad connector dashboard style bug,"Style changes not visible on connector dashboard.",Bug,2026-05-25,Archicad Integration
+10875,PB-875,Blocked,Search dashboard export error,"Export errors with dashboard search results.",Bug,2026-05-26,Search
+10876,PB-876,Done,User interface dashboard batch export,"Batch export now enabled for dashboard widgets.",Improvement,2026-05-27,User Interface
+10877,PB-877,To Do,Reporting dashboard mapping asset bug,"Asset mapping field missing for dashboard reports.",Bug,2026-05-28,Reporting
+10878,PB-878,Blocked,Archicad connector dashboard batch fail,"Batch dashboard mapping fails on connector export.",Bug,2026-05-29,Archicad Integration
+10879,PB-879,Done,Analytics dashboard export icons,"Export icons available on dashboard analytics.",Improvement,2026-05-30,Analytics
+10880,PB-880,In Progress,Mobile dashboard export project merge,"Enable merging projects for mobile dashboard export.",Task,2026-05-31,Mobile
+10881,PB-881,To Do,User interface dashboard list bug,"List logic fails for project dashboard widgets.",Bug,2026-06-01,User Interface
+10882,PB-882,Blocked,Reporting dashboard multi-filter bug,"Filters not applied on dashboard reports.",Bug,2026-06-02,Reporting
+10883,PB-883,Done,Archicad connector dashboard asset preview,"Preview assets in mapping dashboard export.",Improvement,2026-06-03,Archicad Integration
+10884,PB-884,To Do,Analytics dashboard mapping logic bug,"Logic for mapping not applied to assets dashboard.",Bug,2026-06-04,Analytics
+10885,PB-885,Blocked,Mobile dashboard mapping schedule fail,"Mapping schedule export fails on mobile dashboard.",Bug,2026-06-05,Mobile
+10886,PB-886,Done,User interface dashboard export asset,"Asset logic supported in dashboard export.",Improvement,2026-06-06,User Interface
+10887,PB-887,To Do,Reporting dashboard mapping summary bug,"Mapping summary report fails to export.",Bug,2026-06-07,Reporting
+10888,PB-888,Blocked,Archicad dashboard batch mapping error,"Batch mapping records lost after dashboard export.",Bug,2026-06-08,Archicad Integration
+10889,PB-889,Done,Analytics dashboard export room totals,"Room totals calculation added to analytics export.",Improvement,2026-06-09,Analytics
+10890,PB-890,In Progress,Reporting dashboard export icon logic,"Add icon logic for dashboard reporting exports.",Task,2026-06-10,Reporting
+10891,PB-891,To Do,User interface dashboard widget export bug,"Export not triggered from widget panels.",Bug,2026-06-11,User Interface
+10892,PB-892,Blocked,Mobile dashboard note loss,"Note field missing after mobile dashboard export.",Bug,2026-06-12,Mobile
+10893,PB-893,Done,Archicad connector dashboard mapping export,"Export mapping logic enhanced for connector dashboard.",Improvement,2026-06-13,Archicad Integration
+10894,PB-894,To Do,Analytics dashboard room mapping bug,"Room mapping not shown in dashboard analytics.",Bug,2026-06-14,Analytics
+10895,PB-895,Blocked,Reporting dashboard icon mapping error,"Mapping icons not updated on reporting dashboard.",Bug,2026-06-15,Reporting
+10896,PB-896,Done,Mobile dashboard mapping batch preview,"Preview mapping batches before dashboard export.",Improvement,2026-06-16,Mobile
+10897,PB-897,To Do,User interface dashboard export progress bug,"Progress bar missing in dashboard export.",Bug,2026-06-17,User Interface
+10898,PB-898,Blocked,Archicad dashboard mapping asset fail,"Assets fail to export from connector dashboard.",Bug,2026-06-18,Archicad Integration
+10899,PB-899,Done,Analytics dashboard mapping batch export,"Batch export supported for mapping analytics.",Improvement,2026-06-19,Analytics
+10900,PB-900,In Progress,Reporting dashboard mapping asset fields,"Enable asset mapping fields in dashboard reporting.",Task,2026-06-20,Reporting
+10901,PB-901,To Do,Archicad connector dashboard mapping review bug,"Mapping review panel not loading in connector dashboard.",Bug,2026-06-21,Archicad Integration
+10902,PB-902,Blocked,Reporting dashboard asset tags error,"Asset tags missing for dashboard reporting exports.",Bug,2026-06-22,Reporting
+10903,PB-903,Done,Analytics dashboard export room grouping,"Room group logic added for analytics dashboard exports.",Improvement,2026-06-23,Analytics
+10904,PB-904,To Do,Mobile dashboard mapping timeline bug,"Mapping timelines not shown for exported dashboard mapping.",Bug,2026-06-24,Mobile
+10905,PB-905,Blocked,User interface dashboard summary loss,"Dashboard summary lost after analytics export.",Bug,2026-06-25,User Interface
+10906,PB-906,Done,Reporting dashboard historic asset mapping,"Historic asset mapping option added to dashboard.",Improvement,2026-06-26,Reporting
+10907,PB-907,In Progress,Archicad dashboard mapping merge logic,"Add merge logic for mapping batches in connector dashboard.",Task,2026-06-27,Archicad Integration
+10908,PB-908,To Do,Analytics dashboard note mapping bug,"Notes mapping missing in analytics dashboard export.",Bug,2026-06-28,Analytics
+10909,PB-909,Blocked,Reporting dashboard custom format error,"Custom format not supported for reporting dashboard assets.",Bug,2026-06-29,Reporting
+10910,PB-910,Done,Mobile dashboard mapping historic assets,"Historic asset mapping export supported on mobile.",Improvement,2026-06-30,Mobile
+10911,PB-911,To Do,Search dashboard mapping tags bug,"Search tags not mapped on dashboard export.",Bug,2026-07-01,Search
+10912,PB-912,Blocked,Archicad dashboard mapping group error,"Mapping groups lost on dashboard export.",Bug,2026-07-02,Archicad Integration
+10913,PB-913,Done,Reporting dashboard mapping auto-sync,"Auto-sync logic added for dashboard mapping reports.",Improvement,2026-07-03,Reporting
+10914,PB-914,To Do,Analytics dashboard export status bug,"Status indicators missing on exported analytics dashboard.",Bug,2026-07-04,Analytics
+10915,PB-915,Blocked,User interface dashboard export icons error,"Icons lost on exported dashboard views.",Bug,2026-07-05,User Interface
+10916,PB-916,Done,Archicad dashboard asset tagging,"Asset tagging for dashboard mapping connector.",Improvement,2026-07-06,Archicad Integration
+10917,PB-917,In Progress,Mobile dashboard mapping verification,"Verification logic for mapping in mobile dashboard.",Task,2026-07-07,Mobile
+10918,PB-918,To Do,Reporting dashboard asset export bug,"Assets missing from exported reporting dashboard files.",Bug,2026-07-08,Reporting
+10919,PB-919,Blocked,Analytics dashboard mapping asset error,"Mapping assets do not show in analytics dashboard.",Bug,2026-07-09,Analytics
+10920,PB-920,Done,Archicad connector dashboard group mapping,"Group mapping enabled in connector dashboard.",Improvement,2026-07-10,Archicad Integration
+10921,PB-921,To Do,Search dashboard export logic bug,"Export logic mismatch on search dashboard reports.",Bug,2026-07-11,Search
+10922,PB-922,Blocked,Reporting dashboard mapping preview error,"Preview option fails for dashboard mapping exports.",Bug,2026-07-12,Reporting
+10923,PB-923,Done,User interface dashboard batch verify,"Batch verify tool enabled for dashboard views.",Improvement,2026-07-13,User Interface
+10924,PB-924,To Do,Analytics dashboard mapping preview bug,"Preview does not show all mapping steps in dashboard.",Bug,2026-07-14,Analytics
+10925,PB-925,Blocked,Archicad connector dashboard mapping style error,"Dashboard mapping style not saved on connector export.",Bug,2026-07-15,Archicad Integration
+10926,PB-926,Done,Reporting dashboard asset preview,"Asset preview enabled for dashboard reporting exports.",Improvement,2026-07-16,Reporting
+10927,PB-927,In Progress,Analytics dashboard asset schedule,"Schedule assets for periodic analytics export.",Task,2026-07-17,Analytics
+10928,PB-928,To Do,Mobile dashboard mapping asset logic bug,"Asset logic not applied on mobile dashboard mapping.",Bug,2026-07-18,Mobile
+10929,PB-929,Blocked,User interface dashboard mapping format error,"Mapping formats lost after dashboard widget import.",Bug,2026-07-19,User Interface
+10930,PB-930,Done,Archicad connector dashboard asset export,"Batch export for assets enabled in mapping connector.",Improvement,2026-07-20,Archicad Integration
+10931,PB-931,To Do,Reporting dashboard batch mapping bug,"Batch mapping does not save in dashboard view.",Bug,2026-07-21,Reporting
+10932,PB-932,Blocked,Analytics dashboard connector export error,"Connector export logic fails for dashboard analytics.",Bug,2026-07-22,Analytics
+10933,PB-933,Done,Mobile dashboard mapping schedule export,"Schedule export option available for dashboard mapping.",Improvement,2026-07-23,Mobile
+10934,PB-934,To Do,Search dashboard mapping summary bug,"Mapping summary not shown in search dashboard export.",Bug,2026-07-24,Search
+10935,PB-935,Blocked,Archicad dashboard mapping batch error,"Batch error when exporting multiple mappings from dashboard.",Bug,2026-07-25,Archicad Integration
+10936,PB-936,Done,Reporting dashboard mapping asset review,"Asset review supported in dashboard reporting.",Improvement,2026-07-26,Reporting
+10937,PB-937,To Do,Analytics dashboard mapping asset group bug,"Asset groups not preserved in dashboard analytics export.",Bug,2026-07-27,Analytics
+10938,PB-938,Blocked,Mobile dashboard mapping asset loss,"Assets missing for mapping after dashboard export.",Bug,2026-07-28,Mobile
+10939,PB-939,Done,Archicad connector dashboard mapping audit,"Audit log for all dashboard mapping exports.",Improvement,2026-07-29,Archicad Integration
+10940,PB-940,To Do,Reporting dashboard mapping historic asset bug,"Historic assets not shown in reporting dashboard mapping.",Bug,2026-07-30,Reporting
+10941,PB-941,Blocked,User interface dashboard export mapping error,"Mapping export fails for dashboard widget views.",Bug,2026-07-31,User Interface
+10942,PB-942,Done,Analytics dashboard asset mapping group,"Group mapping logic added for asset export.",Improvement,2026-08-01,Analytics
+10943,PB-943,In Progress,Archicad dashboard mapping export status,"Show export status for all dashboard mappings.",Task,2026-08-02,Archicad Integration
+10944,PB-944,To Do,Mobile dashboard batch export bug,"Batch exports missing mapping logic on mobile.",Bug,2026-08-03,Mobile
+10945,PB-945,Blocked,Reporting dashboard batch status error,"Batch status indicators not shown in reporting dashboard.",Bug,2026-08-04,Reporting
+10946,PB-946,Done,User interface dashboard historic export,"Historic export tool for dashboard widget views.",Improvement,2026-08-05,User Interface
+10947,PB-947,To Do,Analytics dashboard mapping logic bug,"Logic error in asset mapping dashboard analytics.",Bug,2026-08-06,Analytics
+10948,PB-948,Blocked,Archicad dashboard asset schedule fail,"Scheduling fails for dashboard asset exports.",Bug,2026-08-07,Archicad Integration
+10949,PB-949,Done,Reporting dashboard mapping export icon,"Export icon visible for mapping exports in dashboard.",Improvement,2026-08-08,Reporting
+10950,PB-950,In Progress,Mobile dashboard mapping import verify,"Verify logic for imported dashboard mapping assets.",Task,2026-08-09,Mobile
+10951,PB-951,To Do,Search dashboard mapping audit bug,"Audit not shown for dashboard mapping exports.",Bug,2026-08-10,Search
+10952,PB-952,Blocked,Reporting dashboard historic audit error,"Audit records not found in historic dashboard reports.",Bug,2026-08-11,Reporting
+10953,PB-953,Done,Archicad connector dashboard mapping preview,"Preview mapping steps before connector dashboard export.",Improvement,2026-08-12,Archicad Integration
+10954,PB-954,To Do,Analytics dashboard batch export bug,"Batch export fails for dashboard analytics.",Bug,2026-08-13,Analytics
+10955,PB-955,Blocked,Mobile dashboard asset mapping error,"Error mapping assets to dashboard export.",Bug,2026-08-14,Mobile
+10956,PB-956,Done,User interface dashboard mapping summary,"Summary panel added for dashboard mapping widgets.",Improvement,2026-08-15,User Interface
+10957,PB-957,To Do,Reporting dashboard mapping historic batch bug,"Historic batch mapping not shown in reporting dashboard.",Bug,2026-08-16,Reporting
+10958,PB-958,Blocked,Analytics dashboard mapping row error,"Row error reported on dashboard mapping export.",Bug,2026-08-17,Analytics
+10959,PB-959,Done,Archicad dashboard mapping batch summary,"Batch mapping summary export available for connector dashboard.",Improvement,2026-08-18,Archicad Integration
+10960,PB-960,In Progress,Reporting dashboard export asset logic,"Refactor asset logic for dashboard exporting.",Task,2026-08-19,Reporting
+10961,PB-961,To Do,Mobile dashboard mapping field bug,"Mapping fields not shown for dashboard mapping on mobile.",Bug,2026-08-20,Mobile
+10962,PB-962,Blocked,Search dashboard batch mapping error,"Batch mapping error thrown on dashboard search.",Bug,2026-08-21,Search
+10963,PB-963,Done,Analytics dashboard mapping export audit,"Mapping exports now logged for dashboard analytics.",Improvement,2026-08-22,Analytics
+10964,PB-964,To Do,Archicad dashboard mapping export tag bug,"Tags not shown in exporting dashboard mapping.",Bug,2026-08-23,Archicad Integration
+10965,PB-965,Blocked,Reporting dashboard mapping export fail,"Export fails for historic mapping dashboard reporting.",Bug,2026-08-24,Reporting
+10966,PB-966,Done,Mobile dashboard mapping asset history,"Asset history now available for dashboard mapping exports.",Improvement,2026-08-25,Mobile
+10967,PB-967,To Do,User interface dashboard export audit bug,"Audit fields lost in dashboard export process.",Bug,2026-08-26,User Interface
+10968,PB-968,Blocked,Archicad dashboard asset group error,"Asset groups lost for dashboard mapping export.",Bug,2026-08-27,Archicad Integration
+10969,PB-969,Done,Reporting dashboard mapping export batch,"Batch export enabled for historic mapping exports.",Improvement,2026-08-28,Reporting
+10970,PB-970,In Progress,Analytics dashboard mapping status,"Add export status bar for dashboard batch mappings.",Task,2026-08-29,Analytics
+10971,PB-971,To Do,Mobile dashboard mapping preview bug,"Preview not shown for mapping batch exports.",Bug,2026-08-30,Mobile
+10972,PB-972,Blocked,Search dashboard mapping export fail,"Export fails for batch mapping in dashboard search.",Bug,2026-08-31,Search
+10973,PB-973,Done,Archicad connector dashboard mapping color tags,"Color tag logic added for mapping dashboard exports.",Improvement,2026-09-01,Archicad Integration
+10974,PB-974,To Do,Reporting dashboard mapping scheduled export bug,"Scheduled exports not supported for dashboard mapping.",Bug,2026-09-02,Reporting
+10975,PB-975,Blocked,Analytics dashboard mapping export gap,"Mapped data missing after dashboard export.",Bug,2026-09-03,Analytics
+10976,PB-976,Done,Mobile dashboard mapping batch export merge,"Merge mapping batches for export from dashboard.",Improvement,2026-09-04,Mobile
+10977,PB-977,To Do,Archicad dashboard asset audit bug,"Audit records lost on dashboard asset export.",Bug,2026-09-05,Archicad Integration
+10978,PB-978,Blocked,Reporting dashboard export mapping timeout,"Export times out for mapping dashboard batch.",Bug,2026-09-06,Reporting
+10979,PB-979,Done,User interface dashboard export mapping,"Export mapping now supported for dashboard views.",Improvement,2026-09-07,User Interface
+10980,PB-980,In Progress,Analytics dashboard mapping summary audit,"Summary audit panel for dashboard mapping analytics.",Task,2026-09-08,Analytics
+10981,PB-981,To Do,Mobile dashboard mapping import mapping bug,"Import logic fails for mapping batch dashboard.",Bug,2026-09-09,Mobile
+10982,PB-982,Blocked,Archicad dashboard batch merge error,"Error merging mapping batches from dashboard export.",Bug,2026-09-10,Archicad Integration
+10983,PB-983,Done,Reporting dashboard export batch merge,"Batch merge export enabled for dashboard reporting.",Improvement,2026-09-11,Reporting
+10984,PB-984,To Do,Analytics dashboard mapping export settings bug,"Settings not preserved for mapping dashboard export.",Bug,2026-09-12,Analytics
+10985,PB-985,Blocked,Mobile dashboard export settings error,"Settings export missing for mobile dashboard.",Bug,2026-09-13,Mobile
+10986,PB-986,Done,Archicad dashboard mapping assets verify,"Verify asset mapping enabled for dashboard exports.",Improvement,2026-09-14,Archicad Integration
+10987,PB-987,To Do,User interface dashboard mapping batch bug,"Mapping batch field not exporting from dashboard.",Bug,2026-09-15,User Interface
+10988,PB-988,Blocked,Reporting dashboard mapping audit error,"Audit fields not preserved in mapping dashboard export.",Bug,2026-09-16,Reporting
+10989,PB-989,Done,Analytics dashboard export mapping merge,"Mapping batch merge export logic added for dashboard.",Improvement,2026-09-17,Analytics
+10990,PB-990,In Progress,Archicad dashboard asset export review,"Review assets logic for connector dashboard export.",Task,2026-09-18,Archicad Integration
+10991,PB-991,To Do,Reporting dashboard mapping preview export bug,"Export preview logic not shown for mapping dashboard.",Bug,2026-09-19,Reporting
+10992,PB-992,Blocked,Analytics dashboard mapping batch fail,"Batch mapping failed for dashboard mapping export.",Bug,2026-09-20,Analytics
+10993,PB-993,Done,Mobile dashboard mapping batch status,"Status now available for mapping batch exports.",Improvement,2026-09-21,Mobile
+10994,PB-994,To Do,Archicad dashboard mapping panel bug,"Mapping panel fails to load in connector dashboard.",Bug,2026-09-22,Archicad Integration
+10995,PB-995,Blocked,User interface dashboard batch mapping export error,"Export error for mapping batch exports from dashboard.",Bug,2026-09-23,User Interface
+10996,PB-996,Done,Reporting dashboard asset mapping batch export,"Batch export for asset mapping enabled in reporting dashboard.",Improvement,2026-09-24,Reporting
+10997,PB-997,In Review,Analytics dashboard export mapping batch preview,"Preview batch mapping export for analytics dashboard.",Story,2026-09-25,Analytics
+10998,PB-998,To Do,Mobile dashboard mapping icon bug,"Icon not displayed for mapping batch export.",Bug,2026-09-26,Mobile
+10999,PB-999,Blocked,Archicad dashboard mapping export merge error,"Merge fails for exported mapping dashboard batches.",Bug,2026-09-27,Archicad Integration
+11000,PB-1000,Done,User interface dashboard historic asset mapping,"Historic asset mapping records supported on dashboard view.",Improvement,2026-09-28,User Interface

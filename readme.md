@@ -83,22 +83,26 @@ Project Keys: PROJ1,PROJ2,WEBDEV
 ## 🏗️ Architecture
 
 ### Project Structure
-'''
+```
 atlassianJiraConnector/
-├── README.md # this document
-├── atlassianJiraConnector.pq # Main connector logic
-├── atlassianJiraConnector.proj # Project file
-├── atlassianJiraConnector.query.pq # Test queries (legacy)
-├── resources.resx # Localization resources
-├── *.png # Connector icons
-├── bin/
-│ └── AnyCPU/
-│ └── Debug/
-│ └── atlassianJiraConnector.mez # Compiled connector
-└── released/
-│ └──version1.0/
-│ └──atlassianJiraConnector.mez # Officially published connector
-'''
+|-- README.md # this document
+|-- atlassianJiraConnector.pq # Main connector logic
+|-- atlassianJiraConnector.proj # Project file
+|-- atlassianJiraConnector.query.pq # Test queries (legacy)
+|-- resources.resx # Localization resources
+|-- *.png # Connector icons
+|-- bin/
+|  |-- AnyCPU/
+|  |-- Debug/
+|     |-- atlassianJiraConnector.mez # Compiled connector
+|-- released/
+|  |-- version1.0/
+|     |-- atlassianJiraConnector.mez # Officially published connector
+|-- tests/
+   |-- ConnectorConfigs
+   |-- Diagnostics
+   |-- TestSuites
+```
 
 ### Key Components
 
@@ -113,7 +117,12 @@ atlassianJiraConnector/
 
 ## 🧪 Testing
 
-Unit Tests are seperated as per Microsoft SDK.
+- Unit Tests located under the ./tests folder.
+- Requires the VSCode Power Query SDK to run.
+- Updated the OOTB MSFT 'RunPQSDKTestSuites.ps1' to auto find the SDK exe.
+- Configuration paths are configured as relative paths, no updates should be required.
+- Update atlassianJiraConnector.parameterquery.pq with appropriate connection details for your instance of Jira.
+
 
 ## 📈 Performance Considerations
 

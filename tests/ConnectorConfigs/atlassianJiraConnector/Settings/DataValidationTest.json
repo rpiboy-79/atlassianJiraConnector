@@ -1,0 +1,5 @@
+{
+  "FailOnMissingOutputFile": false,
+  "QueryFilePath": "./TestSuites/DataValidation",
+  "ParameterQueryFilePath": "./ConnectorConfigs/atlassianJiraConnector/ParameterQueries/atlassianJiraConnector.parameterquery.pq"
+}

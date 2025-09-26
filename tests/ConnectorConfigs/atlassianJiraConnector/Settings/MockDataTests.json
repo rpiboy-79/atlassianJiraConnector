@@ -1,0 +1,5 @@
+{
+  "FailOnMissingOutputFile": false,
+  "QueryFilePath": "./TestSuites/MockData",
+  "ParameterQueryFilePath": "./ConnectorConfigs/atlassianJiraConnector/ParameterQueries/atlassianJiraConnector_MockData.parameterquery.pq"
+}

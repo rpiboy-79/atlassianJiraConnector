@@ -208,3 +208,11 @@ tramp
 [._]s[a-rt-v][a-z]
 [._]ss[a-gi-z]
 [._]sw[a-p]
+
+# Power Query Test Results
+tests/Results/
+tests/Results/*.html
+tests/TestResults_*.html
+
+# Temporary test files
+tests/*.html
