@@ -215,4 +215,4 @@ tests/Results/*.html
 tests/TestResults_*.html
 
 # Temporary test files
-tests/*.html
+tests/results/*.html

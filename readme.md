@@ -84,7 +84,8 @@ Project Keys: PROJ1,PROJ2,WEBDEV
 
 ### Project Structure
 
-'''atlassianJiraConnector/
+'''
+atlassianJiraConnector/
 ├── README.md # this document
 ├── atlassianJiraConnector.pq # Main connector logic
 ├── atlassianJiraConnector.proj # Project file
@@ -92,12 +93,22 @@ Project Keys: PROJ1,PROJ2,WEBDEV
 ├── resources.resx # Localization resources
 ├── *.png # Connector icons
 ├── bin/
-│ └── AnyCPU/
-│ └── Debug/
+│ |── AnyCPU/
+│ |── Debug/
 │ └── atlassianJiraConnector.mez # Compiled connector
-└── released/
-│ └──version1.0/
-│ └──atlassianJiraConnector.mez # Officially published connector'''
+|── released/
+│ |── version1.0/
+│ └── atlassianJiraConnector.mez # Officially published connector
+|── testResultServer/
+│ └── dashboard_server.py # Mini python webservice/server for unit testing dashboard
+└── tests/
+  |── ConnectorConfigs/ # Configuration files for various unit tests
+  |── Diagnostics/
+  |── MockData/ # Mock data & configuration files for unit testing
+  |── TestSuites/ # Various Unit Test Suites
+  |── RunPQSDKTestSuites.ps1 # Cusomtimzed script for running unit tests and generating HTML results for use with webservice
+  └── local-dashboard.html # Reporting dashboard for unit tests, requires dashboard_server.py to be running
+'''
 
 ### Key Components
 
@@ -114,9 +125,10 @@ Project Keys: PROJ1,PROJ2,WEBDEV
 
 - Unit Tests located under the ./tests folder.
 - Requires the VSCode Power Query SDK to run.
-- Updated the OOTB MSFT 'RunPQSDKTestSuites.ps1' to auto find the SDK exe.
 - Configuration paths are configured as relative paths, no updates should be required.
 - Update atlassianJiraConnector.parameterquery.pq with appropriate connection details for your instance of Jira.
+- Heavily enhanced and Updated the OOTB MSFT 'RunPQSDKTestSuites.ps1' to auto find the SDK exe, generate HTML results pages and additional arguements to allow full automation from build command.
+- Use VSCode tasks with dependent sequential tasks to set-up a fully automated CI/CD pipeline that includes ensuring the Reporting Dashboard/webservice is running.
 
 
 ## 📈 Performance Considerations

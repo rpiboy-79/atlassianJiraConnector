@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Query Test Results Dashboard - Complete</title>
+    <style>
+        :root {
+            --primary: #0078d4;
+            --success: #107c10;
+            --danger: #d13438;
+            --warning: #ffb900;
+            --info: #0078d4;
+            --background: #f5f5f5;
+            --card-bg: #ffffff;
+            --border: #d1d1d1;
+            --text: #323130;
+            --text-secondary: #605e5c;
+            --muted-bg: #f8f9fa;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header { padding: 20px; border-bottom: 1px solid var(--border); }
+        .card-content { padding: 20px; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value { font-size: 2rem; font-weight: bold; margin-bottom: 5px; }
+        .stat-label { font-size: 0.9rem; color: var(--text-secondary); }
+
+        .success { color: var(--success); }
+        .danger { color: var(--danger); }
+        .info { color: var(--info); }
+
+        .success-bg { background: #d4edda; border-color: var(--success); }
+        .danger-bg { background: #f8d7da; border-color: var(--danger); }
+        .info-bg { background: #d1ecf1; border-color: var(--info); }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .btn-outline:hover { background: var(--muted-bg); }
+
+        .test-list { display: grid; gap: 15px; }
+
+        .test-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .test-item:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-1px);
+        }
+
+        .test-info { flex: 1; }
+        .test-name { font-weight: 600; font-size: 1.1rem; margin-bottom: 5px; }
+        .test-meta { font-size: 0.9rem; color: var(--text-secondary); }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: var(--success); color: white; }
+        .badge-danger { background: var(--danger); color: white; }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .results-table th, .results-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        .results-table th { background: var(--muted-bg); font-weight: 600; }
+
+        .result-pass { background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px; }
+        .result-fail { background: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 4px; }
+        .result-info { background: #d1ecf1; color: #0c5460; padding: 4px 8px; border-radius: 4px; }
+
+        .hidden { display: none; }
+
+        .tabs { border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+
+        .tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-family: inherit;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active { border-bottom-color: var(--primary); color: var(--primary); font-weight: 600; }
+
+        .loading { text-align: center; padding: 40px; color: var(--text-secondary); }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .compare-controls {
+            padding: 15px;
+            background: var(--muted-bg);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Power Query Test Results Dashboard</h1>
+            <p>✅ Complete Version - Robust Parser + Comparison + Clean File Generation</p>
+        </header>
+
+        <div id="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2>📊 Test Results Summary</h2>
+                        <button class="btn btn-outline" onclick="loadTestResults()">Reload</button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="stats-grid" id="stats-grid">
+                        <div class="loading">Loading test results...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('overview')">Overview</button>
+                <button class="tab" id="detail-tab" onclick="showTab('detail')" style="display: none;">Test Detail</button>
+                <button class="tab" id="compare-tab" onclick="showTab('compare')" style="display: none;">Compare</button>
+            </div>
+
+            <div id="tab-overview">
+                <div id="test-list" class="test-list">
+                    <div class="loading">Loading test results...</div>
+                </div>
+            </div>
+
+            <div id="tab-detail" class="hidden">
+                <div id="test-detail-content"></div>
+            </div>
+
+            <div id="tab-compare" class="hidden">
+                <div id="comparison-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = [];
+        let currentTest = null;
+        let compareTests = [];
+        let activeTab = 'overview';
+
+        console.log('✅ Complete dashboard initializing...');
+
+        window.addEventListener('load', function() {
+            setTimeout(loadTestResults, 1000);
+        });
+
+        async function loadTestResults() {
+            try {
+                console.log('🔍 Loading test results...');
+
+                document.getElementById('stats-grid').innerHTML = '<div class="loading">Loading test files...</div>';
+                document.getElementById('test-list').innerHTML = '<div class="loading">Processing results...</div>';
+
+                const response = await fetch('/api/test-files');
+                if (!response.ok) throw new Error(`API failed: ${response.status}`);
+
+                const data = await response.json();
+                console.log(`📋 Found ${data.files.length} test files`);
+
+                const results = [];
+                for (const file of data.files) {
+                    try {
+                        const fileResponse = await fetch(file.url);
+                        if (fileResponse.ok) {
+                            const content = await fileResponse.text();
+                            const parsed = parseTestFile(file.name, content);
+                            if (parsed) results.push(parsed);
+                        }
+                    } catch (error) {
+                        console.warn(`Error loading ${file.name}:`, error);
+                    }
+                }
+
+                testResults = results.sort((a, b) => {
+                    const nameCompare = a.testName.localeCompare(b.testName);
+                    return nameCompare !== 0 ? nameCompare : b.timestamp.getTime() - a.timestamp.getTime();
+                });
+
+                updateStats();
+                updateOverview();
+                console.log(`✅ Loaded ${results.length} test results`);
+
+            } catch (error) {
+                console.error('❌ Error loading results:', error);
+                showError(error);
+            }
+        }
+
+        function parseTestFile(fileName, htmlContent) {
+            try {
+                const match = fileName.match(/TestResults_(.+?)_(\d{8})_(\d{6})\.html/);
+                if (!match) return null;
+
+                const [, testName, dateStr, timeStr] = match;
+                const timestamp = new Date(
+                    parseInt(dateStr.substring(0, 4)),
+                    parseInt(dateStr.substring(4, 6)) - 1,
+                    parseInt(dateStr.substring(6, 8)),
+                    parseInt(timeStr.substring(0, 2)),
+                    parseInt(timeStr.substring(2, 4)),
+                    parseInt(timeStr.substring(4, 6))
+                );
+
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlContent, 'text/html');
+                const sections = [];
+
+                doc.querySelectorAll('.test-section').forEach(sectionEl => {
+                    const titleEl = sectionEl.querySelector('.test-title');
+                    if (!titleEl) return;
+
+                    const title = titleEl.textContent?.replace('TEST:', '').trim() || 'Unknown Test';
+                    const testCases = [];
+
+                    // Simple result format
+                    const simpleResult = sectionEl.querySelector('.simple-result');
+                    if (simpleResult) {
+                        let result = 'INFO';
+                        if (simpleResult.classList.contains('simple-success')) result = 'PASS';
+                        else if (simpleResult.classList.contains('simple-fail')) result = 'FAIL';
+
+                        testCases.push({
+                            name: title.replace(/\.query\.pq$/, ''),
+                            result: result,
+                            expected: 'Success',
+                            actual: simpleResult.textContent?.replace('Result:', '').trim().replace(/"/g, '') || '',
+                            details: 'Connection test'
+                        });
+                    } else {
+                        // Table format
+                        const table = sectionEl.querySelector('table');
+                        if (table) {
+                            const rows = table.querySelectorAll('tbody tr');
+                            const headers = table.querySelectorAll('thead th');
+
+                            rows.forEach((row, index) => {
+                                const cells = row.querySelectorAll('td');
+                                if (cells.length < 2) return;
+
+                                let result = 'INFO';
+                                let resultCell;
+
+                                if (headers.length === 5) {
+                                    // 5-column: Test | Result | Expected | Actual | Details
+                                    resultCell = cells[1];
+                                } else if (headers.length === 3) {
+                                    // 3-column: ColumnName | ExpectedType | ValidationResult
+                                    resultCell = cells[2];
+                                } else {
+                                    // Generic
+                                    resultCell = cells[1];
+                                }
+
+                                if (resultCell?.classList.contains('pass-cell')) result = 'PASS';
+                                else if (resultCell?.classList.contains('fail-cell')) result = 'FAIL';
+                                else if (resultCell?.classList.contains('info-cell')) result = 'INFO';
+
+                                testCases.push({
+                                    name: cells[0]?.textContent?.trim() || `Test ${index + 1}`,
+                                    result: result,
+                                    expected: headers.length === 5 ? cells[2]?.textContent?.trim() || '' : 
+                                             headers.length === 3 ? cells[1]?.textContent?.trim() || '' : '',
+                                    actual: headers.length === 5 ? cells[3]?.textContent?.trim() || '' : result,
+                                    details: headers.length === 5 ? cells[4]?.textContent?.trim() || '' : 
+                                            headers.length === 3 ? `Column validation: ${cells[1]?.textContent?.trim()}` : ''
+                                });
+                            });
+                        }
+                    }
+
+                    if (testCases.length > 0) {
+                        sections.push({ title, testCases });
+                    }
+                });
+
+                let pass = 0, fail = 0, info = 0;
+                sections.forEach(section => {
+                    section.testCases.forEach(testCase => {
+                        if (testCase.result === 'PASS') pass++;
+                        else if (testCase.result === 'FAIL') fail++;
+                        else info++;
+                    });
+                });
+
+                console.log(`✅ Parsed ${testName}: ${pass}P ${fail}F ${info}I`);
+                return {
+                    fileName, testName, timestamp, sections,
+                    summary: { pass, fail, info, total: pass + fail + info }
+                };
+
+            } catch (error) {
+                console.error(`❌ Parse error for ${fileName}:`, error);
+                return null;
+            }
+        }
+
+        function updateStats() {
+            const groups = getTestGroups();
+            let totalPass = 0, totalFail = 0, totalInfo = 0;
+
+            groups.forEach(group => {
+                const latest = group.history[0];
+                totalPass += latest.summary.pass;
+                totalFail += latest.summary.fail;
+                totalInfo += latest.summary.info;
+            });
+
+            document.getElementById('stats-grid').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${groups.length}</div>
+                    <div class="stat-label">Test Suites</div>
+                </div>
+                <div class="stat-card success-bg">
+                    <div class="stat-value success">${totalPass}</div>
+                    <div class="stat-label">Passed</div>
+                </div>
+                <div class="stat-card danger-bg">
+                    <div class="stat-value danger">${totalFail}</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+                <div class="stat-card info-bg">
+                    <div class="stat-value info">${totalInfo}</div>
+                    <div class="stat-label">Info</div>
+                </div>
+            `;
+        }
+
+        function getTestGroups() {
+            const groups = new Map();
+            testResults.forEach(result => {
+                if (!groups.has(result.testName)) {
+                    groups.set(result.testName, []);
+                }
+                groups.get(result.testName).push(result);
+            });
+
+            return Array.from(groups.entries()).map(([testName, results]) => {
+                const sortedResults = results.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+                return { testName, history: sortedResults, latest: sortedResults[0] };
+            });
+        }
+
+        function updateOverview() {
+            const groups = getTestGroups();
+
+            const html = groups.map(group => {
+                const latest = group.latest;
+                const badge = latest.summary.fail > 0 ? 
+                    '<span class="badge badge-danger">FAIL</span>' : 
+                    '<span class="badge badge-success">PASS</span>';
+
+                return `
+                    <div class="test-item">
+                        <div class="test-info">
+                            <div class="test-name">${group.testName}</div>
+                            <div class="test-meta">
+                                ${latest.timestamp.toLocaleString()} • ${group.history.length} run${group.history.length !== 1 ? 's' : ''}
+                            </div>
+                        </div>
+                        <div class="test-result" style="text-align: right;">
+                            ${badge}
+                            <div style="font-size: 0.85rem; color: var(--text-secondary); margin: 5px 0;">
+                                <span class="success">${latest.summary.pass}P</span>
+                                <span class="danger">${latest.summary.fail}F</span>
+                                <span class="info">${latest.summary.info}I</span>
+                            </div>
+                            <button class="btn btn-outline" onclick="viewTest('${latest.fileName}')">View Details</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('test-list').innerHTML = html;
+        }
+
+        function viewTest(fileName) {
+            const test = testResults.find(t => t.fileName === fileName);
+            if (!test) return;
+
+            currentTest = test;
+            showTab('detail');
+            updateTestDetail();
+        }
+
+        function updateTestDetail() {
+            if (!currentTest) return;
+
+            const group = getTestGroups().find(g => g.testName === currentTest.testName);
+            const badge = currentTest.summary.fail > 0 ? 
+                '<span class="badge badge-danger">FAIL</span>' : 
+                '<span class="badge badge-success">PASS</span>';
+
+            let sectionsHtml = '';
+            currentTest.sections.forEach(section => {
+                const rows = section.testCases.map(testCase => {
+                    let resultClass = 'result-info', resultIcon = 'ℹ';
+                    if (testCase.result === 'PASS') {
+                        resultClass = 'result-pass';
+                        resultIcon = '✓';
+                    } else if (testCase.result === 'FAIL') {
+                        resultClass = 'result-fail';
+                        resultIcon = '✗';
+                    }
+
+                    return `
+                        <tr>
+                            <td style="font-weight: 500;">${testCase.name}</td>
+                            <td>${testCase.expected || '-'}</td>
+                            <td><span class="${resultClass}">${resultIcon} ${testCase.result}</span></td>
+                            <td>${testCase.actual || '-'}</td>
+                            <td>${testCase.details || '-'}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                sectionsHtml += `
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>${section.title}</h3>
+                        </div>
+                        <div class="card-content">
+                            <table class="results-table">
+                                <thead>
+                                    <tr><th>Test Name</th><th>Expected</th><th>Result</th><th>Actual</th><th>Details</th></tr>
+                                </thead>
+                                <tbody>${rows}</tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const compareOptions = group && group.history.length > 1 ? 
+                group.history.filter(h => h.fileName !== currentTest.fileName)
+                    .map(h => `<option value="${h.fileName}">${h.timestamp.toLocaleString()}</option>`)
+                    .join('') : '';
+
+            document.getElementById('test-detail-content').innerHTML = `
+                <div class="card">
+                    <div class="card-content">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                            <div>
+                                <h2>${currentTest.testName}</h2>
+                                <div style="color: var(--text-secondary); margin: 10px 0;">
+                                    ${currentTest.timestamp.toLocaleString()}
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                ${badge}
+                                <div style="margin-top: 10px;">
+                                    <button class="btn btn-outline" onclick="showTab('overview')">← Back to Overview</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card success-bg">
+                                <div class="stat-value success">${currentTest.summary.pass}</div>
+                                <div class="stat-label">Passed</div>
+                            </div>
+                            <div class="stat-card danger-bg">
+                                <div class="stat-value danger">${currentTest.summary.fail}</div>
+                                <div class="stat-label">Failed</div>
+                            </div>
+                            <div class="stat-card info-bg">
+                                <div class="stat-value info">${currentTest.summary.info}</div>
+                                <div class="stat-label">Info</div>
+                            </div>
+                        </div>
+
+                        ${compareOptions ? `
+                            <div class="compare-controls">
+                                <strong>Compare with previous version:</strong>
+                                <select id="compare-select" style="margin: 0 10px; padding: 8px;">
+                                    <option value="">Select version to compare</option>
+                                    ${compareOptions}
+                                </select>
+                                <button class="btn btn-primary" onclick="compareWithSelected()">Compare</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+                ${sectionsHtml}
+            `;
+
+            document.getElementById('detail-tab').style.display = 'block';
+            document.getElementById('detail-tab').textContent = currentTest.testName;
+        }
+
+        function compareWithSelected() {
+            const selected = document.getElementById('compare-select').value;
+            if (!selected) return;
+
+            const compareTest = testResults.find(t => t.fileName === selected);
+            if (compareTest) {
+                compareTests = [currentTest, compareTest];
+                showTab('compare');
+                updateComparison();
+            }
+        }
+
+        function updateComparison() {
+            if (compareTests.length !== 2) return;
+
+            const [test1, test2] = compareTests.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+            const allTestCases = new Map();
+
+            compareTests.forEach(test => {
+                test.sections.forEach(section => {
+                    if (!allTestCases.has(section.title)) {
+                        allTestCases.set(section.title, new Set());
+                    }
+                    section.testCases.forEach(testCase => {
+                        allTestCases.get(section.title).add(testCase.name);
+                    });
+                });
+            });
+
+            const comparisons = [];
+            allTestCases.forEach((testCaseNames, sectionTitle) => {
+                testCaseNames.forEach(testCaseName => {
+                    const results = compareTests.map(test => {
+                        const section = test.sections.find(s => s.title === sectionTitle);
+                        const testCase = section?.testCases.find(tc => tc.name === testCaseName) || null;
+                        return { test, testCase };
+                    });
+
+                    const resultValues = results.map(r => r.testCase?.result || 'MISSING');
+                    const hasChanges = new Set(resultValues).size > 1;
+
+                    comparisons.push({ testName: testCaseName, sectionTitle, results, hasChanges });
+                });
+            });
+
+            const changed = comparisons.filter(c => c.hasChanges).length;
+            const unchanged = comparisons.length - changed;
+
+            let comparisonRows = '';
+            comparisons.forEach(comparison => {
+                const rowClass = comparison.hasChanges ? 'style="background: #fff3cd;"' : '';
+
+                const resultCells = comparison.results.map(result => {
+                    const resultText = result.testCase?.result || 'N/A';
+                    const resultClass = resultText === 'PASS' ? 'result-pass' : 
+                                      resultText === 'FAIL' ? 'result-fail' : 'result-info';
+
+                    return `<td><span class="${resultClass}">${resultText}</span></td>`;
+                }).join('');
+
+                comparisonRows += `
+                    <tr ${rowClass}>
+                        <td>${comparison.sectionTitle}</td>
+                        <td>${comparison.testName}</td>
+                        ${resultCells}
+                    </tr>
+                `;
+            });
+
+            const testHeaders = compareTests.map((test, index) => 
+                `<th>#${index + 1}<br><small>${test.timestamp.toLocaleDateString()}</small></th>`
+            ).join('');
+
+            document.getElementById('comparison-content').innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📊 Test Comparison</h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">${comparisons.length}</div>
+                                <div class="stat-label">Total Tests</div>
+                            </div>
+                            <div class="stat-card" style="background: #fff3cd; border-color: var(--warning);">
+                                <div class="stat-value" style="color: var(--warning);">${changed}</div>
+                                <div class="stat-label">Changed</div>
+                            </div>
+                            <div class="stat-card success-bg">
+                                <div class="stat-value success">${unchanged}</div>
+                                <div class="stat-label">Stable</div>
+                            </div>
+                        </div>
+
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Section</th>
+                                    <th>Test</th>
+                                    ${testHeaders}
+                                </tr>
+                            </thead>
+                            <tbody>${comparisonRows}</tbody>
+                        </table>
+
+                        ${changed === 0 ? '<div style="text-align: center; padding: 20px; background: #d4edda; color: #155724; border-radius: 6px; margin-top: 20px;"><strong>✅ All test results are identical across selected versions.</strong></div>' : ''}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('compare-tab').style.display = 'block';
+            document.getElementById('compare-tab').textContent = `Compare (${compareTests.length})`;
+        }
+
+        function showTab(tabName) {
+            activeTab = tabName;
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('[id^="tab-"]').forEach(content => content.classList.add('hidden'));
+
+            if (tabName === 'overview') {
+                document.querySelector('.tab').classList.add('active');
+                document.getElementById('tab-overview').classList.remove('hidden');
+            } else if (tabName === 'detail' && currentTest) {
+                document.getElementById('detail-tab').classList.add('active');
+                document.getElementById('tab-detail').classList.remove('hidden');
+            } else if (tabName === 'compare' && compareTests.length > 0) {
+                document.getElementById('compare-tab').classList.add('active');
+                document.getElementById('tab-compare').classList.remove('hidden');
+            }
+        }
+
+        function showError(error) {
+            document.getElementById('stats-grid').innerHTML = `
+                <div class="error">
+                    <h3>❌ Error Loading Test Results</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <button class="btn btn-primary" onclick="location.reload()">Retry</button>
+                </div>
+            `;
+        }
+
+        console.log('✨ Complete dashboard loaded successfully!');
+    </script>
+</body>
+</html>
