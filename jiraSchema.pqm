@@ -1,0 +1,104 @@
+let
+    //Query Fields List
+    issuesFieldsList =
+        {
+            "id",
+            "key",
+            "summary",
+            "description",
+            "issuetype",
+            "created",
+            "components"
+        },
+    
+    //Known Jira field schema definitions
+    JiraKnownFields =
+        #table
+        (
+            {"Name", "Type"}, 
+            {
+                {"id", type text},
+                {"key", type text},
+                {"self", type text},
+                {"summary", type text},
+                {"created", type datetimezone},
+                {"updated", type datetimezone}
+            }
+        ),
+
+    // Infer types from field names and sample data
+    InferJiraFieldType = (fieldName as text, sampleValue as any) as type =>
+        let
+            lowerFieldName = Text.Lower(fieldName),
+            
+            // Custom field pattern recognition
+            typeFromName = if Text.StartsWith(lowerFieldName, "customfield_") then
+                if Text.Contains(lowerFieldName, "date") then type datetimezone
+                else if Text.Contains(lowerFieldName, "number") then type number
+                else if Text.Contains(lowerFieldName, "user") then type any
+                else type any
+            else type any,
+                
+            // Sample value analysis
+            typeFromValue = if typeFromName = type any then
+                if sampleValue is text then
+                    if try DateTime.FromText(sampleValue) <> null otherwise false then
+                        type datetimezone
+                    else if try Number.FromText(sampleValue) <> null otherwise false then
+                        type number
+                    else type text
+                else if sampleValue is number then type number
+                else if sampleValue is list then type any
+                else if sampleValue is record then type any
+                else if sampleValue is table then type any
+                else type any
+            else typeFromName
+        in
+            typeFromValue,
+
+    // Apply schema only to fields we can confidently type
+    ApplyJiraSchema = (tbl as table) as table =>
+        let
+            tableColumns = Table.ColumnNames(tbl),
+            sampleRow = if Table.RowCount(tbl) > 0 then tbl{0} else null,
+
+            // Build schema for existing columns only
+            schemaTransforms = List.Transform(tableColumns, (colName) =>
+                let
+                    knownTypeRow = Table.SelectRows(JiraKnownFields, each [Name] = colName),
+                    knownType = if Table.RowCount(knownTypeRow) > 0 then 
+                        knownTypeRow{0}[Type] else null,
+                        
+                    inferredType = if knownType = null and sampleRow <> null then
+                        InferJiraFieldType(colName, Record.Field(sampleRow, colName))
+                    else knownType,
+                    
+                    // Only transform if we have confidence in the type
+                    finalType = if inferredType <> null and
+                                    inferredType <> type any and
+                                    inferredType <> type record and     // SKIP generic records
+                                    inferredType <> type nullable record// SKIP nullable records
+                                    then
+                                    inferredType
+                                else null
+                in
+                    if finalType <> null then {colName, finalType} else null
+            ),
+            
+            // Remove null entries and apply transformations
+            validTransforms = List.RemoveNulls(schemaTransforms),
+
+            //original final step
+            result = if List.Count(validTransforms) > 0 then
+                Table.TransformColumnTypes(tbl, validTransforms)
+            else tbl
+        in
+            result
+
+in
+    [
+        issuesFieldsList = issuesFieldsList,
+        JiraKnownFields = JiraKnownFields,
+        InferJiraFieldType = InferJiraFieldType,
+        ApplyJiraSchema = ApplyJiraSchema
+    ]

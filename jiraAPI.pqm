@@ -1,0 +1,173 @@
+let
+    //Function to extract issues array from test data
+    ExtractTestIssuesData = (testData as record) as list =>
+        let
+            issuesArray = if Record.HasFields(testData, "issues") then 
+                testData[issues]
+            else 
+                // Fallback for other possible structures
+                if Record.HasFields(testData, "values") then testData[values]
+                else if Record.HasFields(testData, "results") then testData[results]
+                else if Value.Is(testData, type list) then testData
+                else {}
+        in
+            issuesArray,
+
+    DiscoverMaxResults = (url as text, jqlQuery as text, optional testOverride as nullable record) =>
+        let
+            result = if testOverride <> null then
+                1000 //return default for test mode
+            else
+                let
+                    testMaxResults = "5000",
+                    queryHeaders = [Accept = "application/json"],
+                    queryParameters = [
+                        jql = jqlQuery,
+                        fields = "id,key",
+                        maxResults = testMaxResults,
+                        startAt = "0"
+                    ],
+                    source = Web.Contents(
+                        url, [
+                            RelativePath = "rest/api/3/search/jql",
+                            Headers = queryHeaders,
+                            Query = queryParameters
+                        ]
+                    ),
+                    jsonDoc = Json.Document(source),
+                    actualMaxResults = jsonDoc[maxResults]
+                in
+                    actualMaxResults
+        in
+            result,
+
+// Phase 1: Simple data retrieval (works with API tokens)
+// Consider adding filtering to allow manaul pagination by user in PowerBI.
+    jiraDataRetreivalSimple = (
+        url as text,
+        queryPath as text,
+        actualJql as nullable text,
+        fieldsText as nullable text,
+        maxResultsText as text,
+        optional testOverride as nullable record
+    ) =>
+        let
+            dataArray = if testOverride <> null then
+                // TEST MODE: Use provided test data
+                ExtractTestIssuesData(testOverride)
+            else
+                let
+                    // Build query parameters (only include non-null values)
+                    baseParams = [
+                        jql = actualJql,
+                        fields = fieldsText,
+                        maxResults = maxResultsText
+                    ],
+                    queryParams = Record.RemoveFields(baseParams, 
+                        List.Select(Record.FieldNames(baseParams), each Record.Field(baseParams, _) = null)),
+
+                    // Single API call
+                    source = Web.Contents(url, [
+                        RelativePath = queryPath,
+                        Headers = [Accept = "application/json"],
+                        Query = queryParams
+                    ]),
+                    
+                    response = Json.Document(source),
+                    
+                    // Extract data array
+                    extractedArray = if Record.HasFields(response, "issues") then response[issues]
+                            else if Record.HasFields(response, "values") then response[values]  
+                            else if Record.HasFields(response, "results") then response[results]
+                            else if Value.Is(response, type list) then response
+                            else {}
+                in
+                    extractedArray
+        in
+            dataArray,
+
+    // Phase 2: Full pagination data retrieval (for OAuth)
+    jiraDataRetrievalPaginated = (
+        url as text,
+        queryPath as text,
+        actualJql as nullable text,
+        fieldsText as nullable text,
+        maxResultsText as text,
+        maxResultsNumber as number,
+        optional testOverride as nullable record
+    ) =>
+        let
+            result = if testOverride <> null then
+                // TEST MODE: Use provided test data
+                ExtractTestIssuesData(testOverride)
+            else
+                let
+                    // Build query parameters dynamically, excluding null values
+                    BuildQueryParameters = (startAt as number) =>
+                        let
+                            baseParams = [
+                                startAt = Number.ToText(startAt),
+                                maxResults = maxResultsText
+                            ],
+                            withJql = if actualJql <> null then Record.AddField(baseParams, "jql", actualJql) else baseParams,
+                            withFields = if fieldsText <> null then Record.AddField(withJql, "fields", fieldsText) else withJql
+                        in
+                            withFields,
+
+                    GetPage = (startAt as number) =>
+                        let
+                            queryHeaders = [Accept = "application/json"],
+                            queryParameters = BuildQueryParameters(startAt),
+                            source = Web.Contents(
+                                url, [
+                                    RelativePath = queryPath,
+                                    Headers = queryHeaders,
+                                    Query = queryParameters
+                                ]
+                            ),
+                            jsonDoc = Json.Document(source)
+                        in
+                            jsonDoc,
+
+                    firstResponse = GetPage(0),
+                    isDirectArrayResponse = Value.Is(firstResponse, type list),
+
+                    GetAllPages = if isDirectArrayResponse then
+                        {firstResponse}
+                    else
+                        let
+                            ExtractDataArray = (pageResponse as record) =>
+                                if Record.HasFields(pageResponse, "issues") then pageResponse[issues]
+                                else if Record.HasFields(pageResponse, "values") then pageResponse[values]  
+                                else if Record.HasFields(pageResponse, "results") then pageResponse[results]
+                                else null,
+                            
+                            isPaginated = Record.HasFields(firstResponse, "isLast") or Record.HasFields(firstResponse, "total")
+                        in
+                            if isPaginated then
+                                List.Generate(
+                                    () => [Page = firstResponse, StartAt = 0],
+                                    each [Page] <> null and 
+                                        ExtractDataArray([Page]) <> null and
+                                        ([Page][isLast]? <> true),
+                                    each 
+                                        let
+                                            nextStartAt = [StartAt] + maxResultsNumber
+                                        in
+                                            [Page = GetPage(nextStartAt), StartAt = nextStartAt],
+                                    each ExtractDataArray([Page])
+                                )
+                            else
+                                {ExtractDataArray(firstResponse)}
+                in
+                    List.Combine(List.RemoveNulls(GetAllPages))
+        in
+            result
+
+in
+    [
+        ExtractTestIssuesData = ExtractTestIssuesData,
+        DiscoverMaxResults = DiscoverMaxResults,
+        jiraDataRetreivalSimple = jiraDataRetreivalSimple,
+        jiraDataRetrievalPaginated = jiraDataRetrievalPaginated
+    ]

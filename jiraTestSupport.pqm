@@ -1,0 +1,33 @@
+let
+    //Function to create mock projects from test issues
+    CreateMockProjects = (testIssues as list) as table =>
+    let
+        // Extract project data from the first few issues to get project info
+        projectRecords = List.Transform(
+            List.FirstN(testIssues, 10), // Just sample first 10 issues
+            each 
+                if Record.HasFields(_, "fields") and Record.HasFields([fields], "project") then
+                    [fields][project]
+                else null
+        ),
+        
+        // Remove nulls and get unique projects
+        validProjects = List.RemoveNulls(projectRecords),
+        uniqueProjects = List.Distinct(validProjects, each [key]),
+        
+        // Convert to table - your test data already has proper project structure
+        projectTable = Table.FromRecords(uniqueProjects)
+    in
+        if Table.RowCount(projectTable) > 0 then 
+            projectTable 
+        else 
+            // Fallback mock project if extraction fails
+            #table(
+                {"key", "name", "id", "projectTypeKey"}, 
+                {{"PB", "Product Bugs", "10000", "software"}}
+            )
+
+in
+    [
+        CreateMockProjects = CreateMockProjects
+    ]
