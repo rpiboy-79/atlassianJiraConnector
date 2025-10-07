@@ -172,6 +172,87 @@
             border: 1px solid var(--border);
             margin: 15px 0;
         }
+
+        .result-cell {
+            font-weight: bold;
+            text-align: center;
+            padding: 8px 12px;
+        }
+
+        .result-pass {
+            background-color: #d4edda !important;
+            color: #155724 !important;
+        }
+
+        .result-fail {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
+
+        .result-error {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
+
+        .result-info {
+            background-color: #d1ecf1 !important;
+            color: #0c5460 !important;
+        }
+
+        .result-warning {
+            background-color: #fff3cd !important;
+            color: #856404 !important;
+        }
+
+        .result-missing {
+            background: repeating-linear-gradient(
+                45deg,
+                #ffeaa7,
+                #ffeaa7 8px,
+                #fdcb6e 8px,
+                #fdcb6e 16px
+            ) !important;
+            color: #b8860b !important;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        .result-null {
+            background-color: #fff3cd !important;
+            color: #856404 !important;
+            font-style: italic;
+            border: 1px solid #ffeaa7;
+        }
+
+        .result-blank {
+            background-color: #fffbf0 !important;
+            color: #b8860b !important;
+            font-style: italic;
+            border: 1px solid #fff3cd;
+        }
+
+
+        .flexible-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .flexible-table th,
+        .flexible-table td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .flexible-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+
+
     </style>
 </head>
 <body>
@@ -224,7 +305,7 @@
         let compareTests = [];
         let activeTab = 'overview';
 
-        console.log('✅ Complete dashboard initializing...');
+        console.log('✅ Complete dashboard initializing with JSON API support...');
 
         window.addEventListener('load', function() {
             setTimeout(loadTestResults, 1000);
@@ -232,31 +313,64 @@
 
         async function loadTestResults() {
             try {
-                console.log('🔍 Loading test results...');
+                console.log('🔍 Loading test results from JSON API...');
 
                 document.getElementById('stats-grid').innerHTML = '<div class="loading">Loading test files...</div>';
                 document.getElementById('test-list').innerHTML = '<div class="loading">Processing results...</div>';
 
+                // First, get list of available test files (JSON + HTML)
                 const response = await fetch('/api/test-files');
                 if (!response.ok) throw new Error(`API failed: ${response.status}`);
 
                 const data = await response.json();
-                console.log(`📋 Found ${data.files.length} test files`);
+                console.log(`📋 Found ${data.files.length} test files (${data.files.filter(f => f.type === 'json').length} JSON, ${data.files.filter(f => f.type === 'html').length} HTML)`);
 
                 const results = [];
-                for (const file of data.files) {
+
+                // Process JSON files first (preferred)
+                const jsonFiles = data.files.filter(f => f.type === 'json');
+                for (const file of jsonFiles) {
                     try {
-                        const fileResponse = await fetch(file.url);
-                        if (fileResponse.ok) {
-                            const content = await fileResponse.text();
-                            const parsed = parseTestFile(file.name, content);
+                        console.log(`📊 Processing JSON file: ${file.filename}`);
+                        const detailResponse = await fetch(`/api/json-test-details/${file.filename}`);
+                        if (detailResponse.ok) {
+                            const jsonData = await detailResponse.json();
+                            const parsed = parseJsonTestFile(file, jsonData);
                             if (parsed) results.push(parsed);
                         }
                     } catch (error) {
-                        console.warn(`Error loading ${file.name}:`, error);
+                        console.warn(`Error loading JSON ${file.filename}:`, error);
                     }
                 }
 
+                // Process HTML files as fallback for test suites without JSON
+                const htmlFiles = data.files.filter(f => f.type === 'html');
+                const processedTestNames = new Set(results.map(r => r.testName));
+
+                for (const file of htmlFiles) {
+                    try {
+                        // Only process HTML if we don't have JSON for this test suite
+                        const testNameMatch = file.filename.match(/TestResults_(.+?)_\d{8}_\d{6}\.html/);
+                        const testName = testNameMatch ? testNameMatch[1] : null;
+
+                        if (testName && !processedTestNames.has(testName)) {
+                            console.log(`📄 Processing HTML file: ${file.filename} (no JSON available)`);
+                            const fileResponse = await fetch(file.filepath || file.url || `/results/${file.filename}`);
+                            if (fileResponse.ok) {
+                                const content = await fileResponse.text();
+                                const parsed = parseTestFile(file.filename, content);
+                                if (parsed) {
+                                    parsed.sourceType = 'html'; // Mark as HTML source
+                                    results.push(parsed);
+                                }
+                            }
+                        }
+                    } catch (error) {
+                        console.warn(`Error loading HTML ${file.filename}:`, error);
+                    }
+                }
+
+                // Sort results by test name and timestamp
                 testResults = results.sort((a, b) => {
                     const nameCompare = a.testName.localeCompare(b.testName);
                     return nameCompare !== 0 ? nameCompare : b.timestamp.getTime() - a.timestamp.getTime();
@@ -264,7 +378,7 @@
 
                 updateStats();
                 updateOverview();
-                console.log(`✅ Loaded ${results.length} test results`);
+                console.log(`✅ Loaded ${results.length} test results (${results.filter(r => r.sourceType !== 'html').length} from JSON, ${results.filter(r => r.sourceType === 'html').length} from HTML)`);
 
             } catch (error) {
                 console.error('❌ Error loading results:', error);
@@ -272,6 +386,240 @@
             }
         }
 
+        function parseJsonTestFile(file, jsonData) {
+            try {
+                const metadata = jsonData.metadata || {};
+                const testResults = jsonData.test_results || [];
+
+                // Extract test name and timestamp from metadata or filename
+                const testName = metadata.test_suite_name || 
+                                file.test_suite_name || 
+                                extractTestNameFromFilename(file.filename);
+
+                // Parse timestamp from metadata or filename
+                let timestamp;
+                if (metadata.run_timestamp) {
+                    timestamp = new Date(metadata.run_timestamp);
+                } else {
+                    const match = file.filename.match(/TestResults_(.+?)_(\d{8})_(\d{6})\.json/);
+                    if (match) {
+                        const [, , dateStr, timeStr] = match;
+                        timestamp = new Date(
+                            parseInt(dateStr.substring(0, 4)),
+                            parseInt(dateStr.substring(4, 6)) - 1,
+                            parseInt(dateStr.substring(6, 8)),
+                            parseInt(timeStr.substring(0, 2)),
+                            parseInt(timeStr.substring(2, 4)),
+                            parseInt(timeStr.substring(4, 6))
+                        );
+                    } else {
+                        timestamp = new Date(file.created_time || Date.now());
+                    }
+                }
+
+                // Process test results from JSON
+                const sections = [];
+                const processedTests = new Map();
+
+                testResults.forEach(test => {
+                    const sectionTitle = test.test_name || 'Unknown Test';
+
+                    if (!processedTests.has(sectionTitle)) {
+                        processedTests.set(sectionTitle, []);
+                    }
+
+                    // Parse SerializedSource if available
+                    if (test.serialized_source) {
+                        const parsedData = parseSerializedSource(test.serialized_source);
+                        if (parsedData && parsedData.type === 'table') {
+                            // Process table rows as individual test cases
+                            parsedData.rows.forEach((row, index) => {
+                                if (row.length >= 2) {
+                                    processedTests.get(sectionTitle).push({
+                                        name: row[0] || `Test ${index + 1}`,
+                                        result: normalizeResult(row[1] || 'INFO'),
+                                        expected: row[2] || '',
+                                        actual: row[3] || row[1] || '',
+                                        details: row[4] || ''
+                                    });
+                                }
+                            });
+                        } else {
+                            // Single test result
+                            processedTests.get(sectionTitle).push({
+                                name: sectionTitle,
+                                result: normalizeResult(test.result || test.output_status || 'INFO'),
+                                expected: 'Success',
+                                actual: test.result || 'Unknown',
+                                details: test.details || 'JSON test result'
+                            });
+                        }
+                    } else {
+                        // Basic test result without SerializedSource
+                        processedTests.get(sectionTitle).push({
+                            name: sectionTitle,
+                            result: normalizeResult(test.result || test.output_status || 'INFO'),
+                            expected: 'Success', 
+                            actual: test.result || 'Unknown',
+                            details: test.details || `Duration: ${test.duration_seconds}s`
+                        });
+                    }
+                });
+
+                // Convert to sections format
+                processedTests.forEach((testCases, title) => {
+                    if (testCases.length > 0) {
+                        sections.push({ title, testCases });
+                    }
+                });
+
+                // Calculate summary statistics
+                let pass = 0, fail = 0, info = 0;
+                sections.forEach(section => {
+                    section.testCases.forEach(testCase => {
+                        if (testCase.result === 'PASS') pass++;
+                        else if (testCase.result === 'FAIL') fail++;
+                        else info++;
+                    });
+                });
+
+                console.log(`✅ Parsed JSON ${testName}: ${pass}P ${fail}F ${info}I`);
+
+                return {
+                    fileName: file.filename,
+                    testName: testName,
+                    timestamp: timestamp,
+                    sections: sections,
+                    summary: { pass, fail, info, total: pass + fail + info },
+                    sourceType: 'json',
+                    metadata: metadata
+                };
+
+            } catch (error) {
+                console.error(`❌ Parse error for JSON ${file.filename}:`, error);
+                return null;
+            }
+        }
+
+        function parseSerializedSource(serializedSource) {
+            console.log("🔍 DEBUG: Starting parseSerializedSource (CORRECTED)");
+            console.log("🔍 DEBUG: Input serializedSource:", serializedSource);
+            
+            if (!serializedSource || serializedSource.trim() === '') {
+                console.log("🚨 DEBUG: Empty or null serializedSource");
+                return null;
+            }
+
+            try {
+                // Step 1: Extract column definitions
+                console.log("🔍 DEBUG: Step 1 - Extracting columns");
+                
+                const columnMatch = serializedSource.match(/\[([^\]]+)\]/);
+                if (!columnMatch) {
+                    console.log("🚨 DEBUG: No column match found");
+                    return null;
+                }
+                
+                const columnPart = columnMatch[1];
+                console.log("🔍 DEBUG: Column part:", columnPart);
+                
+                // Parse column names
+                const columns = [];
+                const columnRegex = /#?"?([^"=,\]]+)"?\s*=\s*[^,\]]+/g;
+                let match;
+                while ((match = columnRegex.exec(columnPart)) !== null) {
+                    let columnName = match[1].trim();
+                    if (columnName.startsWith('"') && columnName.endsWith('"')) {
+                        columnName = columnName.slice(1, -1);
+                    }
+                    columns.push(columnName);
+                }
+                
+                console.log("🔍 DEBUG: Extracted columns:", columns);
+                
+                if (columns.length === 0) {
+                    console.log("🚨 DEBUG: No columns extracted");
+                    return null;
+                }
+
+                // Step 2: Extract row data - CORRECTED APPROACH
+                console.log("🔍 DEBUG: Step 2 - Extracting rows (CORRECTED)");
+                
+                // CORRECTED: Look for data between {{ and }}
+                const altMatch = serializedSource.match(/\{\{(.+)\}\s*\)$/);
+                if (!altMatch) {
+                    console.log("🚨 DEBUG: No data match found with corrected regex");
+                    return null;
+                }
+                
+                const dataPart = altMatch[1];
+                console.log("🔍 DEBUG: Data part (corrected):", dataPart);
+                
+                // Parse individual rows
+                const rows = [];
+                const rowRegex = /\{([^}]+)\}/g;
+                let rowMatch;
+                while ((rowMatch = rowRegex.exec(dataPart)) !== null) {
+                    const rowData = rowMatch[1];
+                    console.log("🔍 DEBUG: Processing row data:", rowData);
+                    
+                    // Extract quoted values
+                    const cells = [];
+                    const cellRegex = /"([^"]*)"/g;
+                    let cellMatch;
+                    while ((cellMatch = cellRegex.exec(rowData)) !== null) {
+                        cells.push(cellMatch[1]);
+                    }
+                    
+                    console.log("🔍 DEBUG: Row cells:", cells);
+                    if (cells.length > 0) {
+                        rows.push(cells);
+                    }
+                }
+                
+                console.log("🔍 DEBUG: All extracted rows:", rows);
+                
+                if (rows.length === 0) {
+                    console.log("🚨 DEBUG: No rows extracted");
+                    return null;
+                }
+
+                const result = {
+                    type: 'table',
+                    columns: columns,
+                    rows: rows
+                };
+                
+                console.log("🔍 DEBUG: Final result object:", result);
+                
+                // Show column mapping
+                console.log("🔍 DEBUG: Column mapping:");
+                for (let i = 0; i < result.columns.length && i < result.rows[0].length; i++) {
+                    console.log(`  Column ${i}: "${result.columns[i]}" -> "${result.rows[0][i]}"`);
+                }
+                
+                return result;
+
+            } catch (error) {
+                console.error("🚨 DEBUG: Error in parseSerializedSource:", error);
+                console.error("🚨 DEBUG: Error stack:", error.stack);
+                return null;
+            }
+        }
+        function normalizeResult(result) {
+            if (!result) return 'INFO';
+            const r = result.toString().toUpperCase();
+            if (r === 'PASSED' || r === 'PASS') return 'PASS';
+            if (r === 'FAILED' || r === 'FAIL') return 'FAIL';
+            return 'INFO';
+        }
+
+        function extractTestNameFromFilename(filename) {
+            const match = filename.match(/TestResults_(.+?)_\d{8}_\d{6}\.(json|html)/);
+            return match ? match[1] : filename.replace(/\.(json|html)$/, '');
+        }
+
+        // Keep all existing functions exactly as they were, just updated the data loading part above
         function parseTestFile(fileName, htmlContent) {
             try {
                 const match = fileName.match(/TestResults_(.+?)_(\d{8})_(\d{6})\.html/);
@@ -368,7 +716,7 @@
                     });
                 });
 
-                console.log(`✅ Parsed ${testName}: ${pass}P ${fail}F ${info}I`);
+                console.log(`✅ Parsed HTML ${testName}: ${pass}P ${fail}F ${info}I`);
                 return {
                     fileName, testName, timestamp, sections,
                     summary: { pass, fail, info, total: pass + fail + info }
@@ -435,12 +783,18 @@
                     '<span class="badge badge-danger">FAIL</span>' : 
                     '<span class="badge badge-success">PASS</span>';
 
+                // Add indicator for data source
+                const sourceIndicator = latest.sourceType === 'json' ? 
+                    '<span style="font-size: 0.7rem; color: #28a745;">📊 JSON</span>' : 
+                    '<span style="font-size: 0.7rem; color: #ffc107;">📄 HTML</span>';
+
                 return `
                     <div class="test-item">
                         <div class="test-info">
-                            <div class="test-name">${group.testName}</div>
+                            <div class="test-name">${group.testName} ${sourceIndicator}</div>
                             <div class="test-meta">
                                 ${latest.timestamp.toLocaleString()} • ${group.history.length} run${group.history.length !== 1 ? 's' : ''}
+                                ${latest.metadata && latest.metadata.connector_version ? ` • v${latest.metadata.connector_version}` : ''}
                             </div>
                         </div>
                         <div class="test-result" style="text-align: right;">
@@ -477,6 +831,35 @@
                 '<span class="badge badge-success">PASS</span>';
 
             let sectionsHtml = '';
+
+             if (currentTest.serialized_source) {
+                console.log("🔍 Found serialized_source, trying flexible table rendering");
+                const tableData = parseSerializedSource(currentTest.serialized_source);
+                if (tableData) {
+                    console.log("✅ Successfully parsed table data for flexible rendering");
+                    
+                    // Create container for flexible table
+                    sectionsHtml = `
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Test Results (Flexible Table)</h3>
+                            </div>
+                            <div class="card-content" id="flexible-table-container">
+                                <!-- Flexible table will be rendered here -->
+                            </div>
+                        </div>`;
+                    
+                    // Update the DOM first
+                    document.getElementById('test-sections').innerHTML = sectionsHtml;
+                    
+                    // Then render the flexible table
+                    renderFlexibleTable(tableData, 'flexible-table-container');
+                    
+                    console.log("✅ Flexible table rendered successfully");
+                    return; // Skip the manual table building below
+                }
+            }
+            // Fallback to manual table rendering if no serialized_source or parsing failed
             currentTest.sections.forEach(section => {
                 const rows = section.testCases.map(testCase => {
                     let resultClass = 'result-info', resultIcon = 'ℹ';
@@ -521,6 +904,16 @@
                     .map(h => `<option value="${h.fileName}">${h.timestamp.toLocaleString()}</option>`)
                     .join('') : '';
 
+            // Add metadata display for JSON sources
+            const metadataDisplay = currentTest.metadata ? `
+                <div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 6px; font-size: 0.9rem;">
+                    <strong>📊 Test Metadata:</strong><br>
+                    ${currentTest.metadata.connector_name ? `Connector: ${currentTest.metadata.connector_name} v${currentTest.metadata.connector_version}<br>` : ''}
+                    ${currentTest.metadata.total_duration_seconds ? `Duration: ${currentTest.metadata.total_duration_seconds}s<br>` : ''}
+                    Source: ${currentTest.sourceType === 'json' ? 'JSON API' : 'HTML File'}
+                </div>
+            ` : '';
+
             document.getElementById('test-detail-content').innerHTML = `
                 <div class="card">
                     <div class="card-content">
@@ -530,6 +923,7 @@
                                 <div style="color: var(--text-secondary); margin: 10px 0;">
                                     ${currentTest.timestamp.toLocaleString()}
                                 </div>
+                                ${metadataDisplay}
                             </div>
                             <div style="text-align: right;">
                                 ${badge}
@@ -643,7 +1037,7 @@
             });
 
             const testHeaders = compareTests.map((test, index) => 
-                `<th>#${index + 1}<br><small>${test.timestamp.toLocaleDateString()}</small></th>`
+                `<th>#${index + 1}<br><small>${test.timestamp.toLocaleDateString()}</small><br><small>${test.sourceType === 'json' ? '📊' : '📄'}</small></th>`
             ).join('');
 
             document.getElementById('comparison-content').innerHTML = `
@@ -714,7 +1108,134 @@
             `;
         }
 
-        console.log('✨ Complete dashboard loaded successfully!');
+        console.log('✨ Complete dashboard loaded successfully with JSON API support!');
+
+        function determineColumnOrder(columns) {
+            console.log("🔍 Determining column order for:", columns);
+            
+            const canonicalOrder = [
+                { name: 'Test', aliases: ['test', 'test name', 'testname', 'name'] },
+                { name: 'Result', aliases: ['result', 'status', 'outcome'] },
+                { name: 'Expected', aliases: ['expected', 'expect', 'expected value'] },
+                { name: 'Actual', aliases: ['actual', 'actual value', 'value'] },
+                { name: 'Details', aliases: ['details', 'description', 'notes', 'comment'] }
+            ];
+            
+            const matchedColumns = [];
+            const unmatchedColumns = [...columns];
+            
+            for (const canonical of canonicalOrder) {
+                const match = columns.find(col => {
+                    const colLower = col.toLowerCase();
+                    return canonical.aliases.includes(colLower);
+                });
+                
+                if (match) {
+                    matchedColumns.push(match);
+                    const index = unmatchedColumns.indexOf(match);
+                    if (index > -1) {
+                        unmatchedColumns.splice(index, 1);
+                    }
+                }
+            }
+            
+            if (matchedColumns.length >= 4 && columns.length <= 6) {
+                return [...matchedColumns, ...unmatchedColumns];
+            } else {
+                return columns;
+            }
+        }
+
+        function styleResultCell(value, cellElement) {
+            if (!cellElement) return;
+            
+            cellElement.className = cellElement.className.replace(/result-\w+/g, '');
+            cellElement.classList.add('result-cell');
+            
+            if (value === undefined || value === null) {
+                cellElement.textContent = 'Missing';
+                cellElement.classList.add('result-missing');
+            } else if (value === '' || value === ' ') {
+                cellElement.textContent = 'Blank';
+                cellElement.classList.add('result-blank');
+            } else if (value === 'null' || value === 'NULL') {
+                cellElement.textContent = 'Null';
+                cellElement.classList.add('result-null');
+            } else {
+                const valueStr = String(value).toLowerCase();
+                cellElement.textContent = value;
+                
+                if (valueStr === 'missing' || valueStr === 'n/a') {
+                    cellElement.classList.add('result-missing');
+                } else if (valueStr === 'pass' || valueStr === 'passed') {
+                    cellElement.classList.add('result-pass');
+                } else if (valueStr === 'fail' || valueStr === 'failed') {
+                    cellElement.classList.add('result-fail');
+                } else if (valueStr === 'error') {
+                    cellElement.classList.add('result-error');
+                } else if (valueStr === 'info') {
+                    cellElement.classList.add('result-info');
+                } else if (valueStr === 'warning') {
+                    cellElement.classList.add('result-warning');
+                } else {
+                    cellElement.classList.add('result-info');
+                }
+            }
+        }
+
+        function renderFlexibleTable(tableData, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container || !tableData?.columns || !tableData?.rows) {
+                container.innerHTML = '<p class="text-muted">No table data available</p>';
+                return;
+            }
+            
+            const { columns, rows } = tableData;
+            const orderedColumns = determineColumnOrder(columns);
+            const resultColumnIndex = orderedColumns.findIndex(col => 
+                ['result', 'status', 'outcome'].includes(col.toLowerCase())
+            );
+            
+            let tableHtml = '<table class="table table-striped table-hover flexible-table">';
+            
+            // Table header
+            tableHtml += '<thead><tr>';
+            orderedColumns.forEach(columnName => {
+                tableHtml += `<th>${columnName}</th>`;
+            });
+            tableHtml += '</tr></thead>';
+            
+            // Table body
+            tableHtml += '<tbody>';
+            rows.forEach((row, rowIndex) => {
+                tableHtml += '<tr>';
+                orderedColumns.forEach((columnName, colIndex) => {
+                    const originalColumnIndex = columns.indexOf(columnName);
+                    const cellValue = originalColumnIndex >= 0 ? row[originalColumnIndex] : '';
+                    const cellId = `cell-${rowIndex}-${colIndex}`;
+                    
+                    tableHtml += `<td id="${cellId}">${cellValue || ''}</td>`;
+                });
+                tableHtml += '</tr>';
+            });
+            tableHtml += '</tbody></table>';
+            
+            container.innerHTML = tableHtml;
+            
+            // Apply result column styling
+            if (resultColumnIndex >= 0) {
+                rows.forEach((row, rowIndex) => {
+                    const originalColumnIndex = columns.indexOf(orderedColumns[resultColumnIndex]);
+                    const cellValue = originalColumnIndex >= 0 ? row[originalColumnIndex] : undefined;
+                    const cellElement = document.getElementById(`cell-${rowIndex}-${resultColumnIndex}`);
+                    
+                    if (cellElement) {
+                        styleResultCell(cellValue, cellElement);
+                    }
+                });
+            }
+        }
+
     </script>
 </body>
 </html>

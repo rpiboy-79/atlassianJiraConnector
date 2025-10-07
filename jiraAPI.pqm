@@ -2,16 +2,35 @@ let
     //Function to extract issues array from test data
     ExtractTestIssuesData = (testData as record) as list =>
         let
-            issuesArray = if Record.HasFields(testData, "issues") then 
-                testData[issues]
-            else 
-                // Fallback for other possible structures
-                if Record.HasFields(testData, "values") then testData[values]
-                else if Record.HasFields(testData, "results") then testData[results]
-                else if Value.Is(testData, type list) then testData
-                else {}
-        in
-            issuesArray,
+        // First, get the outer issues array
+        outerIssuesArray = if Record.HasFields(testData, "issues") then 
+            testData[issues]
+        else 
+            if Record.HasFields(testData, "values") then testData[values]
+            else if Record.HasFields(testData, "results") then testData[results]
+            else if Value.Is(testData, type list) then testData
+            else {},
+        
+        // Handle the double-nested structure
+        actualIssues = if List.Count(outerIssuesArray) > 0 then
+            let
+                firstItem = outerIssuesArray{0}
+            in
+                // Check if first item has nested "issues" array
+                if Value.Is(firstItem, type record) and Record.HasFields(firstItem, "issues") then
+                    firstItem[issues]  // Extract the INNER issues array
+                else
+                    outerIssuesArray  // Use outer array if not double-nested
+        else
+            outerIssuesArray,
+            
+        // Validate we have actual issue objects
+        validatedIssues = List.Select(actualIssues, each 
+            Value.Is(_, type record) and 
+            (Record.HasFields(_, "id") or Record.HasFields(_, "key"))
+        )
+    in
+        validatedIssues,
 
     DiscoverMaxResults = (url as text, jqlQuery as text, optional testOverride as nullable record) =>
         let
@@ -43,7 +62,7 @@ let
 
 // Phase 1: Simple data retrieval (works with API tokens)
 // Consider adding filtering to allow manaul pagination by user in PowerBI.
-    jiraDataRetreivalSimple = (
+    jiraDataRetrievalSimple = (
         url as text,
         queryPath as text,
         actualJql as nullable text,
@@ -52,37 +71,41 @@ let
         optional testOverride as nullable record
     ) =>
         let
-            dataArray = if testOverride <> null then
-                // TEST MODE: Use provided test data
-                ExtractTestIssuesData(testOverride)
-            else
-                let
-                    // Build query parameters (only include non-null values)
-                    baseParams = [
-                        jql = actualJql,
-                        fields = fieldsText,
-                        maxResults = maxResultsText
-                    ],
-                    queryParams = Record.RemoveFields(baseParams, 
-                        List.Select(Record.FieldNames(baseParams), each Record.Field(baseParams, _) = null)),
+            dataArray =
+                if testOverride <> null
+                then
+                    // TEST MODE: Use provided test data
+                    ExtractTestIssuesData(testOverride)
+                else
+                    let
+                        // Build query parameters (only include non-null values)
+                        baseParams = [
+                            jql = actualJql,
+                            fields = fieldsText,
+                            maxResults = maxResultsText
+                        ],
+                        queryParams = Record.RemoveFields(baseParams, 
+                            List.Select(Record.FieldNames(baseParams), each Record.Field(baseParams, _) = null)),
 
-                    // Single API call
-                    source = Web.Contents(url, [
-                        RelativePath = queryPath,
-                        Headers = [Accept = "application/json"],
-                        Query = queryParams
-                    ]),
-                    
-                    response = Json.Document(source),
-                    
-                    // Extract data array
-                    extractedArray = if Record.HasFields(response, "issues") then response[issues]
-                            else if Record.HasFields(response, "values") then response[values]  
-                            else if Record.HasFields(response, "results") then response[results]
-                            else if Value.Is(response, type list) then response
-                            else {}
-                in
-                    extractedArray
+                        // Single API call
+                        source = Web.Contents(url, [
+                            RelativePath = queryPath,
+                            Headers = [Accept = "application/json"],
+                            Query = queryParams
+                        ]),
+                        
+                        response = Json.Document(source),
+                        
+                        // Extract data array
+                        extractedArray =
+                            if Record.HasFields(response, "issues")
+                                then response[issues]
+                                else if Record.HasFields(response, "values") then response[values]  
+                                else if Record.HasFields(response, "results") then response[results]
+                                else if Value.Is(response, type list) then response
+                                else {}
+                    in
+                        extractedArray
         in
             dataArray,
 
@@ -168,6 +191,6 @@ in
     [
         ExtractTestIssuesData = ExtractTestIssuesData,
         DiscoverMaxResults = DiscoverMaxResults,
-        jiraDataRetreivalSimple = jiraDataRetreivalSimple,
+        jiraDataRetrievalSimple = jiraDataRetrievalSimple,
         jiraDataRetrievalPaginated = jiraDataRetrievalPaginated
     ]

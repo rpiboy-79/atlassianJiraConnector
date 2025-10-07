@@ -1,5 +1,5 @@
 // This file contains your Data Connector logic
-[Version = "1.0.3"]
+[Version = "1.0.4"]
 section atlassianJiraConnector;
 
 // Helper function to load .pqm files
@@ -47,15 +47,30 @@ shared Jira = (
     #"Company URL Identifier (as specified in your Jira URL)" as text,
     optional #"Field List (comma separated, e.g., summary,created)" as text,
     optional #"Project Keys (comma separated, e.g., PROJ1,PROJ2)" as text,
-    optional #"Max Number of Results (default: 1000)" as text,
-    optional TestDataOverride as nullable record
+    optional #"Max Number of Results (default: 1000)" as text
 ) => jiraNavTbl(
     #"Company URL Identifier (as specified in your Jira URL)",
     #"Field List (comma separated, e.g., summary,created)",
     #"Project Keys (comma separated, e.g., PROJ1,PROJ2)",
     #"Max Number of Results (default: 1000)",
-    TestDataOverride
+    null
 );
+
+// This function is for SDK testing only. It is not published.
+shared JiraTest = (
+    #"Company URL Identifier (as specified in your Jira URL)" as text,
+    optional #"Field List (comma separated, e.g., summary,created)" as text,
+    optional #"Project Keys (comma separated, e.g., PROJ1,PROJ2)" as text,
+    optional #"Max Number of Results (default: 1000)" as text,
+    optional TestDataOverride as nullable record
+) =>
+    jiraNavTbl(
+        #"Company URL Identifier (as specified in your Jira URL)",
+        #"Field List (comma separated, e.g., summary,created)",
+        #"Project Keys (comma separated, e.g., PROJ1,PROJ2)",
+        #"Max Number of Results (default: 1000)",
+        TestDataOverride
+    );
 
 // Data Source Kind description
 Atlassian_Jira_Connector.Kind = [
@@ -69,12 +84,6 @@ Atlassian_Jira_Connector.Kind = [
         { dataSourcePath }
 ];
 
-// icon resources
-atlassianJiraConnector.Icons = [
-    Icon16 = { Extension.Contents("atlassianJiraConnector16.png"), Extension.Contents("atlassianJiraConnector20.png"), Extension.Contents("atlassianJiraConnector24.png"), Extension.Contents("atlassianJiraConnector32.png") },
-    Icon32 = { Extension.Contents("atlassianJiraConnector32.png"), Extension.Contents("atlassianJiraConnector40.png"), Extension.Contents("atlassianJiraConnector48.png"), Extension.Contents("atlassianJiraConnector64.png") }
-];
-
 // Data Source UI publishing description
 Atlassian_Jira_Connector.Publish = [
     Beta = true,
@@ -83,6 +92,12 @@ Atlassian_Jira_Connector.Publish = [
     LearnMoreUrl = "https://github.com/rpiboy-79/atlassianJiraConnector",
     SourceImage = atlassianJiraConnector.Icons,
     SourceTypeImage = atlassianJiraConnector.Icons
+];
+
+// icon resources
+atlassianJiraConnector.Icons = [
+    Icon16 = { Extension.Contents("atlassianJiraConnector16.png"), Extension.Contents("atlassianJiraConnector20.png"), Extension.Contents("atlassianJiraConnector24.png"), Extension.Contents("atlassianJiraConnector32.png") },
+    Icon32 = { Extension.Contents("atlassianJiraConnector32.png"), Extension.Contents("atlassianJiraConnector40.png"), Extension.Contents("atlassianJiraConnector48.png"), Extension.Contents("atlassianJiraConnector64.png") }
 ];
 
 //Universal Dynamic Jira Query Function
@@ -104,11 +119,12 @@ jiraQuery =
             actualMaxResults = if maxResults = null then "1000" else maxResults,
             shouldDiscoverLimits = if discoverLimits = null then false else discoverLimits,
             useSimple = if useSimpleRetrieval = null then true else useSimpleRetrieval, // Default to Simple
+            useTestData = if testOverride = null then null else testOverride,
             fieldsText = if actualFieldsList = null then null else Text.Combine(actualFieldsList, ","),
 
         // Dynamic limit discovery (only if requested and JQL is provided)
             optimalMaxResults = if shouldDiscoverLimits and actualJql <> null and not useSimple then
-                try DiscoverMaxResults(url, actualJql) otherwise Number.FromText(actualMaxResults)
+                try DiscoverMaxResults(url, actualJql, useTestData) otherwise Number.FromText(actualMaxResults)
                 else if useSimple then 1000 // adjust for Simple
                 else Number.FromText(actualMaxResults),
             
@@ -117,9 +133,9 @@ jiraQuery =
             
         // DATA RETRIEVAL: Choose between simple or paginated
             CombinedData = if useSimple then
-                jiraDataRetrievalSimple(url, queryPath, actualJql, fieldsText, maxResultsText, testOverride)
+                jiraDataRetrievalSimple(url, queryPath, actualJql, fieldsText, maxResultsText, useTestData)
             else
-                jiraDataRetrievalPaginated(url, queryPath, actualJql, fieldsText, maxResultsText, maxResultsNumber, testOverride),
+                jiraDataRetrievalPaginated(url, queryPath, actualJql, fieldsText, maxResultsText, maxResultsNumber, useTestData),
 
         // TRANSFORMATION LOGIC:
             ConvertToTable = Table.FromList(CombinedData, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
@@ -198,7 +214,7 @@ jiraNavTbl =
                     List.Transform(
                         List.RemoveNulls(List.Transform(
                             Text.Split(fields, ","),
-                            each if Text.Trim(_) = "" then null else Text.Trim(Text.Upper(_))
+                            each if Text.Trim(_) = "" then null else Text.Trim(_)
                         )),
                         each _
                     ),
@@ -216,27 +232,40 @@ jiraNavTbl =
                     ),
             URL = ValidateUrlScheme("https://" & company & ".atlassian.net"),
                 
-            allProjects = if testOverride <> null then
-                let
-                    testIssues = ExtractTestIssuesData(testOverride)
-                in
-                    CreateMockProjects(testIssues)
-            else
-                jiraQuery(URL, "rest/api/3/project", null, null, null, null, false),//uses advanced query since project retrieval is not paginated to begin with
+            allProjects =
+                if testOverride <> null then
+                    let
+                        testIssues = ExtractTestIssuesData(testOverride)
+                    in
+                        CreateMockProjects(testIssues)
+                else
+                    jiraQuery(
+                        URL,
+                        "rest/api/3/project",
+                        null,
+                        null,
+                        null,
+                        null,
+                        false,
+                        null
+                    ),//uses advanced query since project retrieval is not paginated to begin with
 
             projectValidation = 
                 let
-                    validProjectKeys = List.Transform(Table.Column(allProjects, "key"), each Text.Upper(_)),
+                    validProjectKeys = Table.Column(allProjects, "key"),
                     
                     // Separate valid and invalid keys
                     validKeys = List.Select(requestedProjects, each List.Contains(validProjectKeys, _)),
                     invalidKeys = List.Select(requestedProjects, each not List.Contains(validProjectKeys, _)),
                     
                     // Use all projects if no filter specified, otherwise use validated subset
-                    finalKeys = if List.Count(requestedProjects) = 0 then validProjectKeys else validKeys,
+                    finalKeys =
+                        if List.Count(requestedProjects) = 0
+                        then validProjectKeys
+                        else validKeys,
                     
                     filteredProjects = Table.SelectRows(allProjects, 
-                        each List.Contains(finalKeys, Text.Upper([key]))
+                        each List.Contains(finalKeys, [key])
                     ),
                     
                     // Create validation report
@@ -269,15 +298,27 @@ jiraNavTbl =
                             "rest/api/3/search/jql",
                             "project=" & [key],
                             fieldsDynamic,
+                            //insert support for additional JQL statement here
                             maxResults,
                             false, // Don't discover limits in Phase 1
                             true,   // Use simple retrieval
                             testOverride // PASS TEST OVERRIDE
                         )
                     ),
-                    removeErrors = Table.RemoveRowsWithErrors(getIssues, {"Issues"})
+                    issuesWithErrorHandling = Table.TransformColumns(getIssues, {"Issues", each 
+                        try _
+                        catch (e) => 
+                            #table(
+                                {"Error Type", "Details"}, 
+                                {
+                                    {"Failed to retrieve issues", e[Reason]? },
+                                    {"Error Message", e[Message]? },
+                                    {"Check project permissions", "Verify project key and access rights"}
+                                }
+                            )
+                    })
                 in
-                    removeErrors,
+                    issuesWithErrorHandling,
             issuesForNav = Table.TransformRows(issues, 
                         each {
                             [name],
