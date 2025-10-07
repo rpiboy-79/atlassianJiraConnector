@@ -1,0 +1,34 @@
+// MSFT reccomended helper functions
+let
+    // Navigation Tables Function from Microsoft docs:
+    Table.ToNavigationTable = (
+        table as table,
+        keyColumns as list,
+        nameColumn as text,
+        dataColumn as text,
+        itemKindColumn as text,
+        itemNameColumn as text,
+        isLeafColumn as text
+    ) as table =>
+        let
+            tableType = Value.Type(table),
+            newTableType = Type.AddTableKey(tableType, keyColumns, true) meta 
+            [
+                NavigationTable.NameColumn = nameColumn, 
+                NavigationTable.DataColumn = dataColumn,
+                NavigationTable.ItemKindColumn = itemKindColumn, 
+                Preview.DelayColumn = itemNameColumn, 
+                NavigationTable.IsLeafColumn = isLeafColumn
+            ],
+            navigationTable = Value.ReplaceType(table, newTableType)
+        in
+            navigationTable,
+
+    ValidateUrlScheme = (url as text) as text =>
+        if (Uri.Parts(url)[Scheme] <> "https") then error "Url scheme must be HTTPS" else url
+
+in
+    [
+        Table.ToNavigationTable = Table.ToNavigationTable,
+        ValidateUrlScheme = ValidateUrlScheme
+    ]

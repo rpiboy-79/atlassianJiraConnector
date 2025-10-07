@@ -16,7 +16,6 @@
     <MezContent Include="atlassianJiraConnector48.png" />
     <MezContent Include="atlassianJiraConnector64.png" />
     <MezContent Include="atlassianJiraConnector80.png" />
-    <MezContent Include="resources.resx" />
     <MezContent Include="*.pqm" />
   </ItemGroup>
   <Target Name="BuildMez" AfterTargets="Build" Inputs="@(MezContent)" Outputs="$(MezOutputPath)">

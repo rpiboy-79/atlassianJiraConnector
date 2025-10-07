@@ -1,6 +1,14 @@
 # Atlassian Jira Power Query Connector
 
-A custom Power Query connector for Microsoft Power BI and Excel that enables direct integration with Atlassian Jira Cloud instances. This connector provides seamless access to Jira issues, projects, and related data for business intelligence and reporting purposes.
+A custom Power Query (M) connector for Microsoft Power BI and Excel that integrates with Atlassian Jira Cloud. This README was updated to reflect recent improvements to the project's automated test harness, developer tooling, and developer-friendly helper scripts.
+
+Version: 1.0.4 (connector Version updated in code)
+
+## TL;DR — What's new
+
+- Full test-harness improvements: `tests/RunPQSDKTestSuites.ps1` rewritten for PowerShell 5.1 compatibility, automatic SDK discovery, robust encoding, HTML report generation, optional MEZ deployment, and improved error handling.
+- Improved API handling and test support inside the connector: new `JiraTest` (unpublished) entrypoint to support test overrides and mock-data injection.
+- Several fixes and refactors in `jiraAPI.pqm` and `atlassianJiraConnector.pq` to improve error handling, and mock-data support.
 
 ## 🚀 Features
 
@@ -10,6 +18,7 @@ A custom Power Query connector for Microsoft Power BI and Excel that enables dir
 - **Project Filtering**: Filter data by specific Jira projects during connection
 - **Dynamic Field Expansion**: Automatically expands nested Jira field structures
 - **Phase 1 MVP**: Works with API token authentication (Phase 2 will add OAuth 3LO support)
+- **Built-in support for mock/test data**: used by the test harness
 
 ## 📋 Prerequisites
 
@@ -18,19 +27,24 @@ A custom Power Query connector for Microsoft Power BI and Excel that enables dir
 - **Jira API Token** (generated from your Atlassian account)
 - **Visual Studio Code** with Power Query SDK extension (for development)
 
-## ⚙️ Installation
-
-### For End Users
+## ⚙️ Installation (End Users)
 
 1. Download the latest `.mez` file from the releases
 2. Copy the `.mez` file to your Power BI custom connectors folder:
-   - **Power BI Desktop**: `Documents\Power BI Desktop\Custom Connectors\`
+   - **Power BI Desktop**: `%USERPROFILE%\Documents\Power BI Desktop\Custom Connectors\`
 3. Enable custom connectors in Power BI:
    - File → Options and Settings → Options → Security
    - Under "Data Extensions", select "Allow any extension to load without validation"
 4. Restart Power BI Desktop
 
-### For Developers
+To help with step 2 during development, use the helper script:
+
+```powershell
+# Copy the built MEZ to Power BI Desktop connectors folder (example)
+.\tests\Copy-MezFile.ps1 -SourceMezPath ".\bin\AnyCPU\Debug\atlassianJiraConnector.mez" -Verbose
+```
+
+## 🧑‍� Developer Setup
 
 1. Clone this repository
 2. Install [Power Query SDK for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=PowerQuery.vscode-powerquery-sdk)
@@ -67,6 +81,69 @@ When connecting through Power BI:
 
 - **Username**: Your Atlassian account email
 - **Password**: Your API token (not your Atlassian password)
+
+### 🧪 Testing — full details (new test harness)
+
+This project now includes a complete, local test harness and utilities in the `tests/` folder to run the pre-built PQ/PQOut tests, generate readable HTML reports, and optionally deploy the `.mez` to the local Power BI Connector directory.
+
+Files of interest
+- `tests/RunPQSDKTestSuites.ps1` — Main test runner (rewritten for PS 5.1 compatibility, auto-discovery of PQTest.exe, improved parsing of PQOut results, HTML report generation, optional MEZ copy, and safer JSON handling). Supports `-CopyMez`, `-PrettyJson`, `-MaxParallel` and other flags.
+- `tests/Copy-MezFile.ps1` — Locates built `.mez` and copies it to the Power BI custom connectors directory.
+- `tests/TestSuites/../*.query.pq` — Tests executed by the test harness.
+- `tests/MockData/*.json` — Example test payloads used by parameter queries for deterministic tests (e.g., `jira_api_response_acme_software_pb.json`, `jira_api_response_null.json`).
+- `tests/ConnectorConfigs/atlassianJiraConnector/ParameterQueries/atlassianJiraConnector_MockData.parameterquery.pq` — Example parameter query that calls the unpublished `JiraTest` entrypoint to exercise connector logic with mock data.
+
+Running tests locally
+
+Basic (auto-discover SDK tools and run tests):
+
+```powershell
+# Run the test harness; if PQTest.exe can be discovered automatically it will be used
+.\tests\RunPQSDKTestSuites.ps1 -TestSettingsDirectoryPath ".\tests\ConnectorConfigs\atlassianJiraConnector\Settings" -TestSettingsList "SanitySettings.json" -PrettyJson -CopyMez
+```
+
+If you want to pass an explicit PQTest.exe path or the MEZ path, do so with the named parameters:
+
+```powershell
+.\tests\RunPQSDKTestSuites.ps1 -PQTestExePath 'C:\path\to\PQTest.exe' -ExtensionPath '.\bin\AnyCPU\Debug\atlassianJiraConnector.mez' -TestSettingsDirectoryPath '.\tests\ConnectorConfigs\atlassianJiraConnector\Settings' -TestSettingsList 'SanitySettings.json' -CopyMez
+```
+
+What the harness does
+- Locates PQTest.exe automatically (from VS Code Power Query SDK extension) when possible.
+- Runs the PQ/PQOut tests (the repository contains many pre-built `.query.pq` and `.query.pqout` files under `tests/TestSuites`).
+- Parses `.pqout` results into HTML-friendly tables. The new parser handles simple string results and table `#table(...)` structures robustly.
+- Produces an HTML report (and keeps historical copies) suitable for CI artifacts or local review.
+- Optionally copies the built `.mez` into the user's Power BI Custom Connectors directory so tests can execute against the actual connector binary.
+- Supports mock-data injection through the `JiraTest` entrypoint and the `TestDataOverride` mechanism so tests are deterministic and offline-capable.
+
+Test configuration
+- Configure the test harness by editing `tests/RunPQSDKTestSuitesSettings.json` or passing parameters to the runner.
+- The connector parameter query in `tests/ConnectorConfigs/.../atlassianJiraConnector_MockData.parameterquery.pq` demonstrates how to hand a JSON object into the connector using `JiraTest(...)` for SDK-driven tests.
+
+Troubleshooting the test harness
+- If PQTest.exe cannot be found automatically, pass `-PQTestExePath` with the explicit path to the SDK tool.
+- If encoding issues appear in PS 5.1, the runner uses a UTF8-no-BOM write mechanism to ensure the HTML and JSON artifacts are portable.
+
+CI Suggestions
+
+- Add a CI job that runs the test harness script on a Windows runner. Example pipeline steps:
+  - Build (Power Query: Build) → produce `.mez`
+  - Run tests: execute `RunPQSDKTestSuites.ps1` with `-ExtensionPath` pointing to the built `.mez` and collect the HTML output as artifacts
+  - Optionally fail the job on non-empty failures by parsing the produced JSON/HTML summary
+
+#### Test-driven developer workflow (recommended)
+
+1. Implement a function change in `atlassianJiraConnector.pq` or supporting `.pqm` modules.
+2. Add or update a `.query.pq` test under `tests/TestSuites` that exercises the change.
+3. Use `tests/ConnectorConfigs/.../ParameterQueries` to create a deterministic test scenario (use `JiraTest` + mock JSON files when possible).
+4. Run `RunPQSDKTestSuites.ps1` locally and verify the HTML report.
+5. Iterate until tests pass.
+
+## Connector internals (brief)
+
+- Main logic: `atlassianJiraConnector.pq` (navigation table, `jiraQuery`, `jiraNavTbl`).
+- API helpers: `jiraAPI.pqm` contains core retrieval helpers and parsing improvements. The code base now better handles nested/double-nested issue arrays and performs safer JSON extraction.
+- Test entrypoint: `JiraTest(...)` — an unpublished, test-only entry function that accepts `TestDataOverride` and other parameters to exercise connector code paths with injected mock data.
 
 ## 📊 Usage Examples
 
@@ -120,16 +197,6 @@ atlassianJiraConnector/
 - **`jiraQuery()`**: Universal query function with transformation
 - **`jiraNavTbl()`**: Navigation table generator
 - **`createIssuesNavigationTable()`**: Sub-navigation builder
-
-## 🧪 Testing
-
-- Unit Tests located under the ./tests folder.
-- Requires the VSCode Power Query SDK to run.
-- Configuration paths are configured as relative paths, no updates should be required.
-- Update atlassianJiraConnector.parameterquery.pq with appropriate connection details for your instance of Jira.
-- Heavily enhanced and Updated the OOTB MSFT 'RunPQSDKTestSuites.ps1' to auto find the SDK exe, generate HTML results pages and additional arguements to allow full automation from build command.
-- Use VSCode tasks with dependent sequential tasks to set-up a fully automated CI/CD pipeline that includes ensuring the Reporting Dashboard/webservice is running.
-
 
 ## 📈 Performance Considerations
 
@@ -265,4 +332,4 @@ When reporting issues, please include:
 
 ---
 
-*Last updated: September 2025*
+*Last updated: October 7, 2025*
