@@ -8,13 +8,15 @@ let
     ProjectKeys = "CFR,PB",
     MaxResults = "100",
     JQLString = "(status=""In Progress"") OR (priority =""Major"")",
+    JQLOrderBy = null,
     
     Source = Jira (
         Company,
         FieldList,
         ProjectKeys,
         MaxResults,
-        JQLString
+        JQLString,
+        JQLOrderBy
     )
 in
     Source
