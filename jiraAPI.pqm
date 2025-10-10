@@ -60,23 +60,26 @@ let
         in
             result,
 
-    buildJqlQuery = (projectKey as nullable text, userJQL as nullable text) as nullable text  =>
+    buildJqlQuery = (projectKey as nullable text, userJQL as nullable text, orderBy as nullable text) as nullable text  =>
         let
             baseJQL =
                 if projectKey <> null
                 then projectKey
                 else "",
-            combinedJQL =
+            conditionsJQL =
                 if userJQL <> null and userJQL <> ""
                 then
                     if baseJQL <> ""
                         then baseJQL & " AND (" & userJQL & ")"
                         else userJQL
-                    else baseJQL
+                    else baseJQL,
+            finalJQL = if orderBy <> null and orderBy <> "" then
+                conditionsJQL & " ORDER BY " & orderBy
+                else conditionsJQL
         in
-            if combinedJQL = ""
+            if finalJQL = ""
                 then null 
-                else combinedJQL,
+                else finalJQL,
 
 
 // Phase 1: Simple data retrieval (works with API tokens)

@@ -49,13 +49,15 @@ shared Jira = (
     optional #"Field List (comma separated, e.g., summary,created)" as text,
     optional #"Project Keys (comma separated, e.g., PROJ1,PROJ2)" as text,
     optional #"Max Number of Results (default: 1000)" as text,
-    optional #"JQL Query String (e.g., status=""Open"")" as text
+    optional #"JQL Query String (e.g., status=""Open"")" as text,
+    optional #"JQL Order By String (e.g. priority DESC, Created DESC)" as text
 ) => jiraNavTbl(
     #"Company URL Identifier (as specified in your Jira URL)",
     #"Field List (comma separated, e.g., summary,created)",
     #"Project Keys (comma separated, e.g., PROJ1,PROJ2)",
     #"Max Number of Results (default: 1000)",
     #"JQL Query String (e.g., status=""Open"")",
+    #"JQL Order By String (e.g. priority DESC, Created DESC)",
     null
 );
 
@@ -66,6 +68,7 @@ shared JiraTest = (
     optional #"Project Keys (comma separated, e.g., PROJ1,PROJ2)" as text,
     optional #"Max Number of Results (default: 1000)" as text,
     optional #"JQL Query String (e.g., status=""Open"")" as text,
+    optional #"JQL Order By String (e.g. priority DESC, Created DESC)" as text,
     optional TestDataOverride as nullable record
 ) =>
     jiraNavTbl(
@@ -74,6 +77,7 @@ shared JiraTest = (
         #"Project Keys (comma separated, e.g., PROJ1,PROJ2)",
         #"Max Number of Results (default: 1000)",
         #"JQL Query String (e.g., status=""Open"")",
+        #"JQL Order By String (e.g. priority DESC, Created DESC)",
         TestDataOverride
     );
 
@@ -113,6 +117,7 @@ jiraQuery =
         optional jqlProjectKey as nullable text,
         optional fieldList as nullable list,
         optional jqlString as nullable text,
+        optional jqlOrderByString as nullable text,
         optional maxResults as nullable text,
         optional discoverLimits as nullable logical,
         optional useSimpleRetrieval as nullable logical,
@@ -123,6 +128,7 @@ jiraQuery =
             actualJqlProjectKey = if jqlProjectKey = null then null else jqlProjectKey,
             actualFieldsList = if fieldList = null then null else fieldList,
             actualJqlString = if jqlString = null then null else jqlString,
+            actualJqlOrderBy = if jqlOrderByString = null then null else jqlOrderByString,
             actualMaxResults = if maxResults = null then "1000" else maxResults,
             shouldDiscoverLimits = if discoverLimits = null then false else discoverLimits,
             useSimple = if useSimpleRetrieval = null then true else useSimpleRetrieval, // Default to Simple
@@ -130,7 +136,7 @@ jiraQuery =
             fieldsText = if actualFieldsList = null then null else Text.Combine(actualFieldsList, ","),
 
         //somewhere in here build full query
-        jqlQuery = buildJqlQuery(actualJqlProjectKey, actualJqlString),
+        jqlQuery = buildJqlQuery(actualJqlProjectKey, actualJqlString, actualJqlOrderBy),
 
         // Dynamic limit discovery (only if requested and JQL is provided)
             optimalMaxResults =
@@ -233,6 +239,7 @@ jiraNavTbl =
         optional projectKeys as text,
         optional maxResults as text,
         optional jqlString as text,
+        optional jqlOrderBy as text,
         optional testOverride as nullable record
     ) =>
         let
@@ -280,15 +287,16 @@ jiraNavTbl =
                         CreateMockProjects(testIssues)
                 else
                     jiraQuery(
-                        URL,
-                        "rest/api/3/project",
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        false,
-                        null
+                        URL, //url
+                        "rest/api/3/project", //queryPath
+                        null, //jqlProjectKey
+                        null, //fieldList
+                        null, //jqlString
+                        null, //jqlOrderByString
+                        null, //maxResults
+                        null, //discoverLimits
+                        false, //useSimpleRetrieval
+                        null //testOverride
                     ),//uses advanced query since project retrieval is not paginated to begin with
 
             
@@ -344,6 +352,7 @@ jiraNavTbl =
                             "project=" & [key],
                             fieldsDynamic,
                             jqlString,
+                            jqlOrderBy, //jqlOrderByString
                             maxResults,
                             false, // Don't discover limits in Phase 1
                             true,   // Use simple retrieval
