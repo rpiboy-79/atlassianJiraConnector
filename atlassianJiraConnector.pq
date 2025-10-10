@@ -1,5 +1,5 @@
 // This file contains your Data Connector logic
-[Version = "1.0.4"]
+[Version = "1.0.5"]
 section atlassianJiraConnector;
 
 // Helper function to load .pqm files
@@ -25,6 +25,7 @@ JiraTestSupport = Extension.LoadFunction("jiraTestSupport.pqm");
 helperFunctions = Extension.LoadFunction("helperFunctions.pqm");
 
 // Load individual API functions
+buildJqlQuery = JiraAPI[buildJqlQuery];
 DiscoverMaxResults = JiraAPI[DiscoverMaxResults];
 jiraDataRetrievalSimple = JiraAPI[jiraDataRetrievalSimple];
 jiraDataRetrievalPaginated = JiraAPI[jiraDataRetrievalPaginated];
@@ -47,12 +48,14 @@ shared Jira = (
     #"Company URL Identifier (as specified in your Jira URL)" as text,
     optional #"Field List (comma separated, e.g., summary,created)" as text,
     optional #"Project Keys (comma separated, e.g., PROJ1,PROJ2)" as text,
-    optional #"Max Number of Results (default: 1000)" as text
+    optional #"Max Number of Results (default: 1000)" as text,
+    optional #"JQL Query String (e.g., status=""Open"")" as text
 ) => jiraNavTbl(
     #"Company URL Identifier (as specified in your Jira URL)",
     #"Field List (comma separated, e.g., summary,created)",
     #"Project Keys (comma separated, e.g., PROJ1,PROJ2)",
     #"Max Number of Results (default: 1000)",
+    #"JQL Query String (e.g., status=""Open"")",
     null
 );
 
@@ -62,6 +65,7 @@ shared JiraTest = (
     optional #"Field List (comma separated, e.g., summary,created)" as text,
     optional #"Project Keys (comma separated, e.g., PROJ1,PROJ2)" as text,
     optional #"Max Number of Results (default: 1000)" as text,
+    optional #"JQL Query String (e.g., status=""Open"")" as text,
     optional TestDataOverride as nullable record
 ) =>
     jiraNavTbl(
@@ -69,6 +73,7 @@ shared JiraTest = (
         #"Field List (comma separated, e.g., summary,created)",
         #"Project Keys (comma separated, e.g., PROJ1,PROJ2)",
         #"Max Number of Results (default: 1000)",
+        #"JQL Query String (e.g., status=""Open"")",
         TestDataOverride
     );
 
@@ -105,8 +110,9 @@ jiraQuery =
     (
         url as text, 
         queryPath as text, 
-        optional jqlQuery as nullable text,
+        optional jqlProjectKey as nullable text,
         optional fieldList as nullable list,
+        optional jqlString as nullable text,
         optional maxResults as nullable text,
         optional discoverLimits as nullable logical,
         optional useSimpleRetrieval as nullable logical,
@@ -114,28 +120,50 @@ jiraQuery =
     ) =>
         let
         // Handle optional parameters with defaults
-            actualJql = if jqlQuery = null then null else jqlQuery,
+            actualJqlProjectKey = if jqlProjectKey = null then null else jqlProjectKey,
             actualFieldsList = if fieldList = null then null else fieldList,
+            actualJqlString = if jqlString = null then null else jqlString,
             actualMaxResults = if maxResults = null then "1000" else maxResults,
             shouldDiscoverLimits = if discoverLimits = null then false else discoverLimits,
             useSimple = if useSimpleRetrieval = null then true else useSimpleRetrieval, // Default to Simple
             useTestData = if testOverride = null then null else testOverride,
             fieldsText = if actualFieldsList = null then null else Text.Combine(actualFieldsList, ","),
 
+        //somewhere in here build full query
+        jqlQuery = buildJqlQuery(actualJqlProjectKey, actualJqlString),
+
         // Dynamic limit discovery (only if requested and JQL is provided)
-            optimalMaxResults = if shouldDiscoverLimits and actualJql <> null and not useSimple then
-                try DiscoverMaxResults(url, actualJql, useTestData) otherwise Number.FromText(actualMaxResults)
-                else if useSimple then 1000 // adjust for Simple
-                else Number.FromText(actualMaxResults),
+            optimalMaxResults =
+                if shouldDiscoverLimits and actualJqlProjectKey <> null
+                    then
+                        try DiscoverMaxResults(url, actualJqlProjectKey, useTestData)
+                        otherwise Number.FromText(actualMaxResults)
+                    else Number.FromText(actualMaxResults), // adjust for Simple
+                        
             
             maxResultsText = Number.ToText(optimalMaxResults),
             maxResultsNumber = Number.FromText(maxResultsText),
             
         // DATA RETRIEVAL: Choose between simple or paginated
             CombinedData = if useSimple then
-                jiraDataRetrievalSimple(url, queryPath, actualJql, fieldsText, maxResultsText, useTestData)
+                jiraDataRetrievalSimple(
+                    url,
+                    queryPath,
+                    jqlQuery,
+                    fieldsText,
+                    maxResultsText,
+                    useTestData
+                )
             else
-                jiraDataRetrievalPaginated(url, queryPath, actualJql, fieldsText, maxResultsText, maxResultsNumber, useTestData),
+                jiraDataRetrievalPaginated(
+                    url,
+                    queryPath,
+                    jqlQuery,
+                    fieldsText,
+                    maxResultsText,
+                    maxResultsNumber,//why do we need both values? Right now they could be different, again why?
+                    useTestData
+                ),
 
         // TRANSFORMATION LOGIC:
             ConvertToTable = Table.FromList(CombinedData, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
@@ -204,6 +232,7 @@ jiraNavTbl =
         optional fields as text,
         optional projectKeys as text,
         optional maxResults as text,
+        optional jqlString as text,
         optional testOverride as nullable record
     ) =>
         let
@@ -219,6 +248,14 @@ jiraNavTbl =
                         each _
                     ),
 
+            //if projectKeys = null, then check JQLstring for "project = " if project = is TRUE then get string after project = before AND/OR/(
+            //how to extend for multiple project =, use list...
+            //pass to project Validation so that we validate only the projects included in the JQLstring
+            //allows a user to skip project keys and provide a fully qualified JQL string, but will prevent attempting to iterate over projects where the fully custom JQL string won't work
+            //pass result to requested Projects either null or result of extraction from JQL query
+
+
+            //is this called anywhere besides projectValidation?
             requestedProjects = 
                 if projectKeys = null then 
                     {} 
@@ -230,8 +267,11 @@ jiraNavTbl =
                         )),
                         each _
                     ),
+            
+
+
             URL = ValidateUrlScheme("https://" & company & ".atlassian.net"),
-                
+
             allProjects =
                 if testOverride <> null then
                     let
@@ -246,9 +286,13 @@ jiraNavTbl =
                         null,
                         null,
                         null,
+                        null,
                         false,
                         null
                     ),//uses advanced query since project retrieval is not paginated to begin with
+
+            
+
 
             projectValidation = 
                 let
@@ -276,7 +320,8 @@ jiraNavTbl =
                             {"Requested Projects", List.Count(requestedProjects), Text.Combine(requestedProjects, ", ")},
                             {"Valid Requested", List.Count(validKeys), Text.Combine(validKeys, ", ")},
                             {"Invalid Requested", List.Count(invalidKeys), Text.Combine(invalidKeys, ", ")},
-                            {"Final Project Count", Table.RowCount(filteredProjects), ""}
+                            {"Final Project Count", Table.RowCount(filteredProjects), ""},
+                            {"User Supplied JQL String", if jqlString = null then "(none)" else jqlString, "Additional JQL to be applied to issue retrieval"}
                         }
                     )
                 in
@@ -298,7 +343,7 @@ jiraNavTbl =
                             "rest/api/3/search/jql",
                             "project=" & [key],
                             fieldsDynamic,
-                            //insert support for additional JQL statement here
+                            jqlString,
                             maxResults,
                             false, // Don't discover limits in Phase 1
                             true,   // Use simple retrieval

@@ -4,11 +4,11 @@ let
     // Update company identifier to your instance
     Company = "drofus",
     // Optional: specify fields, project keys, max results
-    FieldList = null,
+    FieldList = "id,key,summary,description,issuetype,created,components,status,priority",
     ProjectKeys = "CFR,PB",
     MaxResults = "100",
-    JQLString = null,
-        
+    JQLString = "(status=""In Progress"") OR (priority =""Major"")",
+    
     Source = Jira (
         Company,
         FieldList,

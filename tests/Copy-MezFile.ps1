@@ -4,6 +4,8 @@
 
 param(
     [string]$SourceMezPath,
+    [string]$TargetPath,
+    [switch]$CopyToAll,
     [switch]$Verbose
 )
 
@@ -41,10 +43,70 @@ function Get-ProjectMezFile {
 function Get-PowerBIConnectorsPath {
     <#
     .SYNOPSIS
-    Gets the Power BI Custom Connectors directory path
+    Gets the Power BI Custom Connectors directory path(s),
+    properly handling OneDrive integration (including multiple OneDrives)
     #>
     
-    return "$env:USERPROFILE\Documents\Power BI Desktop\Custom Connectors"
+    $localDocuments = [Environment]::GetFolderPath('MyDocuments')
+    $standardPath = Join-Path $localDocuments "Power BI Desktop\Custom Connectors"
+
+    $userProfile = $env:USERPROFILE
+    $oneDriveRoots = Get-ChildItem -Path $userProfile -Directory -Filter "OneDrive*" -ErrorAction SilentlyContinue
+    $paths = @()
+
+    # Always include the standard local path as a fallback
+    if (Test-Path $standardPath) {
+        $paths += $standardPath
+    }
+
+    # Collect all possible OneDrive "Documents" folders
+    foreach ($odr in $oneDriveRoots) {
+        $odDocs = Join-Path $odr.FullName "Documents\Power BI Desktop\Custom Connectors"
+        if (Test-Path $odDocs) {
+            $paths += $odDocs
+        }
+    }
+
+    # Return all found paths, or create standard path if none exist
+    if ($paths.Count -gt 0) {
+        return $paths
+    }
+    return @($standardPath)
+}
+
+function Select-TargetPath {
+    <#
+    .SYNOPSIS
+    Allows user to select target path when multiple OneDrive locations exist
+    #>
+    param(
+        [string[]]$AvailablePaths
+    )
+    
+    if ($AvailablePaths.Count -eq 1) {
+        return $AvailablePaths[0]
+    }
+    
+    Write-Host ""
+    Write-Host "Multiple Power BI Custom Connectors locations found:" -ForegroundColor Yellow
+    for ($i = 0; $i -lt $AvailablePaths.Count; $i++) {
+        Write-Host "  [$($i + 1)] $($AvailablePaths[$i])" -ForegroundColor White
+    }
+    Write-Host ""
+    
+    do {
+        $selection = Read-Host "Select target location (1-$($AvailablePaths.Count)) or press Enter for all"
+        
+        if ([string]::IsNullOrWhiteSpace($selection)) {
+            return $AvailablePaths  # Return all paths
+        }
+        
+        if ($selection -match '^\d+$' -and [int]$selection -ge 1 -and [int]$selection -le $AvailablePaths.Count) {
+            return $AvailablePaths[[int]$selection - 1]
+        }
+        
+        Write-Host "Invalid selection. Please enter a number between 1 and $($AvailablePaths.Count), or press Enter for all." -ForegroundColor Red
+    } while ($true)
 }
 
 function Copy-MezToPowerBI {
@@ -91,6 +153,7 @@ function Copy-MezToPowerBI {
         $fileInfo = Get-Item $destination
         Write-Host "File size: $([math]::Round($fileInfo.Length / 1KB, 2)) KB" -ForegroundColor Gray
         Write-Host "Modified: $($fileInfo.LastWriteTime)" -ForegroundColor Gray
+        Write-Host ""
         
         return $true
     }
@@ -138,31 +201,72 @@ if (-not (Test-Path $sourceMez)) {
     exit 1
 }
 
-# Get destination folder
-$destinationFolder = Get-PowerBIConnectorsPath
+# Get destination folder(s)
+$destinationFolders = if ($TargetPath) {
+    # Use explicitly provided target path
+    @($TargetPath)
+} else {
+    # Get all available Power BI Custom Connectors paths
+    $availablePaths = Get-PowerBIConnectorsPath
+    
+    if ($CopyToAll) {
+        # Copy to all available paths
+        $availablePaths
+    } else {
+        # Let user select or default to first available
+        if ($availablePaths.Count -gt 1) {
+            $selected = Select-TargetPath -AvailablePaths $availablePaths
+            if ($selected -is [array]) {
+                $selected  # User chose all
+            } else {
+                @($selected)  # User chose specific path
+            }
+        } else {
+            $availablePaths
+        }
+    }
+}
 
 if ($Verbose) {
     Write-Host ""
     Write-Host "Configuration:" -ForegroundColor Yellow
     Write-Host "  Source MEZ: $sourceMez" -ForegroundColor White
-    Write-Host "  Target Dir: $destinationFolder" -ForegroundColor White
+    Write-Host "  Target Directories:" -ForegroundColor White
+    foreach ($folder in $destinationFolders) {
+        Write-Host "    - $folder" -ForegroundColor White
+    }
     Write-Host ""
 }
 
-# Perform the copy operation
-$success = Copy-MezToPowerBI -SourcePath $sourceMez -DestinationFolder $destinationFolder
+# Perform the copy operation(s)
+$overallSuccess = $true
+$successCount = 0
 
-if ($success) {
-    Write-Host ""
-    Write-Host "MEZ file deployment completed successfully!" -ForegroundColor Green
+foreach ($destinationFolder in $destinationFolders) {
+    Write-Host "Copying to: $destinationFolder" -ForegroundColor Cyan
+    $success = Copy-MezToPowerBI -SourcePath $sourceMez -DestinationFolder $destinationFolder
+    
+    if ($success) {
+        $successCount++
+    } else {
+        $overallSuccess = $false
+    }
+}
+
+# Final status report
+Write-Host ""
+if ($overallSuccess -and $successCount -eq $destinationFolders.Count) {
+    Write-Host "MEZ file deployment completed successfully to all $successCount location(s)!" -ForegroundColor Green
     Write-Host "You can now use your custom connector in Power BI Desktop." -ForegroundColor Green
     Write-Host ""
     Write-Host "Next steps:" -ForegroundColor Yellow
     Write-Host "  1. Restart Power BI Desktop if it's running" -ForegroundColor White
     Write-Host "  2. Enable 'Allow any extension to load without validation' in Power BI options" -ForegroundColor White
     Write-Host "  3. Look for your connector in Get Data dialog" -ForegroundColor White
+} elseif ($successCount -gt 0) {
+    Write-Host "MEZ file deployment partially successful ($successCount of $($destinationFolders.Count) locations)!" -ForegroundColor Yellow
+    Write-Host "Check error messages above for failed locations." -ForegroundColor Yellow
 } else {
-    Write-Host ""
-    Write-Host "MEZ file deployment failed!" -ForegroundColor Red
+    Write-Host "MEZ file deployment failed to all locations!" -ForegroundColor Red
     exit 1
 }
