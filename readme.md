@@ -6,6 +6,9 @@ Version: 1.0.4 (connector Version updated in code)
 
 ## TL;DR — What's new
 
+- Support for Custom Sort Order
+  - Sort by any valid fields, ASC or DESC
+  - Combine multiple sorts into a single statement.
 - Support for custom JQL strings.
   - the JQL query will be wrapped in parenthesis and appended with an ```AND``` to the base query which includes the Jira Project key
   - **DO NOT** include a project arguement in the JQL this will either result in a failure or strange results.
@@ -82,6 +85,7 @@ When connecting through Power BI:
 | **Project Keys** (Optional) | Comma-separated list of project keys to filter | `PROJECT1,PROJECT2` |
 | **Max Number of Results** (Optional) | Numerical value for the number of results to return from each Jira project, default is 1,000 | `2000` |
 | **JQL Query String** (optional) | Custom JQL query string, appended to base query with an ```AND``` wrapped in Parenthesis ```()```, **DO NOT** include a project arguement. | `status = "In Progress"` |
+| **JQL Order By String** (optional) | Custom JQL ORDER BY string, automatically appended to end of JQL query. Supports ASC and DESC, multiple fields | '"created DESC, priority DESC"' |
 
 ### Authentication
 
@@ -165,6 +169,7 @@ Company URL Identifier: mycompany
 Field List: id,key,summary,status,assignee,created,updated
 Project Keys: PROJ1,PROJ2,WEBDEV
 JQL Query String: (status="In Progress") OR (priority="Major")
+JQL Order By String: created DESC, priority DESC
 
 ## 🏗️ Architecture
 
@@ -324,7 +329,7 @@ When reporting issues, please include:
 - [ ] Full pagination support
 - [ ] Jira Product Discovery (JPD) Insights retreival
 - [ ] Performance optimizations
-- [ ] Advanced filtering options
+- [X] Advanced filtering options
 - [ ] Examples & improved documentation
 
 ### Phase 3 🔮 (Future)
