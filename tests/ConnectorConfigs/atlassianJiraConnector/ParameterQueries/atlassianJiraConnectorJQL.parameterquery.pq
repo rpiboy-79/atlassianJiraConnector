@@ -8,7 +8,7 @@ let
     ProjectKeys = "CFR,PB",
     MaxResults = "100",
     JQLString = "(status=""In Progress"") OR (priority =""Major"")",
-    JQLOrderBy = null,
+    JQLOrderBy = "created DESC, priority DESC",
     
     Source = Jira (
         Company,
