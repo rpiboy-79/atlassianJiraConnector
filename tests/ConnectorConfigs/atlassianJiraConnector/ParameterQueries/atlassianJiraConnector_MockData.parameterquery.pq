@@ -14,13 +14,18 @@ let
 // ##External Field List##
     FieldList = Text.FromBinary(File.Contents( AbsolutePathPart & "\atlassianJiraConnector\tests\MockData\FieldList.txt" )),
 
+    jqlString = "status=""Open""",
+    jqlOrderBy = null,
+    
 //Call unpublished test interface function
     Source = JiraTest(
         "acmesoftware",
         FieldList,
         "PB", 
         "1000",
-        JsonContent
+        JsonContent,
+        jqlString,
+        jqlOrderBy
     )
 in
     Source

@@ -60,6 +60,28 @@ let
         in
             result,
 
+    buildJqlQuery = (projectKey as nullable text, userJQL as nullable text, orderBy as nullable text) as nullable text  =>
+        let
+            baseJQL =
+                if projectKey <> null
+                then projectKey
+                else "",
+            conditionsJQL =
+                if userJQL <> null and userJQL <> ""
+                then
+                    if baseJQL <> ""
+                        then baseJQL & " AND (" & userJQL & ")"
+                        else userJQL
+                    else baseJQL,
+            finalJQL = if orderBy <> null and orderBy <> "" then
+                conditionsJQL & " ORDER BY " & orderBy
+                else conditionsJQL
+        in
+            if finalJQL = ""
+                then null 
+                else finalJQL,
+
+
 // Phase 1: Simple data retrieval (works with API tokens)
 // Consider adding filtering to allow manaul pagination by user in PowerBI.
     jiraDataRetrievalSimple = (
@@ -192,5 +214,6 @@ in
         ExtractTestIssuesData = ExtractTestIssuesData,
         DiscoverMaxResults = DiscoverMaxResults,
         jiraDataRetrievalSimple = jiraDataRetrievalSimple,
-        jiraDataRetrievalPaginated = jiraDataRetrievalPaginated
+        jiraDataRetrievalPaginated = jiraDataRetrievalPaginated,
+        buildJqlQuery = buildJqlQuery
     ]

@@ -6,6 +6,14 @@ Version: 1.0.4 (connector Version updated in code)
 
 ## TL;DR — What's new
 
+- Support for Custom Sort Order
+  - Sort by any valid fields, ASC or DESC
+  - Combine multiple sorts into a single statement.
+- Support for custom JQL strings.
+  - the JQL query will be wrapped in parenthesis and appended with an ```AND``` to the base query which includes the Jira Project key
+  - **DO NOT** include a project arguement in the JQL this will either result in a failure or strange results.
+  - make sure to quote ```"<Textstring>"``` text values.
+  - when using an OR operator over different Fields each field arguement must be wrapped in parenthesis, e.g. ```(status="In Progress") OR (priority="Major")```
 - Full test-harness improvements: `tests/RunPQSDKTestSuites.ps1` rewritten for PowerShell 5.1 compatibility, automatic SDK discovery, robust encoding, HTML report generation, optional MEZ deployment, and improved error handling.
 - Improved API handling and test support inside the connector: new `JiraTest` (unpublished) entrypoint to support test overrides and mock-data injection.
 - Several fixes and refactors in `jiraAPI.pqm` and `atlassianJiraConnector.pq` to improve error handling, and mock-data support.
@@ -75,7 +83,9 @@ When connecting through Power BI:
 | **Company URL Identifier** | Your Jira instance name (without `.atlassian.net`) | `acmesoftware` |
 | **Field List** (Optional) | Comma-separated list of Jira fields to retrieve | `id,key,summary,created,assignee` |
 | **Project Keys** (Optional) | Comma-separated list of project keys to filter | `PROJECT1,PROJECT2` |
-| **Max Number of Results** (Optional) | Numerical value for the number of results to return from each Jira project, default is 1,000 | '2000' |
+| **Max Number of Results** (Optional) | Numerical value for the number of results to return from each Jira project, default is 1,000 | `2000` |
+| **JQL Query String** (optional) | Custom JQL query string, appended to base query with an ```AND``` wrapped in Parenthesis ```()```, **DO NOT** include a project arguement. | `status = "In Progress"` |
+| **JQL Order By String** (optional) | Custom JQL ORDER BY string, automatically appended to end of JQL query. Supports ASC and DESC, multiple fields | '"created DESC, priority DESC"' |
 
 ### Authentication
 
@@ -151,11 +161,15 @@ CI Suggestions
 Company URL Identifier: mycompany
 Field List: (leave blank for default fields) - id, key, summary, description, issuetype, created, components
 Project Keys: (leave blank for all projects)
+Max Results: (leave blank to return 1,000 rows)
+JQL Query String: (leave blank to return the top N rows from each project)
 
 ### Specific Projects with Custom Fields
 Company URL Identifier: mycompany
 Field List: id,key,summary,status,assignee,created,updated
 Project Keys: PROJ1,PROJ2,WEBDEV
+JQL Query String: (status="In Progress") OR (priority="Major")
+JQL Order By String: created DESC, priority DESC
 
 ## 🏗️ Architecture
 
@@ -315,7 +329,7 @@ When reporting issues, please include:
 - [ ] Full pagination support
 - [ ] Jira Product Discovery (JPD) Insights retreival
 - [ ] Performance optimizations
-- [ ] Advanced filtering options
+- [X] Advanced filtering options
 - [ ] Examples & improved documentation
 
 ### Phase 3 🔮 (Future)
