@@ -41,6 +41,7 @@ ExtractTestIssuesData = JiraAPI[ExtractTestIssuesData];
 CreateMockProjects = JiraTestSupport[CreateMockProjects];
 Table.ToNavigationTable = helperFunctions[Table.ToNavigationTable];
 ValidateUrlScheme = helperFunctions[ValidateUrlScheme];
+ReadSecretFile = helperFunctions[ReadSecretFile];
 
 
 
@@ -83,21 +84,9 @@ shared JiraTest = (
         TestDataOverride
     );
 
-// Data Source Kind description
-Atlassian_Jira_Connector.Kind = [
-    Authentication = [
-        Key = [],
-        UsernamePassword = []
-        // Windows = [],
-        // Anonymous = []
-    ],
-    TestConnection = (dataSourcePath as text) as list =>
-        { dataSourcePath }
-];
+
 
 //Oauth Config
-client_id = Text.FromBinary(Extension.Contents("client.key"));
-client_secret = Text.FromBinary(Extension.Contents("secret.key"));
 redirect_uri = "http://localhost:7777";
 authorize_uri = "https://auth.atlassian.com/authorize";
 token_uri = "https://auth.atlassian.com/oauth/token";
@@ -108,6 +97,24 @@ api_uri = "https://api.atlassian.com";
 //Connector Window
 windowWidth = 1200;
 windowHeight = 1000;
+
+//client secrets
+clientIdPath = "C:\ProgramData\AtlassianConnectorSecrets\client.key";
+clientSecretPath = "C:\ProgramData\AtlassianConnectorSecrets\secret.key";
+
+/*
+    #### uncommment for production and comment out lines below ####
+*/
+    //client_id = ReadSecretFile(clientIdPath);
+    //client_secret = ReadSecretFile(clientSecretPath);
+
+/*
+    #### For development use these paths, for production comment out and uncomment lines above ####
+*/
+    client_id = Text.FromBinary(Extension.Contents("client.key"));
+    client_secret = Text.FromBinary(Extension.Contents("secret.key"));
+
+
 
 //OAuth2 Flow Definition
 
@@ -192,7 +199,33 @@ GetCloudId = (accessToken as text) =>
     in
         CloudId;
 
-
+// Data Source Kind description
+Atlassian_Jira_Connector.Kind = [
+    //old test connection
+    /*TestConnection = (dataSourcePath as text) as list =>
+        { dataSourcePath }*/
+    //new
+    TestConnection = (dataSourcePath) =>
+        { "AtlassianJira.Contents", Json.Document(dataSourcePath) },
+    Authentication = [
+        OAuth = [
+            StartLogin = StartLogin,
+            FinishLogin = FinishLogin,
+            //Refresh = RefreshAccessToken,
+            Label = "OAuth 2.0 (Reccommended)"
+        ],
+        Key = [
+            KeyLabel = "API Token",
+            Label = "API Token Authentication"
+        ],
+        UsernamePassword = [
+            Username = "Email",
+            PasswordLabel = "API Token",
+            Label = "Basic Authentication"
+        ]
+    ],
+    Label = "Atlassian Jira"        
+];
 
 
 // Data Source UI publishing description
@@ -345,6 +378,22 @@ jiraNavTbl =
         optional testOverride as nullable record
     ) =>
         let
+            credentials = try Extension.CurrentCredential() otherwise null,
+
+            AuthType =
+                if credentials <> null
+                then if Record.HasFields(credentials, "cloud_id")
+                    then "OAuth3LO"
+                    else if Record.HasFields(credentials, "Key")
+                        then "ApiToken"
+                    else "BasicAuth"
+                else "Legacy",
+
+            baseURL =
+                if AuthType = "OAuth3LO"
+                then "https://api.atlassian.com/ex/jira/" & credentials[cloud_id]
+                else "https://" & company & ".atlassian.net",
+
             fieldsDynamic =
                 if fields = null
                 then issuesFieldsList
@@ -379,7 +428,7 @@ jiraNavTbl =
             
 
 
-            URL = ValidateUrlScheme("https://" & company & ".atlassian.net"),
+            URL = ValidateUrlScheme(baseURL),
 
             allProjects =
                 if testOverride <> null then

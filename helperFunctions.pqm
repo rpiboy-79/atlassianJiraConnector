@@ -25,10 +25,18 @@ let
             navigationTable,
 
     ValidateUrlScheme = (url as text) as text =>
-        if (Uri.Parts(url)[Scheme] <> "https") then error "Url scheme must be HTTPS" else url
+        if (Uri.Parts(url)[Scheme] <> "https") then error "Url scheme must be HTTPS" else url,
+
+    ReadSecretFile = (filePath as text) as text =>
+    let
+        bytes = try File.Contents(filePath) otherwise error "Failed to load secret file: " & filePath,
+        result = Text.FromBinary(bytes)
+    in
+        result
 
 in
     [
         Table.ToNavigationTable = Table.ToNavigationTable,
-        ValidateUrlScheme = ValidateUrlScheme
+        ValidateUrlScheme = ValidateUrlScheme,
+        ReadSecretFile = ReadSecretFile
     ]
