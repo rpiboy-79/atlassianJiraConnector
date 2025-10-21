@@ -88,7 +88,7 @@ shared JiraTest = (
 
 //Oauth Config
 redirect_uri = "http://localhost:7777";
-authorize_uri = "https://auth.atlassian.com/authorize";
+authorize_uri = "https://auth.atlassian.com/authorize?";
 token_uri = "https://auth.atlassian.com/oauth/token";
 
 //static variables
@@ -99,20 +99,20 @@ windowWidth = 1200;
 windowHeight = 1000;
 
 //client secrets
-clientIdPath = "C:\ProgramData\AtlassianConnectorSecrets\client.key";
-clientSecretPath = "C:\ProgramData\AtlassianConnectorSecrets\secret.key";
+clientIdPath = "C:\ProgramData\AtlassianConnector\client.key";
+clientSecretPath = "C:\ProgramData\AtlassianConnector\secret.key";
 
 /*
     #### uncommment for production and comment out lines below ####
 */
-    //client_id = ReadSecretFile(clientIdPath);
-    //client_secret = ReadSecretFile(clientSecretPath);
+    client_id = ReadSecretFile(clientIdPath);
+    client_secret = ReadSecretFile(clientSecretPath);
 
 /*
     #### For development use these paths, for production comment out and uncomment lines above ####
 */
-    client_id = Text.FromBinary(Extension.Contents("client.key"));
-    client_secret = Text.FromBinary(Extension.Contents("secret.key"));
+    //client_id = Text.FromBinary(Extension.Contents("client.key"));
+    //client_secret = Text.FromBinary(Extension.Contents("secret.key"));
 
 
 
@@ -166,7 +166,7 @@ TokenMethod = (code) =>
             token_uri,
             [
                 Content = Json.FromValue(TokenRequest),
-                Headers = [#"Content-type" = "application/x-www-form-urlencoded", #"Accept" = "application/json"],
+                Headers = [#"Content-type" = "application/json", #"Accept" = "application/json"],
                 ManualCredentials = true
             ]
         ),
@@ -224,7 +224,7 @@ Atlassian_Jira_Connector.Kind = [
             Label = "Basic Authentication"
         ]
     ],
-    Label = "Atlassian Jira"        
+    Label = "Atlassian Jira"
 ];
 
 
