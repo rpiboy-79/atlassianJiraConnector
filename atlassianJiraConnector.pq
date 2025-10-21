@@ -1,5 +1,5 @@
 // This file contains your Data Connector logic
-[Version = "1.0.5"]
+[Version = "1.0.6"]
 section atlassianJiraConnector;
 
 // Helper function to load .pqm files
