@@ -41,6 +41,9 @@ ExtractTestIssuesData = JiraAPI[ExtractTestIssuesData];
 CreateMockProjects = JiraTestSupport[CreateMockProjects];
 Table.ToNavigationTable = helperFunctions[Table.ToNavigationTable];
 ValidateUrlScheme = helperFunctions[ValidateUrlScheme];
+ReadSecretFile = helperFunctions[ReadSecretFile];
+
+
 
 // Main entry point function
 [DataSource.Kind="Atlassian_Jira_Connector.Kind", Publish="Atlassian_Jira_Connector.Publish"]
@@ -81,17 +84,149 @@ shared JiraTest = (
         TestDataOverride
     );
 
+
+
+//Oauth Config
+redirect_uri = "http://localhost:7777";
+authorize_uri = "https://auth.atlassian.com/authorize?";
+token_uri = "https://auth.atlassian.com/oauth/token";
+
+//static variables
+api_uri = "https://api.atlassian.com";
+
+//Connector Window
+windowWidth = 1200;
+windowHeight = 1000;
+
+//client secrets
+clientIdPath = "C:\ProgramData\AtlassianConnector\client.key";
+clientSecretPath = "C:\ProgramData\AtlassianConnector\secret.key";
+
+/*
+    #### uncommment for production and comment out lines below ####
+*/
+    client_id = ReadSecretFile(clientIdPath);
+    client_secret = ReadSecretFile(clientSecretPath);
+
+/*
+    #### For development use these paths, for production comment out and uncomment lines above ####
+*/
+    //client_id = Text.FromBinary(Extension.Contents("client.key"));
+    //client_secret = Text.FromBinary(Extension.Contents("secret.key"));
+
+
+
+//OAuth2 Flow Definition
+
+StartLogin = (resourceUrl, state, display) =>
+    let
+        AuthorizeUrl = authorize_uri
+            & Uri.BuildQueryString(
+                [
+                    client_id = client_id,
+                    redirect_uri = redirect_uri,
+                    response_type = "code",
+                    scope = "read:jira-user read:jira-work write:jira-work offline_access",
+                    prompt = "consent",
+                    audience = "api.atlassian.com"
+                    // Optional parameters for better UX
+                    // access_type = "offline", // Request refresh token (if supported)
+                    // include_granted_scopes = "true", // Use existing scopes if possible
+                    // login_hint = "", // Prefill user email if known
+                    // hd = "" // Restrict to a specific domain if applicable
+                ]
+            )
+    in
+        [
+            LoginUri = AuthorizeUrl,
+            CallbackUri = redirect_uri,
+            WindowWidth = windowWidth,
+            WindowHeight = windowHeight,
+            Context = null
+        ];
+
+FinishLogin = (context, callbackUri, state) =>
+    let
+        Parts = Uri.Parts(callbackUri)[Query]
+    in
+        TokenMethod(Parts[code]);
+
+TokenMethod = (code) =>
+    let
+        TokenRequest = [
+            grant_type = "authorization_code",
+            client_id = client_id,
+            client_secret = client_secret,
+            code = code,
+            redirect_uri = redirect_uri
+        ],
+
+
+        Response = Web.Contents(
+            token_uri,
+            [
+                Content = Json.FromValue(TokenRequest),
+                Headers = [#"Content-type" = "application/json", #"Accept" = "application/json"],
+                ManualCredentials = true
+            ]
+        ),
+        TokenData = Json.Document(Response),
+        //Get CloudId using the access token
+        CloudId = GetCloudId(TokenData[access_token]),
+        
+        //Return enhanced token data with CloudId
+        EnhancedTokenData = TokenData & [
+            cloud_id = CloudId,
+            api_base_url = "https://api.atlassian.com/ex/jira/" & CloudId
+        ]
+    in
+        EnhancedTokenData;
+
+// Get Cloud ID for Atlassian API calls
+GetCloudId = (accessToken as text) =>
+    let
+        Response = Web.Contents(
+            "https://api.atlassian.com/oauth/token/accessible-resources",
+            [
+                Headers = [
+                    Authorization = "Bearer " & accessToken,
+                    Accept = "application/json"
+                ]
+            ]
+        ),
+        Sites = Json.Document(Response),
+        CloudId = Sites{0}[id]
+    in
+        CloudId;
+
 // Data Source Kind description
 Atlassian_Jira_Connector.Kind = [
+    //old test connection
+    /*TestConnection = (dataSourcePath as text) as list =>
+        { dataSourcePath }*/
+    //new
+    TestConnection = (dataSourcePath) =>
+        { "AtlassianJira.Contents", Json.Document(dataSourcePath) },
     Authentication = [
-        Key = [],
-        UsernamePassword = []
-        // Windows = [],
-        // Anonymous = []
+        OAuth = [
+            StartLogin = StartLogin,
+            FinishLogin = FinishLogin,
+            //Refresh = RefreshAccessToken,
+            Label = "OAuth 2.0 (Reccommended)"
+        ],
+        Key = [
+            KeyLabel = "API Token",
+            Label = "API Token Authentication"
+        ],
+        UsernamePassword = [
+            Username = "Email",
+            PasswordLabel = "API Token",
+            Label = "Basic Authentication"
+        ]
     ],
-    TestConnection = (dataSourcePath as text) as list =>
-        { dataSourcePath }
+    Label = "Atlassian Jira"
 ];
+
 
 // Data Source UI publishing description
 Atlassian_Jira_Connector.Publish = [
@@ -243,6 +378,22 @@ jiraNavTbl =
         optional testOverride as nullable record
     ) =>
         let
+            credentials = try Extension.CurrentCredential() otherwise null,
+
+            AuthType =
+                if credentials <> null
+                then if Record.HasFields(credentials, "cloud_id")
+                    then "OAuth3LO"
+                    else if Record.HasFields(credentials, "Key")
+                        then "ApiToken"
+                    else "BasicAuth"
+                else "Legacy",
+
+            baseURL =
+                if AuthType = "OAuth3LO"
+                then "https://api.atlassian.com/ex/jira/" & credentials[cloud_id]
+                else "https://" & company & ".atlassian.net",
+
             fieldsDynamic =
                 if fields = null
                 then issuesFieldsList
@@ -277,7 +428,7 @@ jiraNavTbl =
             
 
 
-            URL = ValidateUrlScheme("https://" & company & ".atlassian.net"),
+            URL = ValidateUrlScheme(baseURL),
 
             allProjects =
                 if testOverride <> null then

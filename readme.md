@@ -2,10 +2,18 @@
 
 A custom Power Query (M) connector for Microsoft Power BI and Excel that integrates with Atlassian Jira Cloud. This README was updated to reflect recent improvements to the project's automated test harness, developer tooling, and developer-friendly helper scripts.
 
-Version: 1.0.4 (connector Version updated in code)
+Version: 1.0.5 (connector Version updated in code)
 
 ## TL;DR — What's new
 
+- OAuth Support
+  - You must define an Application in the Atlassian Developer Console.
+    - The redirect is hardcoded and assumes ```http://localhost:7777```
+  - The Client ID and Client Secret are stored as plain text files locally on the machine using the connector.
+  - Create a folder: ```C:\ProgramData\AtlassianConnector\```
+  - Name the files:
+    - ```client.key```
+    - ```secret.key```  
 - Support for Custom Sort Order
   - Sort by any valid fields, ASC or DESC
   - Combine multiple sorts into a single statement.

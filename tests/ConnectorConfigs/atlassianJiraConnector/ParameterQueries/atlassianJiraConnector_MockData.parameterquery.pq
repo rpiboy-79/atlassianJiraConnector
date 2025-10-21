@@ -22,7 +22,7 @@ let
         "acmesoftware",
         FieldList,
         "PB", 
-        "1000",
+        "250",
         JsonContent,
         jqlString,
         jqlOrderBy
