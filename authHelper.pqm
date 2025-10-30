@@ -1,0 +1,250 @@
+let
+    debugCredentials = (credentials as record) as record =>
+                if credentials <> null then [
+                    AuthenticationKind = if Record.HasFields(credentials, "AuthenticationKind")
+                        then credentials[AuthenticationKind]
+                        else "Not Present",
+                    HasAccessToken = Record.HasFields(credentials, "access_token"),
+                    AccessTokenLength = 
+                        if Record.HasFields(credentials, "access_token")
+                        then Text.Length(credentials[access_token])
+                        else 0,
+
+                    HasRefreshToken = Record.HasFields(credentials, "refresh_token"),
+                    RefreshTokenLength = 
+                        if Record.HasFields(credentials, "refresh_token")
+                        then Text.Length(credentials[refresh_token])
+                        else 0,
+
+                    Expires = if Record.HasFields(credentials, "expires")
+                        then credentials[expires]
+                        else "not Present",
+
+                    HasProperties = Record.HasFields(credentials, "Properties"),
+
+                    PropertiesFieldNames = 
+                        if Record.HasFields(credentials, "Properties")
+                        then Text.Combine(Record.FieldNames(credentials[Properties]), ", ")
+                        else "No Properties field",
+                    
+
+                    TokenType =
+                        if Record.HasFields(credentials, "Properties") and Record.HasFields(credentials[Properties], "token_type")
+                        then credentials[Properties][token_type]
+                        else "Not present",
+
+                    Scope =
+                        if Record.HasFields(credentials, "Properties") and Record.HasFields(credentials[Properties], "scope")
+                        then credentials[Properties][scope]
+                        else "Not present",
+
+                    CloudId =
+                        if Record.HasFields(credentials, "Properties") and Record.HasFields(credentials[Properties], "cloud_id")
+                        then credentials[Properties][cloud_id]
+                        else "Not present",
+
+                    ApiBaseUrl =
+                        if Record.HasFields(credentials, "Properties") and Record.HasFields(credentials[Properties], "api_base_url")
+                        then credentials[Properties][api_base_url]
+                        else "Not present",
+
+                    AllProperties =
+                        if Record.HasFields(credentials, "Properties")
+                        then credentials[Properties]
+                        else null
+                    
+                    ] else null,
+
+    ReadSecretFile = (fileName as text) as text =>
+        let
+            bytes = try Extension.Contents(fileName) otherwise error "Failed to load secret file: " & fileName,
+            result = Text.Trim(Text.FromBinary(bytes))
+        in
+            result,
+
+    GetOAuthConfig = (/*clientPath as text,*/ optional overrides as record) as record =>
+        let
+            client_id = ReadSecretFile("client_id.txt"),
+            client_secret = ReadSecretFile("client_secret.txt"),
+
+            defaultConfig =
+                [
+                    redirect_uri = "https://oauth.powerbi.com/views/oauthredirect.html?",
+                    authorize_uri = "https://auth.atlassian.com/authorize?",
+                    logout_uri = "",
+                    token_uri = "https://auth.atlassian.com/oauth/token",
+                    api_uri = "https://api.atlassian.com",
+                    client_id = client_id,
+                    client_secret = client_secret,
+                    windowWidth = 1200,
+                    windowHeight = 1000,
+                    scopes = {
+                        "read:jira-user",
+                        "read:jira-work",
+                        "write:jira-work",
+                        "offline_access"
+                    },
+                    scope_prefix = "",//not used by Atlassian
+                    prompt = "consent",
+                    audience = "api.atlassian.com"
+                ],
+
+            finalConfig =
+                if overrides <> null then
+                    Record.Combine({defaultConfig, overrides})
+                else
+                    defaultConfig
+        in
+            finalConfig,
+
+    TokenMethod = (code as text, OAuthConfig as record) =>
+        let
+            TokenRequest = [
+                grant_type = "authorization_code",
+                client_id = OAuthConfig[client_id],
+                client_secret = OAuthConfig[client_secret],
+                code = code,
+                redirect_uri = OAuthConfig[redirect_uri]
+            ],
+            Response = Web.Contents(
+                OAuthConfig[token_uri],
+                [
+                    Content = Json.FromValue(TokenRequest),
+                    Headers = [#"Content-type" = "application/json", #"Accept" = "application/json"],
+                    ManualCredentials = true
+                ]
+            ),
+            TokenData = Json.Document(Response),
+            CloudId = GetCloudId(TokenData[access_token]),
+            EnhancedTokenData = TokenData & [
+                cloud_id = CloudId,
+                api_base_url = "https://api.atlassian.com/ex/jira/" & CloudId
+            ]
+        in
+            EnhancedTokenData,
+    
+    GetCloudId = (accessToken as text) =>
+        let
+            Response = Web.Contents(
+                "https://api.atlassian.com/oauth/token/accessible-resources",
+                [
+                    Headers = [
+                        Authorization = "Bearer " & accessToken,
+                        Accept = "application/json"
+                    ],
+                    ManualCredentials = true
+                ]
+            ),
+            Sites = Json.Document(Response),
+            CloudId = Sites{0}[id]
+        in
+            CloudId,
+
+    StartLogin = (resourceUrl, state, display, OAuthConfig as record) =>
+        let
+            scopeString = Text.Combine(OAuthConfig[scopes], " "),
+
+            AuthorizeUrl = OAuthConfig[authorize_uri]
+                & Uri.BuildQueryString(
+                    [
+                        client_id = OAuthConfig[client_id],
+                        redirect_uri = OAuthConfig[redirect_uri],
+                        response_type = "code",
+                        scope = scopeString,
+                        prompt = OAuthConfig[prompt],
+                        audience = OAuthConfig[audience],
+                        state = state
+                    ]
+                )
+        in
+            [
+                LoginUri = AuthorizeUrl,
+                CallbackUri = OAuthConfig[redirect_uri],
+                WindowWidth = OAuthConfig[windowWidth],
+                WindowHeight = OAuthConfig[windowHeight],
+                Context = null
+            ],
+        
+    FinishLogin = (context, callbackUri, state, OAuthConfig as record) =>
+        let
+            Parts =
+                try
+                    Uri.Parts(callbackUri)[Query]
+                otherwise
+                    error Error.Record(
+                        "OAuth Callback Failure",
+                        "Failed to parse callback URI",
+                        [ Uri = callbackUri ]
+                    ),
+            Code =
+                try
+                    Parts[code] otherwise Error.Record(
+                        "NoCodeInCallback",
+                        "The OAuth callback URI did not contain an authorization code.",
+                        [ Parts = Parts ]
+                    ),
+            TokenResult =
+                try
+                    TokenMethod(Code, OAuthConfig) otherwise Error.Record(
+                        "TokenExchangeFailed",
+                        "Failed to obtain access token from authorization code.",
+                        [
+                            HasCode = (Code <> null),
+                            TokenUri = OAuthConfig[token_uri],
+                            ClientIDLength = Text.Length(OAuthConfig[client_id]),
+                            ClientSecreteLength = Text.Length(OAuthConfig[client_secret]),
+                            RedirectUri = OAuthConfig[redirect_uri]
+                        ]
+                    )
+            
+        in
+            TokenResult,
+
+    RefreshAccessToken = (resourceUrl, refresh_token, OAuthConfig as record) =>
+        let
+            TokenRequest = [
+                grant_type = "refresh_token",
+                client_id = OAuthConfig[client_id],
+                client_secret = OAuthConfig[client_secret],
+                refresh_token = refresh_token
+            ],
+            
+            Response = Web.Contents(
+                OAuthConfig[token_uri],
+                [
+                    Content = Json.FromValue(TokenRequest),
+                    Headers = [
+                        #"Content-type" = "application/json",
+                        #"Accept" = "application/json"
+                    ],
+                    ManualCredentials = true
+                ]
+            ),
+            TokenData = Json.Document(Response),
+            CloudId = try GetCloudId(TokenData[access_token]) otherwise null,
+            EnhancedTokenData = TokenData & [
+                cloud_id = if (CloudId <> null) then CloudId else Extension.CurrentCredential()[cloud_id],
+                api_base_url = if (CloudId <> null) then 
+                    "https://api.atlassian.com/ex/jira/" & CloudId 
+                else 
+                    Extension.CurrentCredential()[api_base_url]
+            ]
+        in
+            EnhancedTokenData,
+
+    LogOut = (accessToken as text, OAuthConfig as record) as null =>
+        let
+            //no Atlassian support for logout
+            LogoutUrl = null
+        in
+            LogoutUrl
+
+in
+    [
+        debugCredentials = debugCredentials,
+        GetOAuthConfig = GetOAuthConfig,
+        StartLogin = StartLogin,
+        FinishLogin = FinishLogin,
+        RefreshAccessToken = RefreshAccessToken,
+        LogOut = LogOut
+    ]

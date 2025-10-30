@@ -2,18 +2,24 @@
 
 A custom Power Query (M) connector for Microsoft Power BI and Excel that integrates with Atlassian Jira Cloud. This README was updated to reflect recent improvements to the project's automated test harness, developer tooling, and developer-friendly helper scripts.
 
-Version: 1.0.6 (connector Version updated in code)
+Version: 1.0.7 (connector Version updated in code)
 
 ## TL;DR — What's new
 
 - OAuth Support
+  - Authentication workflow moved to its own PQM.
+  - Proper handling of URL based on credential Kind.
   - You must define an Application in the Atlassian Developer Console.
-    - The redirect is hardcoded and assumes ```http://localhost:7777```
+    - The redirect uses the Microsoft provided URI: ```https://oauth.powerbi.com/views/oauthredirect.html```
+    - When creating your own Atlassian Application, use the URI for Authorization.
   - The Client ID and Client Secret are stored as plain text files locally on the machine using the connector.
-  - Create a folder: ```C:\ProgramData\AtlassianConnector\```
-  - Name the files:
-    - ```client.key```
-    - ```secret.key```  
+    - Name the files:
+      - ```client_id.txt```
+      - ```client_secret.txt```
+    - Update without build process:
+      - Browse to the *.mez connector file.
+      - Open in Winzip (or other archive tool); or modify the file extension to *.zip, (revert for implementation/use in Power BI / Power BI Gateway)
+      - Copy ID and Secret file into the zip (*.mez) archive
 - Support for Custom Sort Order
   - Sort by any valid fields, ASC or DESC
   - Combine multiple sorts into a single statement.
@@ -325,25 +331,24 @@ When reporting issues, please include:
 
 ## 🗺️ Roadmap
 
-### Phase 1 ✅ (Current)
+### Phase 1 ✅ (Complete)
 - [x] Basic API token authentication
 - [x] Project and issue navigation
 - [x] Field customization
 - [x] Comprehensive test suite
 - [x] Documentation
 
-### Phase 2 🚧 (Planned)
-- [ ] OAuth 3LO authentication implementation
+### Phase 2 🚧 (Planned/Active)
+- [x] OAuth 3LO authentication implementation* (unsecure)
 - [ ] Full pagination support
 - [ ] Jira Product Discovery (JPD) Insights retreival
 - [ ] Performance optimizations
 - [X] Advanced filtering options
-- [ ] Examples & improved documentation
 
 ### Phase 3 🔮 (Future)
 - [ ] Incremental refresh capabilities
 - [ ] Advanced JQL query builder
-
+- [ ] Examples & improved documentation
 ---
 
 ## 📞 Contact
@@ -354,4 +359,4 @@ When reporting issues, please include:
 
 ---
 
-*Last updated: October 7, 2025*
+*Last updated: October 30, 2025*

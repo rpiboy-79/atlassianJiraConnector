@@ -1,0 +1,195 @@
+// jiraInsights.pqm
+// GraphQL queries for Jira Product Discovery (Polaris) Insights
+
+section jiraInsights;
+
+// Core GraphQL query executor with error handling
+shared jiraInsights.QueryGraphQL = (
+    query as text,
+    variables as record,
+    accessToken as text
+) as record =>
+    let
+        graphQLEndpoint = "https://api.atlassian.com/graphql",
+        
+        requestBody = [
+            query = query,
+            variables = variables
+        ],
+        
+        response = Web.Contents(
+            graphQLEndpoint,
+            [
+                Content = Json.FromValue(requestBody),
+                Headers = [
+                    Authorization = "Bearer " & accessToken,
+                    Accept = "application/json",
+                    #"Content-Type" = "application/json"
+                ],
+                ManualCredentials = true
+            ]
+        ),
+        
+        jsonResponse = Json.Document(response),
+        
+        // GraphQL always returns 200, check for errors in response
+        result = if Record.HasFields(jsonResponse, "errors") then
+            error Error.Record(
+                "GraphQL.QueryError", 
+                "GraphQL query failed: " & jsonResponse[errors]{0}[message]?,
+                jsonResponse
+            )
+        else
+            jsonResponse[data]
+    in
+        result;
+
+// Fetch Insights for a single project with pagination
+shared jiraInsights.GetProjectInsights = (
+    projectId as text,
+    containerId as nullable text,
+    accessToken as text,
+    optional afterCursor as nullable text
+) as record =>
+    let
+        query = "
+            query getPolarisInsights($project: ID!, $container: ID, $after: String) {
+              polarisInsights(
+                project: $project, 
+                container: $container,
+                first: 50,
+                after: $after
+              ) {
+                edges {
+                  cursor
+                  node {
+                    id
+                    description
+                    created
+                    updated
+                    snippets {
+                      id
+                      data
+                      url
+                      properties
+                      oauthClientId
+                    }
+                  }
+                }
+                pageInfo {
+                  hasNextPage
+                  endCursor
+                }
+              }
+            }
+        ",
+        
+        variables = [
+            project = projectId,
+            container = if containerId <> null then containerId else null,
+            after = if afterCursor <> null then afterCursor else null
+        ],
+        
+        data = jiraInsights.QueryGraphQL(query, variables, accessToken),
+        insights = data[polarisInsights]
+    in
+        insights;
+
+// Paginated fetch with recursive accumulation
+shared jiraInsights.GetAllProjectInsights = (
+    projectId as text,
+    projectKey as text,
+    projectName as text,
+    containerId as nullable text,
+    accessToken as text
+) as table =>
+    let
+        // Recursive function to accumulate paginated results
+        GetPage = (afterCursor as nullable text, accumulated as list) =>
+            let
+                page = jiraInsights.GetProjectInsights(projectId, containerId, accessToken, afterCursor),
+                edges = page[edges],
+                pageInfo = page[pageInfo],
+                
+                // Extract insights from edges
+                insights = List.Transform(edges, each [node]),
+                
+                // Combine with accumulated results
+                allInsights = List.Combine({accumulated, insights}),
+                
+                // Recursively fetch next page if available
+                result = if pageInfo[hasNextPage] then
+                    @GetPage(pageInfo[endCursor], allInsights)
+                else
+                    allInsights
+            in
+                result,
+        
+        // Start pagination
+        allInsights = GetPage(null, {}),
+        
+        // Convert to table and add project context
+        insightsTable = if List.Count(allInsights) > 0 then
+            let
+                baseTable = Table.FromList(allInsights, Splitter.SplitByNothing(), {"Insight"}),
+                expandedTable = Table.ExpandRecordColumn(baseTable, "Insight", 
+                    {"id", "description", "created", "updated", "snippets"}, 
+                    {"InsightId", "InsightDescription", "InsightCreated", "InsightUpdated", "Snippets"}
+                ),
+                
+                // Add project context columns
+                withProject = Table.AddColumn(expandedTable, "ProjectId", each projectId, type text),
+                withKey = Table.AddColumn(withProject, "ProjectKey", each projectKey, type text),
+                withName = Table.AddColumn(withKey, "ProjectName", each projectName, type text),
+                
+                // Expand snippets
+                expandedSnippets = Table.ExpandListColumn(withName, "Snippets"),
+                finalTable = Table.ExpandRecordColumn(expandedSnippets, "Snippets",
+                    {"id", "data", "url", "properties", "oauthClientId"},
+                    {"SnippetId", "SnippetData", "SnippetUrl", "SnippetProperties", "SnippetOAuthClientId"}
+                )
+            in
+                finalTable
+        else
+            // Return empty table with schema if no insights
+            #table(
+                {"InsightId", "InsightDescription", "InsightCreated", "InsightUpdated", 
+                 "ProjectId", "ProjectKey", "ProjectName",
+                 "SnippetId", "SnippetData", "SnippetUrl", "SnippetProperties", "SnippetOAuthClientId"},
+                {}
+            )
+    in
+        insightsTable;
+
+// Fetch Insights for multiple Product Discovery projects
+shared jiraInsights.GetInsightsForProjects = (
+    projects as table,
+    accessToken as text
+) as table =>
+    let
+        // Filter to only Product Discovery projects
+        discoveryProjects = Table.SelectRows(projects, 
+            each [projectTypeKey] = "com.atlassian.jira-polaris-plugin:jira-polaris-project-type"
+        ),
+        
+        // Add Insights column for each project
+        withInsights = Table.AddColumn(discoveryProjects, "Insights", 
+            each try jiraInsights.GetAllProjectInsights(
+                [id],
+                [key],
+                [name],
+                null, // container ID - typically null for project-level insights
+                accessToken
+            ) otherwise #table(
+                {"InsightId", "InsightDescription", "InsightCreated", "InsightUpdated",
+                 "ProjectId", "ProjectKey", "ProjectName",
+                 "SnippetId", "SnippetData", "SnippetUrl", "SnippetProperties", "SnippetOAuthClientId"},
+                {}
+            )
+        ),
+        
+        // Combine all insights into single table
+        insightsTables = Table.Column(withInsights, "Insights"),
+        combinedInsights = Table.Combine(insightsTables)
+    in
+        combinedInsights;

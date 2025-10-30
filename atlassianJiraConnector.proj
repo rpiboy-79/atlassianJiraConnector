@@ -17,6 +17,7 @@
     <MezContent Include="atlassianJiraConnector64.png" />
     <MezContent Include="atlassianJiraConnector80.png" />
     <MezContent Include="*.pqm" />
+    <MezContent Exclude=".gitignore" />
   </ItemGroup>
   <Target Name="BuildMez" AfterTargets="Build" Inputs="@(MezContent)" Outputs="$(MezOutputPath)">
     <RemoveDir Directories="$(MezIntermediatePath)" />

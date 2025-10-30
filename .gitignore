@@ -10,6 +10,8 @@ secrets.json
 .env.production
 *.key
 *.pem
+client_id.txt
+client_secret.txt
 
 # Released connector versions
 !released/
