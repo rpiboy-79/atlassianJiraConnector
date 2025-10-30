@@ -59,14 +59,14 @@ shared Jira = (
     optional #"Project Keys (comma separated, e.g., PROJ1,PROJ2)" as text,
     optional #"Max Number of Results (default: 1000)" as text,
     optional #"JQL Query String (e.g., status=""Open"")" as text,
-    optional #"JQL Order By String (e.g. priority DESC, Created DESC)" as text
+    optional #"JQL Order By String (e.g. priority DESC, created DESC)" as text
 ) => jiraNavTbl(
     #"Company URL Identifier (as specified in your Jira URL)",
     #"Field List (comma separated, e.g., summary,created)",
     #"Project Keys (comma separated, e.g., PROJ1,PROJ2)",
     #"Max Number of Results (default: 1000)",
     #"JQL Query String (e.g., status=""Open"")",
-    #"JQL Order By String (e.g. priority DESC, Created DESC)",
+    #"JQL Order By String (e.g. priority DESC, created DESC)",
     null
 );
 
