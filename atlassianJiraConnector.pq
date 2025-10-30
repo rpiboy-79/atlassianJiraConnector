@@ -90,9 +90,8 @@ shared JiraTest = (
         TestDataOverride
     );
 
-//Oauth Config
-secretsPath = "C:\ProgramData\PowerBICustomConnectors\AtlassianJira";
-OAuthConfig = GetOAuthConfig(secretsPath);
+// OAuth Configuration
+OAuthConfig = GetOAuthConfig();
 
 // Data Source Kind description
 Atlassian_Jira_Connector.Kind = [

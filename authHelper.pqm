@@ -55,17 +55,17 @@ let
                     
                     ] else null,
 
-    ReadSecretFile = (filePath as text) as text =>
+    ReadSecretFile = (fileName as text) as text =>
         let
-            bytes = try File.Contents(filePath) otherwise error "Failed to load secret file: " & filePath,
+            bytes = try Extension.Contents(fileName) otherwise error "Failed to load secret file: " & fileName,
             result = Text.Trim(Text.FromBinary(bytes))
         in
             result,
 
-    GetOAuthConfig = (clientPath as text, optional overrides as record) as record =>
+    GetOAuthConfig = (/*clientPath as text,*/ optional overrides as record) as record =>
         let
-            client_id = ReadSecretFile(clientPath & "\client_id.txt"),
-            client_secret = ReadSecretFile(clientPath & "\client_secret.txt"),
+            client_id = ReadSecretFile("client_id.txt"),
+            client_secret = ReadSecretFile("client_secret.txt"),
 
             defaultConfig =
                 [
