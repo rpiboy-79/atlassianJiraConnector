@@ -270,7 +270,7 @@ jiraNavTbl =
     ) =>
         let
             credentials = try Extension.CurrentCredential() otherwise null,
-        //tempoary credentials debugging, return if needed to inspect credentials object
+        //temporay credentials debugging, return if needed to inspect credentials object
             deBugCredentials = deBugCredentials(credentials),
 
             AuthType =
@@ -318,8 +318,6 @@ jiraNavTbl =
                         )),
                         each _
                     ),
-            
-
 
             URL = ValidateUrlScheme(baseURL),
 
@@ -414,6 +412,130 @@ jiraNavTbl =
                     })
                 in
                     issuesWithErrorHandling,
+            
+            JPDprojects = Table.SelectRows(getProjects, each [projectTypeKey] = "product_discovery"),
+            cloudId = credentials[Properties][cloud_id],
+
+            ConstructProjectARI = Table.AddColumn(JPDprojects, "ARI", each "ari:cloud:jira:" & cloudId & ":project/" & Text.From([id])),
+
+
+            accessToken = credentials[access_token],
+            JPDissues = issues[Issues]{1}[key],
+
+            projectARI = ConstructProjectARI[ARI]{0},
+            issueARI = "ari:cloud:jira:" & cloudId & ":issue/" & "134145",//List.First(JPDissues),
+
+            JPDgraphQL = /* (projectID as text, issuesList as list, accessToken as text) => */
+                let
+                    // Build GraphQL body with passed-in variables
+                    query = "
+                        query getPolarisInsights($project: ID!, $container: ID) {
+                            polarisInsights(project: $project, container: $container) {
+                                id
+                                description
+                                snippets {
+                                    id
+                                    data
+                                    url
+                                    properties
+                                }
+                            }
+                        }
+                    ",
+                    variables = [
+                        project = projectARI,
+                        container = issueARI
+                    ],
+                    // POST to the GraphQL endpoint
+                    response = Web.Contents(
+                        "https://api-private.atlassian.com/graphql",
+                        [
+                            Content = Json.FromValue([query=query, variables=variables]),
+                            Headers = [
+                                Authorization = "Bearer " & accessToken,
+                                Accept = "application/json",
+                                #"Content-Type" = "application/json",
+                                #"X-ExperimentalApi" = "polaris-v0"
+                            ],
+                            ManualCredentials = true
+                        ]
+                    ),
+                    json = Json.Document(response),
+                    hasErrors = Record.HasFields(json, "errors"),
+                    errorMessages = if hasErrors then Table.FromRecords(json[errors]) else json,
+                    ideasData = if not hasErrors and Record.HasFields(json, "data") then json[data][ideas][nodes] else {},
+
+                    outputTable =
+                        if List.IsEmpty(ideasData)
+                        then #table({"id", "key", "title", "created", "updated"}, {})
+                        else Table.FromRecords(ideasData)
+
+                    /*outputTable = if List.IsEmpty(ideasData) then
+                        #table({"id", "key", "title", "created", "updated"}, {})
+                    else
+                        Table.FromList(json, Record.FieldValues, {"id", "key", "title", "created", "updated"})*/
+                in
+                    //variables[container],
+                    [
+                        result = errorMessages,
+                        ARIvalues = variables,
+                        JPDIssues = issues
+                    ],
+
+            //GraphQL Schema Introspection (for development/debugging purposes)
+            /*
+            JPDSchemaIntrospection = 
+                let
+                    // Introspection query to discover available fields on the Query type
+                    query = "
+                        query IntrospectSchema {
+                            __schema {
+                                queryType {
+                                    name
+                                    fields {
+                                        name
+                                        description
+                                        args {
+                                            name
+                                            type {
+                                                name
+                                                kind
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ",
+                    
+                    // No variables needed for introspection
+                    response = Web.Contents(
+                        "https://api.atlassian.com/graphql?product=jira-product-discovery",
+                        [
+                            Content = Json.FromValue([query=query]),
+                            Headers = [
+                                Authorization = "Bearer " & accessToken,
+                                Accept = "application/json",
+                                #"Content-Type" = "application/json"
+                            ],
+                            ManualCredentials = true
+                        ]
+                    ),
+                    
+                    json = Json.Document(response),
+                    
+                    // Extract the fields list
+                    queryFields = json[data][__schema][queryType][fields],
+                    
+                    // Convert to table for easy viewing
+                    fieldsTable = Table.FromRecords(queryFields)
+                in
+                    fieldsTable,
+            */
+
+
+
+            
             issuesForNav = Table.TransformRows(issues, 
                         each {
                             [name],
@@ -460,4 +582,6 @@ jiraNavTbl =
                 source, {"Name"}, "Name", "Data", "ItemKind", "ItemName", "IsLeaf"
             )
         in
-            navTable;
+            //JPDSchemaIntrospection;
+            JPDgraphQL;
+            //navTable;
