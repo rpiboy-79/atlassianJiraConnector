@@ -1,4 +1,4 @@
-[Version = "1.0.7"]
+[Version = "1.0.8"]
 section atlassianJiraConnector;
 
 // Helper function to load .pqm files
@@ -19,6 +19,7 @@ Extension.LoadFunction = (fileName as text) =>
 
 //Load Module Groups
 JiraAPI = Extension.LoadFunction("jiraAPI.pqm");
+JiraInsights = Extension.LoadFunction("jiraInsights.pqm");
 JiraSchema = Extension.LoadFunction("jiraSchema.pqm");
 JiraTestSupport = Extension.LoadFunction("jiraTestSupport.pqm");
 helperFunctions = Extension.LoadFunction("helperFunctions.pqm");
@@ -29,6 +30,7 @@ buildJqlQuery = JiraAPI[buildJqlQuery];
 DiscoverMaxResults = JiraAPI[DiscoverMaxResults];
 jiraDataRetrievalSimple = JiraAPI[jiraDataRetrievalSimple];
 jiraDataRetrievalPaginated = JiraAPI[jiraDataRetrievalPaginated];
+getPolarisInsights = JiraInsights[SafeGetAllPolarisInsights];
 
 // Load schema functions
 issuesFieldsList = JiraSchema[issuesFieldsList];
@@ -412,75 +414,69 @@ jiraNavTbl =
                     })
                 in
                     issuesWithErrorHandling,
-            
-            JPDprojects = Table.SelectRows(getProjects, each [projectTypeKey] = "product_discovery"),
-            cloudId = credentials[Properties][cloud_id],
 
-            ConstructProjectARI = Table.AddColumn(JPDprojects, "ARI", each "ari:cloud:jira:" & cloudId & ":project/" & Text.From([id])),
-
-
-            accessToken = credentials[access_token],
-            JPDissues = issues[Issues]{1}[key],
-
-            projectARI = ConstructProjectARI[ARI]{0},
-            issueARI = "ari:cloud:jira:" & cloudId & ":issue/" & "134145",//List.First(JPDissues),
-
-            JPDgraphQL = /* (projectID as text, issuesList as list, accessToken as text) => */
+            //Get Jira Insights where applicable
+            processInsights =
                 let
-                    // Build GraphQL body with passed-in variables
-                    query = "
-                        query getPolarisInsights($project: ID!, $container: ID) {
-                            polarisInsights(project: $project, container: $container) {
-                                id
-                                description
-                                snippets {
-                                    id
-                                    data
-                                    url
-                                    properties
-                                }
-                            }
-                        }
-                    ",
-                    variables = [
-                        project = projectARI,
-                        container = issueARI
-                    ],
-                    // POST to the GraphQL endpoint
-                    response = Web.Contents(
-                        "https://api-private.atlassian.com/graphql",
-                        [
-                            Content = Json.FromValue([query=query, variables=variables]),
-                            Headers = [
-                                Authorization = "Bearer " & accessToken,
-                                Accept = "application/json",
-                                #"Content-Type" = "application/json",
-                                #"X-ExperimentalApi" = "polaris-v0"
-                            ],
-                            ManualCredentials = true
-                        ]
-                    ),
-                    json = Json.Document(response),
-                    hasErrors = Record.HasFields(json, "errors"),
-                    errorMessages = if hasErrors then Table.FromRecords(json[errors]) else json,
-                    ideasData = if not hasErrors and Record.HasFields(json, "data") then json[data][ideas][nodes] else {},
-
-                    outputTable =
-                        if List.IsEmpty(ideasData)
-                        then #table({"id", "key", "title", "created", "updated"}, {})
-                        else Table.FromRecords(ideasData)
-
-                    /*outputTable = if List.IsEmpty(ideasData) then
-                        #table({"id", "key", "title", "created", "updated"}, {})
-                    else
-                        Table.FromList(json, Record.FieldValues, {"id", "key", "title", "created", "updated"})*/
+                    hasJPD = List.Contains(getProjects[projectTypeKey], "product_discovery")
                 in
-                    //variables[container],
-                    [
-                        result = errorMessages,
-                        ARIvalues = variables,
-                        JPDIssues = issues
-                    ],
+                    AuthType = "OAuth3LO" and hasJPD,
+            cloudId = credentials[Properties][cloud_id],
+            accessToken = credentials[access_token],
+            jpdProjects =
+                if processInsights then
+                    let
+                        filterRows = Table.SelectRows(getProjects, each ([projectTypeKey] = "product_discovery")),
+                        selectColumns = Table.SelectColumns(filterRows,{"id", "key", "projectTypeKey", "name"}),
+                        mergeQueries = Table.NestedJoin(selectColumns, {"id"}, issues, {"id"}, "issueData", JoinKind.LeftOuter),
+                        expandIssues = Table.ExpandTableColumn(mergeQueries, "issueData", {"Issues"}, {"Issues"}),
+                        transformTable = Table.TransformColumns(expandIssues, { "Issues", each Table.SelectColumns(_, {"id", "key"})})
+                    in
+                        transformTable
+                else
+                    #table(
+                        Table.ColumnNames(getProjects),
+                        {}
+                    ),
+
+            insightsData =
+                if processInsights then
+                    let
+                        polarisData = getPolarisInsights(
+                            jpdProjects,
+                            cloudId,
+                            accessToken
+                        )
+                    in
+                        polarisData
+                else
+                    [NavigationTable = #table({"ProjectKey"}, {}), ProjectsInsights = []],
+
+
+
+
+           insightsForNav = 
+            if processInsights then
+                let
+                    navTable = insightsData[NavigationTable],
+                    projectInsights = insightsData[ProjectsInsights],
+                    
+                    // Transform each project into a navigation entry
+                    entries = Table.TransformRows(
+                        navTable,
+                        each {
+                            [ProjectKey] & " - " & [ProjectName],  // Name shown in navigator
+                            Record.Field(projectInsights, [ProjectKey])[InsightsTable],  // The insights table
+                            "Table",
+                            "Table",
+                            true  // IsLeaf
+                        }
+                    )
+                in
+                    entries
+            else
+                {},
+            
 
             //GraphQL Schema Introspection (for development/debugging purposes)
             /*
@@ -557,10 +553,27 @@ jiraNavTbl =
                 }
             },
 
+            entriesWithInsights =
+                if processInsights and List.Count(insightsForNav) > 0 then
+                    List.Combine({
+                        baseEntries,
+                        {
+                            {
+                                "Insights",
+                                createIssuesNavigationTable(insightsForNav),
+                                "Folder",
+                                "Folder",
+                                false
+                            }
+                        }
+                    })
+                else
+                    baseEntries,
+
             entriesWithValidation =
                 if projectValidation[HasInvalidKeys] or List.Count(requestedProjects) > 0 then
                     List.Combine({
-                        baseEntries,
+                        entriesWithInsights,
                         {
                             {
                                 "Project Filter Report",
@@ -583,5 +596,4 @@ jiraNavTbl =
             )
         in
             //JPDSchemaIntrospection;
-            JPDgraphQL;
-            //navTable;
+            navTable;

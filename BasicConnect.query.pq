@@ -3,5 +3,4 @@ let
 
     issues = Source[JPDIssues]
 in
-    issues
-
+    Source
