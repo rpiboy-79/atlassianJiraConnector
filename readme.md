@@ -2,11 +2,16 @@
 
 A custom Power Query (M) connector for Microsoft Power BI and Excel that integrates with Atlassian Jira Cloud. This README was updated to reflect recent improvements to the project's automated test harness, developer tooling, and developer-friendly helper scripts.
 
-Version: 1.0.7 (connector Version updated in code)
+Version: 1.0.8 (connector Version updated in code)
 
 ## TL;DR — What's new
 
 - OAuth Support
+  - Retrieval of Insights from Jira Product Discovery projects
+    - Only attempts Insight retrieval when OAuth is used for authentication and there is at least one JPD project found in the target proejct(s).
+    - Insights load as a seperate table since it is a 1:* relationship from Issues to Insights.
+    - Detailed Snippet Data (Insights) is stored as ADF, requires significant transformation to make ussable.
+    - Insight code modularized into its own PQM.
   - Authentication workflow moved to its own PQM.
   - Proper handling of URL based on credential Kind.
   - You must define an Application in the Atlassian Developer Console.
@@ -38,8 +43,10 @@ Version: 1.0.7 (connector Version updated in code)
 - **Navigation Table**: Browse projects and issues through an intuitive folder structure
 - **Field Customization**: Specify which Jira fields to retrieve for optimal performance
 - **Project Filtering**: Filter data by specific Jira projects during connection
+- **Custom JQL**:include custom JQL filters and sorting
 - **Dynamic Field Expansion**: Automatically expands nested Jira field structures
-- **Phase 1 MVP**: Works with API token authentication (Phase 2 will add OAuth 3LO support)
+- **JPD Insights Retrieval**: return Insights on Issues from JPD Projects
+- **Phase 2 MVP**: Support for OAuth
 - **Built-in support for mock/test data**: used by the test harness
 
 ## 📋 Prerequisites
@@ -87,6 +94,17 @@ To help with step 2 during development, use the helper script:
    - **Email**: Your Atlassian account email
    - **Instance**: Your Jira URL (e.g., `yourcompany.atlassian.net`)
    - **API Token**: The token you just created
+
+### Set-up credentials for OAuth ###
+
+1. **log in to**: [https://developer.atlassian.com/](https://developer.atlassian.com/)
+2. **Click on Create**: to create a new OAuth 2.0 integration
+3. **Follow steps to**: name your App, set permissions and authorize
+4. **This app requires the following permissions/(Classic) scopes**:
+   - View Jira issue data
+   - View user profiles
+   - Create and manage issues
+5. **Store ID & Key**: store ID and Key in a secure location for use by connector.
 
 ### Connection Parameters
 
@@ -341,9 +359,9 @@ When reporting issues, please include:
 ### Phase 2 🚧 (Planned/Active)
 - [x] OAuth 3LO authentication implementation* (unsecure)
 - [ ] Full pagination support
-- [ ] Jira Product Discovery (JPD) Insights retreival
+- [x] Jira Product Discovery (JPD) Insights retreival
 - [ ] Performance optimizations
-- [X] Advanced filtering options
+- [x] Advanced filtering options
 
 ### Phase 3 🔮 (Future)
 - [ ] Incremental refresh capabilities
@@ -359,4 +377,4 @@ When reporting issues, please include:
 
 ---
 
-*Last updated: October 30, 2025*
+*Last updated: November 5, 2025*
