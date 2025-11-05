@@ -1,195 +1,307 @@
-// jiraInsights.pqm
-// GraphQL queries for Jira Product Discovery (Polaris) Insights
+let
+    // ============================================================================
+    // POLARIS INSIGHTS API MODULE
+    // ============================================================================
+    // This module contains functions for querying Polaris insights from Jira Product Discovery
+    
+    // Main function: Get all Polaris insights for a list of issues in a project
+    GetPolarisInsightsForIssues = (
+        projectAri as text,
+        issueIds as list,
+        accessToken as text,
+        optional includeSnippets as logical
+    ) as table =>
+        let
+            validIssueIds = if issueIds = null or List.IsEmpty(issueIds) then
+                {}
+            else
+                issueIds,
+            
+            includeSnippets_actual = if includeSnippets = null then true else includeSnippets,
+            
+            // Function to query insights for a single issue
+            QuerySingleIssueInsights = (issueId as text, optional Ari as text, optional includeSnippet as logical, optional token as text) =>
+                let
+                    // Build the container ARI for the specific issue
+                    containerAri = Text.BeforeDelimiter(projectAri, ":project/") & ":issue/" & issueId,
+                    
+                    query = "
+                        query getPolarisInsights($project: ID!, $container: ID) {
+                            polarisInsights(project: $project, container: $container) {
+                                id
+                                description
+                                created
+                                updated
+                                " & (if includeSnippets_actual then "snippets {
+                                    id
+                                    data
+                                    url
+                                    properties
+                                }" else "") & "
+                            }
+                        }
+                    ",
+                    
+                    variables = [
+                        project = projectAri,
+                        container = containerAri
+                    ],
+                    
+                    response = Web.Contents(
+                        "https://api-private.atlassian.com/graphql",
+                        [
+                            Content = Json.FromValue([query=query, variables=variables]),
+                            Headers = [
+                                Authorization = "Bearer " & accessToken,
+                                #"Content-Type" = "application/json",
+                                #"X-ExperimentalApi" = "polaris-v0"
+                            ],
+                            ManualCredentials = true
+                        ]
+                    ),
+                    
+                    json = Json.Document(response),
+                    hasErrors = Record.HasFields(json, "errors"),
+                    
+                    // Extract insights or error data
+                    insightsData =
+                        if hasErrors then
+                            {}
+                        else if not Record.HasFields(json, "data") then
+                            {}
+                        else if json[data] = null then
+                            {}
+                        else if not Record.HasFields(json[data], "polarisInsights") then
+                            {}
+                        else 
+                            let
+                                rawInsights = json[data][polarisInsights]
+                            in
+                                if rawInsights = null then {} else rawInsights,
 
-section jiraInsights;
+                    safeInsightsData =
+                        if Value.Is(insightsData, List.Type) then
+                            insightsData
+                        else
+                            {},
 
-// Core GraphQL query executor with error handling
-shared jiraInsights.QueryGraphQL = (
-    query as text,
-    variables as record,
-    accessToken as text
-) as record =>
-    let
-        graphQLEndpoint = "https://api.atlassian.com/graphql",
-        
-        requestBody = [
-            query = query,
-            variables = variables
-        ],
-        
-        response = Web.Contents(
-            graphQLEndpoint,
-            [
-                Content = Json.FromValue(requestBody),
-                Headers = [
-                    Authorization = "Bearer " & accessToken,
-                    Accept = "application/json",
-                    #"Content-Type" = "application/json"
-                ],
-                ManualCredentials = true
-            ]
-        ),
-        
-        jsonResponse = Json.Document(response),
-        
-        // GraphQL always returns 200, check for errors in response
-        result = if Record.HasFields(jsonResponse, "errors") then
-            error Error.Record(
-                "GraphQL.QueryError", 
-                "GraphQL query failed: " & jsonResponse[errors]{0}[message]?,
-                jsonResponse
-            )
-        else
-            jsonResponse[data]
-    in
-        result;
-
-// Fetch Insights for a single project with pagination
-shared jiraInsights.GetProjectInsights = (
-    projectId as text,
-    containerId as nullable text,
-    accessToken as text,
-    optional afterCursor as nullable text
-) as record =>
-    let
-        query = "
-            query getPolarisInsights($project: ID!, $container: ID, $after: String) {
-              polarisInsights(
-                project: $project, 
-                container: $container,
-                first: 50,
-                after: $after
-              ) {
-                edges {
-                  cursor
-                  node {
-                    id
-                    description
-                    created
-                    updated
-                    snippets {
-                      id
-                      data
-                      url
-                      properties
-                      oauthClientId
-                    }
-                  }
-                }
-                pageInfo {
-                  hasNextPage
-                  endCursor
-                }
-              }
-            }
-        ",
-        
-        variables = [
-            project = projectId,
-            container = if containerId <> null then containerId else null,
-            after = if afterCursor <> null then afterCursor else null
-        ],
-        
-        data = jiraInsights.QueryGraphQL(query, variables, accessToken),
-        insights = data[polarisInsights]
-    in
-        insights;
-
-// Paginated fetch with recursive accumulation
-shared jiraInsights.GetAllProjectInsights = (
-    projectId as text,
-    projectKey as text,
-    projectName as text,
-    containerId as nullable text,
-    accessToken as text
-) as table =>
-    let
-        // Recursive function to accumulate paginated results
-        GetPage = (afterCursor as nullable text, accumulated as list) =>
-            let
-                page = jiraInsights.GetProjectInsights(projectId, containerId, accessToken, afterCursor),
-                edges = page[edges],
-                pageInfo = page[pageInfo],
-                
-                // Extract insights from edges
-                insights = List.Transform(edges, each [node]),
-                
-                // Combine with accumulated results
-                allInsights = List.Combine({accumulated, insights}),
-                
-                // Recursively fetch next page if available
-                result = if pageInfo[hasNextPage] then
-                    @GetPage(pageInfo[endCursor], allInsights)
+                    // Add metadata: issue ID and result status
+                    withMetadata = List.Transform(
+                        safeInsightsData,
+                        each _ & [
+                            IssueId = issueId,
+                            HasError = hasErrors,
+                            ErrorMessage = if hasErrors then 
+                                try json[errors]{0}[message] otherwise "Unknown error"
+                            else
+                                null
+                        ]
+                    )
+                in
+                    withMetadata,
+            
+            //Query all issues and combine results
+            allInsightsResults =
+                if List.IsEmpty(validIssueIds)
+                then {}
                 else
-                    allInsights
-            in
-                result,
-        
-        // Start pagination
-        allInsights = GetPage(null, {}),
-        
-        // Convert to table and add project context
-        insightsTable = if List.Count(allInsights) > 0 then
-            let
-                baseTable = Table.FromList(allInsights, Splitter.SplitByNothing(), {"Insight"}),
-                expandedTable = Table.ExpandRecordColumn(baseTable, "Insight", 
-                    {"id", "description", "created", "updated", "snippets"}, 
-                    {"InsightId", "InsightDescription", "InsightCreated", "InsightUpdated", "Snippets"}
-                ),
-                
-                // Add project context columns
-                withProject = Table.AddColumn(expandedTable, "ProjectId", each projectId, type text),
-                withKey = Table.AddColumn(withProject, "ProjectKey", each projectKey, type text),
-                withName = Table.AddColumn(withKey, "ProjectName", each projectName, type text),
-                
-                // Expand snippets
-                expandedSnippets = Table.ExpandListColumn(withName, "Snippets"),
-                finalTable = Table.ExpandRecordColumn(expandedSnippets, "Snippets",
-                    {"id", "data", "url", "properties", "oauthClientId"},
-                    {"SnippetId", "SnippetData", "SnippetUrl", "SnippetProperties", "SnippetOAuthClientId"}
-                )
-            in
-                finalTable
-        else
-            // Return empty table with schema if no insights
-            #table(
-                {"InsightId", "InsightDescription", "InsightCreated", "InsightUpdated", 
-                 "ProjectId", "ProjectKey", "ProjectName",
-                 "SnippetId", "SnippetData", "SnippetUrl", "SnippetProperties", "SnippetOAuthClientId"},
-                {}
-            )
-    in
-        insightsTable;
+                    List.Combine(
+                        List.Transform(validIssueIds, each QuerySingleIssueInsights(_))
+                    ),
 
-// Fetch Insights for multiple Product Discovery projects
-shared jiraInsights.GetInsightsForProjects = (
-    projects as table,
-    accessToken as text
-) as table =>
-    let
-        // Filter to only Product Discovery projects
-        discoveryProjects = Table.SelectRows(projects, 
-            each [projectTypeKey] = "com.atlassian.jira-polaris-plugin:jira-polaris-project-type"
-        ),
-        
-        // Add Insights column for each project
-        withInsights = Table.AddColumn(discoveryProjects, "Insights", 
-            each try jiraInsights.GetAllProjectInsights(
-                [id],
-                [key],
-                [name],
-                null, // container ID - typically null for project-level insights
-                accessToken
-            ) otherwise #table(
-                {"InsightId", "InsightDescription", "InsightCreated", "InsightUpdated",
-                 "ProjectId", "ProjectKey", "ProjectName",
-                 "SnippetId", "SnippetData", "SnippetUrl", "SnippetProperties", "SnippetOAuthClientId"},
-                {}
-            )
-        ),
-        
-        // Combine all insights into single table
-        insightsTables = Table.Column(withInsights, "Insights"),
-        combinedInsights = Table.Combine(insightsTables)
-    in
-        combinedInsights;
+            // Convert to table
+            outputTable =
+                if List.IsEmpty(allInsightsResults)
+                then
+                    #table(
+                        {"id", "description", "created", "updated", "snippets", "IssueId", "HasError", "ErrorMessage"},
+                        {}
+                    )
+                else
+                    let
+                        tbl = Table.FromRecords(allInsightsResults),
+                        //filter out issues with no insights
+                        filterNullRows = Table.SelectRows(tbl, each [description] <> null)
+                    in
+                        filterNullRows
+        in
+            outputTable,
+    
+    // Function: Get insights for all JPD projects and create navigation structure
+    GetAllPolarisInsights = (
+        projectsTable as table,
+        cloudId as text,
+        accessToken as text
+    ) as record =>
+        let
+            // Function to process a single JPD project
+            ProcessJPDProject = (projectRow as record) =>
+                let
+                    projectId = projectRow[id],
+                    projectKey = projectRow[key],
+                    projectName = projectRow[name],
+                    projectAri = "ari:cloud:jira:" & cloudId & ":project/" & Text.From(projectId),
+                    
+                    // Get issues for this project
+                    issuesTable =
+                        if Record.HasFields(projectRow, "Issues") and projectRow[Issues] <> null
+                        then projectRow[Issues]
+                        else #table({"id"}, {}),
+
+                    issueIds = 
+                        if Table.RowCount(issuesTable) = 0 then
+                            {}
+                        else if Table.HasColumns(issuesTable, "id") then
+                            List.Transform(
+                                Table.Column(issuesTable, "id"),
+                                each Text.From(_)
+                            )
+                        else {},
+
+                    recordParameters = 
+                        [
+                            ARI = projectAri,
+                            Issues = issueIds,
+                            Creds = accessToken
+                        ],
+                    // Query insights
+                    insightsTable =
+                        if List.IsEmpty(issueIds)
+                        then
+                            #table(
+                                {"id", "description", "created", "updated", "snippets", "IssueId", "HasError", "ErrorMessage"},
+                                {}
+                            )
+                        else 
+                            GetPolarisInsightsForIssues(
+                                projectAri,
+                                issueIds,
+                                accessToken,
+                                true
+                            ),
+                    
+                    // Add project context columns
+                    withProjectContext = Table.AddColumn(
+                        insightsTable,
+                        "ProjectId",
+                        each projectId,
+                        type text
+                    ),
+                    withProjectKey = Table.AddColumn(
+                        withProjectContext,
+                        "ProjectKey",
+                        each projectKey,
+                        type text
+                    ),
+                    withProjectName = Table.AddColumn(
+                        withProjectKey,
+                        "ProjectName",
+                        each projectName,
+                        type text
+                    ),
+                    withProjectAri = Table.AddColumn(
+                        withProjectName,
+                        "ProjectAri", each projectAri,
+                        type text
+                    ),
+                    
+                    // Create summary stats
+                    totalInsights = Table.RowCount(withProjectAri),
+                    issuesWithInsights =
+                        if totalInsights = 0
+                        then 0
+                        else
+                            List.Count(
+                                List.Distinct(
+                                    Table.Column(withProjectAri, "IssueId")
+                                )
+                            ),
+                    
+                    summaryRecord = [
+                        ProjectKey = projectKey,
+                        ProjectName = projectName,
+                        TotalInsights = totalInsights,
+                        IssuesWithInsights = issuesWithInsights,
+                        InsightsTable = withProjectContext,
+                        LastRefreshed = DateTime.LocalNow()
+                    ]
+                in
+                    //[InsightsTbl = insightsTable],
+                    summaryRecord,
+            
+            // Process all JPD projects
+            allProjectInsights = List.Transform(
+                Table.ToRecords(projectsTable),
+                each ProcessJPDProject(_)
+            ),
+            
+            // Create navigation table with summary info
+            navigationRecords = List.Transform(
+                allProjectInsights,
+                each (
+                    let
+                        rec = _
+                    in
+                        [
+                            ProjectKey = rec[ProjectKey],
+                            ProjectName = rec[ProjectName],
+                            TotalInsights = rec[TotalInsights],
+                            IssuesWithInsights = rec[IssuesWithInsights],
+                            LastRefreshed = rec[LastRefreshed]
+                        ]
+                )
+            ),
+            
+            navigationTable = if List.IsEmpty(navigationRecords) then
+                #table(
+                    {"ProjectKey", "ProjectName", "TotalInsights", "IssuesWithInsights", "LastRefreshed"},
+                    {}
+                )
+            else
+                Table.FromRecords(navigationRecords),
+            
+            // Create result record with navigation and individual project tables
+            result = [
+                NavigationTable = navigationTable,
+                ProjectsInsights = Record.FromList(
+                    allProjectInsights,
+                    List.Transform(
+                        allProjectInsights,
+                        each [ProjectKey]
+                    )
+                )
+            ]
+        in
+            //[insghts = allProjectInsights],
+            result,
+    
+    // Error handling wrapper
+    SafeGetAllPolarisInsights = (
+        projectsTable as table,
+        cloudId as text,
+        accessToken as text
+    ) =>
+        let
+            attempt = GetAllPolarisInsights(projectsTable, cloudId, accessToken),
+        //currently bypassed
+            result =
+                if attempt[HasError] then
+                    [
+                        NavigationTable = #table(
+                            {"Error", "Details"},
+                            {
+                                {"Failed to retrieve Polaris insights", attempt[Message] & " (" & attempt[Reason] & ")"}
+                            }
+                        ),
+                        ProjectsInsights = null
+                    ]
+                else
+                    attempt[Value]
+        in
+            attempt
+            //result
+
+in
+    [
+        SafeGetAllPolarisInsights = SafeGetAllPolarisInsights
+    ]

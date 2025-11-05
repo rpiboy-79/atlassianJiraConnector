@@ -1,4 +1,4 @@
-[Version = "1.0.7"]
+[Version = "1.0.8"]
 section atlassianJiraConnector;
 
 // Helper function to load .pqm files
@@ -19,6 +19,7 @@ Extension.LoadFunction = (fileName as text) =>
 
 //Load Module Groups
 JiraAPI = Extension.LoadFunction("jiraAPI.pqm");
+JiraInsights = Extension.LoadFunction("jiraInsights.pqm");
 JiraSchema = Extension.LoadFunction("jiraSchema.pqm");
 JiraTestSupport = Extension.LoadFunction("jiraTestSupport.pqm");
 helperFunctions = Extension.LoadFunction("helperFunctions.pqm");
@@ -29,6 +30,7 @@ buildJqlQuery = JiraAPI[buildJqlQuery];
 DiscoverMaxResults = JiraAPI[DiscoverMaxResults];
 jiraDataRetrievalSimple = JiraAPI[jiraDataRetrievalSimple];
 jiraDataRetrievalPaginated = JiraAPI[jiraDataRetrievalPaginated];
+getPolarisInsights = JiraInsights[SafeGetAllPolarisInsights];
 
 // Load schema functions
 issuesFieldsList = JiraSchema[issuesFieldsList];
@@ -270,7 +272,7 @@ jiraNavTbl =
     ) =>
         let
             credentials = try Extension.CurrentCredential() otherwise null,
-        //tempoary credentials debugging, return if needed to inspect credentials object
+        //temporay credentials debugging, return if needed to inspect credentials object
             deBugCredentials = deBugCredentials(credentials),
 
             AuthType =
@@ -318,8 +320,6 @@ jiraNavTbl =
                         )),
                         each _
                     ),
-            
-
 
             URL = ValidateUrlScheme(baseURL),
 
@@ -414,6 +414,124 @@ jiraNavTbl =
                     })
                 in
                     issuesWithErrorHandling,
+
+            //Get Jira Insights where applicable
+            processInsights =
+                let
+                    hasJPD = List.Contains(getProjects[projectTypeKey], "product_discovery")
+                in
+                    AuthType = "OAuth3LO" and hasJPD,
+            cloudId = credentials[Properties][cloud_id],
+            accessToken = credentials[access_token],
+            jpdProjects =
+                if processInsights then
+                    let
+                        filterRows = Table.SelectRows(getProjects, each ([projectTypeKey] = "product_discovery")),
+                        selectColumns = Table.SelectColumns(filterRows,{"id", "key", "projectTypeKey", "name"}),
+                        mergeQueries = Table.NestedJoin(selectColumns, {"id"}, issues, {"id"}, "issueData", JoinKind.LeftOuter),
+                        expandIssues = Table.ExpandTableColumn(mergeQueries, "issueData", {"Issues"}, {"Issues"}),
+                        transformTable = Table.TransformColumns(expandIssues, { "Issues", each Table.SelectColumns(_, {"id", "key"})})
+                    in
+                        transformTable
+                else
+                    #table(
+                        Table.ColumnNames(getProjects),
+                        {}
+                    ),
+
+            insightsData =
+                if processInsights then
+                    let
+                        polarisData = getPolarisInsights(
+                            jpdProjects,
+                            cloudId,
+                            accessToken
+                        )
+                    in
+                        polarisData
+                else
+                    [NavigationTable = #table({"ProjectKey"}, {}), ProjectsInsights = []],
+
+
+
+
+           insightsForNav = 
+            if processInsights then
+                let
+                    navTable = insightsData[NavigationTable],
+                    projectInsights = insightsData[ProjectsInsights],
+                    
+                    // Transform each project into a navigation entry
+                    entries = Table.TransformRows(
+                        navTable,
+                        each {
+                            [ProjectKey] & " - " & [ProjectName],  // Name shown in navigator
+                            Record.Field(projectInsights, [ProjectKey])[InsightsTable],  // The insights table
+                            "Table",
+                            "Table",
+                            true  // IsLeaf
+                        }
+                    )
+                in
+                    entries
+            else
+                {},
+            
+
+            //GraphQL Schema Introspection (for development/debugging purposes)
+            /*
+            JPDSchemaIntrospection = 
+                let
+                    // Introspection query to discover available fields on the Query type
+                    query = "
+                        query IntrospectSchema {
+                            __schema {
+                                queryType {
+                                    name
+                                    fields {
+                                        name
+                                        description
+                                        args {
+                                            name
+                                            type {
+                                                name
+                                                kind
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ",
+                    
+                    // No variables needed for introspection
+                    response = Web.Contents(
+                        "https://api.atlassian.com/graphql?product=jira-product-discovery",
+                        [
+                            Content = Json.FromValue([query=query]),
+                            Headers = [
+                                Authorization = "Bearer " & accessToken,
+                                Accept = "application/json",
+                                #"Content-Type" = "application/json"
+                            ],
+                            ManualCredentials = true
+                        ]
+                    ),
+                    
+                    json = Json.Document(response),
+                    
+                    // Extract the fields list
+                    queryFields = json[data][__schema][queryType][fields],
+                    
+                    // Convert to table for easy viewing
+                    fieldsTable = Table.FromRecords(queryFields)
+                in
+                    fieldsTable,
+            */
+
+
+
+            
             issuesForNav = Table.TransformRows(issues, 
                         each {
                             [name],
@@ -435,10 +553,27 @@ jiraNavTbl =
                 }
             },
 
+            entriesWithInsights =
+                if processInsights and List.Count(insightsForNav) > 0 then
+                    List.Combine({
+                        baseEntries,
+                        {
+                            {
+                                "Insights",
+                                createIssuesNavigationTable(insightsForNav),
+                                "Folder",
+                                "Folder",
+                                false
+                            }
+                        }
+                    })
+                else
+                    baseEntries,
+
             entriesWithValidation =
                 if projectValidation[HasInvalidKeys] or List.Count(requestedProjects) > 0 then
                     List.Combine({
-                        baseEntries,
+                        entriesWithInsights,
                         {
                             {
                                 "Project Filter Report",
@@ -460,4 +595,5 @@ jiraNavTbl =
                 source, {"Name"}, "Name", "Data", "ItemKind", "ItemName", "IsLeaf"
             )
         in
+            //JPDSchemaIntrospection;
             navTable;
