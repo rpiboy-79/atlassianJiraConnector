@@ -6,6 +6,12 @@ Version: 1.0.8 (connector Version updated in code)
 
 ## TL;DR — What's new
 
+- Gateway and PowerBI Service Support
+  - in liue of only the company identifier, you must now supply the full https:// string;
+    - ```https://<companyIdentifier>.atlassian.net```
+  - There are now two OAuth options, one for use in the context of PowerBI Desktop and one for a Gateway.
+  - Atlassian does not support multiple gateways per App, therefore a unique app per context is required.
+    - Each App will have its own unique Client ID and Secret that need to be embedded into the connector.
 - OAuth Support
   - Retrieval of Insights from Jira Product Discovery projects
     - Only attempts Insight retrieval when OAuth is used for authentication and there is at least one JPD project found in the target proejct(s).
