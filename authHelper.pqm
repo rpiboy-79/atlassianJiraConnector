@@ -69,8 +69,8 @@ let
 
             defaultConfig =
                 [
-                    redirect_uri = "https://oauth.powerbi.com/views/oauthredirect.html?",
-                    authorize_uri = "https://auth.atlassian.com/authorize?",
+                    redirect_uri = "https://gatewayadminportal.azure.com/OAuthRedirect",
+                    authorize_uri = "https://auth.atlassian.com/authorize",
                     logout_uri = "",
                     token_uri = "https://auth.atlassian.com/oauth/token",
                     api_uri = "https://api.atlassian.com",
@@ -109,8 +109,11 @@ let
             Response = Web.Contents(
                 OAuthConfig[token_uri],
                 [
-                    Content = Json.FromValue(TokenRequest),
-                    Headers = [#"Content-type" = "application/json", #"Accept" = "application/json"],
+                    Content = Text.ToBinary(Uri.BuildQueryString(TokenRequest)),
+                    Headers = [
+                        #"Content-type" = "application/x-www-form-urlencoded",
+                        #"Accept" = "application/json"
+                    ],
                     ManualCredentials = true
                 ]
             ),
@@ -144,7 +147,7 @@ let
         let
             scopeString = Text.Combine(OAuthConfig[scopes], " "),
 
-            AuthorizeUrl = OAuthConfig[authorize_uri]
+            AuthorizeUrl = OAuthConfig[authorize_uri] & "?"
                 & Uri.BuildQueryString(
                     [
                         client_id = OAuthConfig[client_id],
@@ -166,24 +169,42 @@ let
             ],
         
     FinishLogin = (context, callbackUri, state, OAuthConfig as record) =>
+//commented out for debugging
         let
-            Parts =
-                try
-                    Uri.Parts(callbackUri)[Query]
-                otherwise
-                    error Error.Record(
-                        "OAuth Callback Failure",
-                        "Failed to parse callback URI",
-                        [ Uri = callbackUri ]
-                    ),
+            Parts = Uri.Parts(callbackUri)[Query],
+                
             Code =
                 try
                     Parts[code] otherwise Error.Record(
                         "NoCodeInCallback",
-                        "The OAuth callback URI did not contain an authorization code.",
+                        "The OAuth callback URI did not contain an authorization code. URI value: " & callbackUri,
                         [ Parts = Parts ]
                     ),
-            TokenResult =
+
+            Result =
+                if Record.HasFields(Parts, "error")
+                then error Error.Record(
+                    Parts[Error],
+                    if Record.HasFields(Parts, "error_description")
+                    then Parts[error_description]
+                    else "OAuth authorization failed",
+                    Parts
+                )
+                else if not Record.HasFields(Parts, "code")
+                then error Error.Record(
+                    "NoCodeInCallBack",
+                    "The OAuth callback URI did not contain an authorization code. URI value: " & callbackUri,
+                    [
+                        callbackUri = callbackUri,
+                        QueryParameters = Parts,
+                        AvailableFields = Record.FieldNames(Parts)
+                    ]
+                )
+                else
+                    TokenMethod(Parts[code], OAuthConfig)
+
+//previously commented out
+            /*TokenResult =
                 try
                     TokenMethod(Code, OAuthConfig) otherwise Error.Record(
                         "TokenExchangeFailed",
@@ -195,10 +216,21 @@ let
                             ClientSecreteLength = Text.Length(OAuthConfig[client_secret]),
                             RedirectUri = OAuthConfig[redirect_uri]
                         ]
-                    )
-            
+                    )*/
+//debugging
+            /*debugInfo = Error.Record(
+                "DEBUG_CALLBACK",
+                "Debugging: Callback URI received by FinishLogin",
+                [
+                    CallbackUri = callbackUri,
+                    CallbackUriType = Value.Type(callbackUri),
+                    CallbackUriLength = Text.Length(callbackUri)
+                ]
+            ),
+*/            
         in
-            TokenResult,
+            Result,
+            //TokenResult,
 
     RefreshAccessToken = (resourceUrl, refresh_token, OAuthConfig as record) =>
         let
@@ -212,22 +244,19 @@ let
             Response = Web.Contents(
                 OAuthConfig[token_uri],
                 [
-                    Content = Json.FromValue(TokenRequest),
+                    Content = Text.ToBinary(Uri.BuildQueryString(TokenRequest)),
                     Headers = [
-                        #"Content-type" = "application/json",
+                        #"Content-type" = "application/x-www-form-urlencoded",
                         #"Accept" = "application/json"
                     ],
                     ManualCredentials = true
                 ]
             ),
             TokenData = Json.Document(Response),
-            CloudId = try GetCloudId(TokenData[access_token]) otherwise null,
+            CloudId = try GetCloudId(TokenData[access_token]) otherwise Extension.CurrentCredential()[cloud_id],
             EnhancedTokenData = TokenData & [
-                cloud_id = if (CloudId <> null) then CloudId else Extension.CurrentCredential()[cloud_id],
-                api_base_url = if (CloudId <> null) then 
-                    "https://api.atlassian.com/ex/jira/" & CloudId 
-                else 
-                    Extension.CurrentCredential()[api_base_url]
+                cloud_id = CloudId,
+                api_base_url = "https://api.atlassian.com/ex/jira/" & CloudId
             ]
         in
             EnhancedTokenData,
@@ -243,8 +272,8 @@ in
     [
         debugCredentials = debugCredentials,
         GetOAuthConfig = GetOAuthConfig,
-        StartLogin = StartLogin,
-        FinishLogin = FinishLogin,
-        RefreshAccessToken = RefreshAccessToken,
-        LogOut = LogOut
+        startLogin = StartLogin,
+        finishLogin = FinishLogin,
+        refreshAccessToken = RefreshAccessToken,
+        logOut = LogOut
     ]

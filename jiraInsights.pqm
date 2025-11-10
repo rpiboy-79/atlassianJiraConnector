@@ -48,8 +48,9 @@ let
                     ],
                     
                     response = Web.Contents(
-                        "https://api-private.atlassian.com/graphql",
+                        "https://api-private.atlassian.com",
                         [
+                            RelativePath = "/graphql",
                             Content = Json.FromValue([query=query, variables=variables]),
                             Headers = [
                                 Authorization = "Bearer " & accessToken,

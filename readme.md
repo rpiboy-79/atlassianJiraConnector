@@ -2,10 +2,14 @@
 
 A custom Power Query (M) connector for Microsoft Power BI and Excel that integrates with Atlassian Jira Cloud. This README was updated to reflect recent improvements to the project's automated test harness, developer tooling, and developer-friendly helper scripts.
 
-Version: 1.0.8 (connector Version updated in code)
+Version: 1.0.9 (connector Version updated in code)
 
 ## TL;DR — What's new
 
+- Gateway and PowerBI Service Support
+  - in liue of only the company identifier, you must now supply the full https:// string;
+    - ```https://<companyIdentifier>.atlassian.net```
+  - infrastructure is built for Service; in testing the Service would not return the proper URI during the grant process when run from a Gateway resulting in a failure.
 - OAuth Support
   - Retrieval of Insights from Jira Product Discovery projects
     - Only attempts Insight retrieval when OAuth is used for authentication and there is at least one JPD project found in the target proejct(s).
@@ -377,4 +381,4 @@ When reporting issues, please include:
 
 ---
 
-*Last updated: November 5, 2025*
+*Last updated: November 10, 2025*

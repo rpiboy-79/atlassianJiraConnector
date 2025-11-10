@@ -1,4 +1,4 @@
-[Version = "1.0.8"]
+[Version = "1.0.9"]
 section atlassianJiraConnector;
 
 // Helper function to load .pqm files
@@ -47,23 +47,41 @@ ValidateUrlScheme = helperFunctions[ValidateUrlScheme];
 //Load Auth Helper Functions
 deBugCredentials = authHelper[debugCredentials];
 GetOAuthConfig = authHelper[GetOAuthConfig];
-startLogin = authHelper[StartLogin];
-finishLogin = authHelper[FinishLogin]; 
-refreshAccessToken = authHelper[RefreshAccessToken];
+startLogin = authHelper[startLogin];
+finishLogin = authHelper[finishLogin]; 
+refreshAccessToken = authHelper[refreshAccessToken];
 
 
+// Implementation function (internal)
+JiraImpl = (
+    baseUrl as text,
+    fieldList as nullable text,
+    projectKeys as nullable text,
+    maxResults as nullable text,
+    jqlQuery as nullable text,
+    jqlOrderBy as nullable text,
+    testDataOverride as nullable record
+) => jiraNavTbl(
+    baseUrl,
+    fieldList,
+    projectKeys,
+    maxResults,
+    jqlQuery,
+    jqlOrderBy,
+    testDataOverride
+);
 
 // Main entry point function
 [DataSource.Kind="Atlassian_Jira_Connector.Kind", Publish="Atlassian_Jira_Connector.Publish"]
 shared Jira = (
-    #"Company URL Identifier (as specified in your Jira URL)" as text,
+    #"Company Atlassian URL" as text,
     optional #"Field List (comma separated, e.g., summary,created)" as text,
     optional #"Project Keys (comma separated, e.g., PROJ1,PROJ2)" as text,
     optional #"Max Number of Results (default: 1000)" as text,
     optional #"JQL Query String (e.g., status=""Open"")" as text,
     optional #"JQL Order By String (e.g. priority DESC, created DESC)" as text
 ) => jiraNavTbl(
-    #"Company URL Identifier (as specified in your Jira URL)",
+    #"Company Atlassian URL",
     #"Field List (comma separated, e.g., summary,created)",
     #"Project Keys (comma separated, e.g., PROJ1,PROJ2)",
     #"Max Number of Results (default: 1000)",
@@ -74,39 +92,58 @@ shared Jira = (
 
 // This function is for SDK testing only. It is not published.
 shared JiraTest = (
-    #"Company URL Identifier (as specified in your Jira URL)" as text,
-    optional #"Field List (comma separated, e.g., summary,created)" as text,
-    optional #"Project Keys (comma separated, e.g., PROJ1,PROJ2)" as text,
-    optional #"Max Number of Results (default: 1000)" as text,
-    optional #"JQL Query String (e.g., status=""Open"")" as text,
-    optional #"JQL Order By String (e.g. priority DESC, Created DESC)" as text,
-    optional TestDataOverride as nullable record
-) =>
-    jiraNavTbl(
-        #"Company URL Identifier (as specified in your Jira URL)",
-        #"Field List (comma separated, e.g., summary,created)",
-        #"Project Keys (comma separated, e.g., PROJ1,PROJ2)",
-        #"Max Number of Results (default: 1000)",
-        #"JQL Query String (e.g., status=""Open"")",
-        #"JQL Order By String (e.g. priority DESC, Created DESC)",
-        TestDataOverride
-    );
+    #"Company Atlassian URL" as text,
+    optional fieldList as text,
+    optional projectKeys as text,
+    optional maxResults as text,
+    optional jqlQuery as text,
+    optional jqlOrderBy as text,
+    optional testDataOverride as record
+) => 
+    jiraNavTbl(#"Company Atlassian URL", fieldList, projectKeys, maxResults, jqlQuery, jqlOrderBy, testDataOverride); 
 
-// OAuth Configuration
+
+
+// OAuth Default Configuration works with Power BI Desktop and in theory Power BI Service
 OAuthConfig = GetOAuthConfig();
+
+// OAuth configuration for Power BI Desktop? In testing Desktop Accepts azure gateway (default value).
+GatewayOAuthOverrides = 
+    let
+        override = [redirect_uri = "https://oauth.powerbi.com/views/oauthredirect.html"]
+    in
+        GetOAuthConfig(override);
 
 // Data Source Kind description
 Atlassian_Jira_Connector.Kind = [
-    TestConnection = (dataSourcePath) =>
-        { "AtlassianJira.Contents", Json.Document(dataSourcePath) },
+    Properties = [
+        SupportsEncryption = true,
+        SupportsPerUserCredentials = true
+    ],
     
+    TestConnection = (dataSourcePath) =>
+        let
+            json = Json.Document(dataSourcePath),
+            baseUrl = json[#"Company Atlassian URL"]
+        in
+            {"Jira", baseUrl},
+
     Authentication = [
         OAuth = [
             StartLogin = (resourceURL, state, display) => startLogin(resourceURL, state, display, OAuthConfig),
             FinishLogin = (context, callbackUri, state) => finishLogin(context, callbackUri, state, OAuthConfig),
             Refresh = (resourceURL, refresh_token) => refreshAccessToken(resourceURL, refresh_token, OAuthConfig),
-            Label = "OAuth 2.0 (Reccommended)"
+            Label = "OAuth 2.0"
         ],
+//comment out above and un-comment to build *.mez that uses PowerBI Oauth address
+/*
+        OAuth = [
+            StartLogin = (resourceURL, state, display) => startLogin(resourceURL, state, display, GatewayOAuthOverrides),
+            FinishLogin = (context, callbackUri, state) => finishLogin(context, callbackUri, state, GatewayOAuthOverrides),
+            Refresh = (resourceURL, refresh_token) => refreshAccessToken(resourceURL, refresh_token, GatewayOAuthOverrides),
+            Label = "OAuth 2.0 (On-Premise Gateway)"
+        ],
+*/
         Key = [
             KeyLabel = "API Token",
             Label = "API Token Authentication"
@@ -262,7 +299,7 @@ createIssuesNavigationTable =
 // Navigation Table
 jiraNavTbl =
     (
-        company as text,
+        companyURL as text,
         optional fields as text,
         optional projectKeys as text,
         optional maxResults as text,
@@ -287,7 +324,7 @@ jiraNavTbl =
             baseURL =
                 if AuthType = "OAuth3LO"
                 then credentials[Properties][api_base_url]
-                else "https://" & company & ".atlassian.net",
+                else companyURL,
 
             fieldsDynamic =
                 if fields = null
@@ -595,5 +632,6 @@ jiraNavTbl =
                 source, {"Name"}, "Name", "Data", "ItemKind", "ItemName", "IsLeaf"
             )
         in
+            //deBugCredentials;
             //JPDSchemaIntrospection;
             navTable;
