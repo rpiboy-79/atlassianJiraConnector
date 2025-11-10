@@ -1,4 +1,4 @@
-[Version = "1.0.8"]
+[Version = "1.0.9"]
 section atlassianJiraConnector;
 
 // Helper function to load .pqm files
