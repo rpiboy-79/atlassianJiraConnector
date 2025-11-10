@@ -69,7 +69,7 @@ let
 
             defaultConfig =
                 [
-                    redirect_uri = "https://oauth.powerbi.com/views/oauthredirect.html",
+                    redirect_uri = "https://gatewayadminportal.azure.com/OAuthRedirect",
                     authorize_uri = "https://auth.atlassian.com/authorize",
                     logout_uri = "",
                     token_uri = "https://auth.atlassian.com/oauth/token",
@@ -169,6 +169,7 @@ let
             ],
         
     FinishLogin = (context, callbackUri, state, OAuthConfig as record) =>
+//commented out for debugging
         let
             Parts = Uri.Parts(callbackUri)[Query],
                 
@@ -176,7 +177,7 @@ let
                 try
                     Parts[code] otherwise Error.Record(
                         "NoCodeInCallback",
-                        "The OAuth callback URI did not contain an authorization code.",
+                        "The OAuth callback URI did not contain an authorization code. URI value: " & callbackUri,
                         [ Parts = Parts ]
                     ),
 
@@ -192,7 +193,7 @@ let
                 else if not Record.HasFields(Parts, "code")
                 then error Error.Record(
                     "NoCodeInCallBack",
-                    "The OAuth callback URI did not contain an authorization code.",
+                    "The OAuth callback URI did not contain an authorization code. URI value: " & callbackUri,
                     [
                         callbackUri = callbackUri,
                         QueryParameters = Parts,
@@ -202,7 +203,7 @@ let
                 else
                     TokenMethod(Parts[code], OAuthConfig)
 
-
+//previously commented out
             /*TokenResult =
                 try
                     TokenMethod(Code, OAuthConfig) otherwise Error.Record(
@@ -216,7 +217,17 @@ let
                             RedirectUri = OAuthConfig[redirect_uri]
                         ]
                     )*/
-            
+//debugging
+            /*debugInfo = Error.Record(
+                "DEBUG_CALLBACK",
+                "Debugging: Callback URI received by FinishLogin",
+                [
+                    CallbackUri = callbackUri,
+                    CallbackUriType = Value.Type(callbackUri),
+                    CallbackUriLength = Text.Length(callbackUri)
+                ]
+            ),
+*/            
         in
             Result,
             //TokenResult,

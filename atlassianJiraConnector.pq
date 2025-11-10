@@ -104,13 +104,13 @@ shared JiraTest = (
 
 
 
-// OAuth Default Configuration works with Power BI Desktop
+// OAuth Default Configuration works with Power BI Desktop and in theory Power BI Service
 OAuthConfig = GetOAuthConfig();
 
-// OAuth configuration for Connector running on On-Premise Gateway
+// OAuth configuration for Power BI Desktop? In testing Desktop Accepts azure gateway (default value).
 GatewayOAuthOverrides = 
     let
-        override = [redirect_uri = "https://gatewayadminportal.azure.com/OAuthRedirect"]
+        override = [redirect_uri = "https://oauth.powerbi.com/views/oauthredirect.html"]
     in
         GetOAuthConfig(override);
 
@@ -129,20 +129,21 @@ Atlassian_Jira_Connector.Kind = [
             {"Jira", baseUrl},
 
     Authentication = [
-//comment out to build *.mez for a Gateway
-        /*OAuth = [
+        OAuth = [
             StartLogin = (resourceURL, state, display) => startLogin(resourceURL, state, display, OAuthConfig),
             FinishLogin = (context, callbackUri, state) => finishLogin(context, callbackUri, state, OAuthConfig),
             Refresh = (resourceURL, refresh_token) => refreshAccessToken(resourceURL, refresh_token, OAuthConfig),
-            Label = "OAuth 2.0 (Power BI Desktop)"
-        ],*/
-//un-comment to build *.mez for a Gateway
+            Label = "OAuth 2.0"
+        ],
+//comment out above and un-comment to build *.mez that uses PowerBI Oauth address
+/*
         OAuth = [
             StartLogin = (resourceURL, state, display) => startLogin(resourceURL, state, display, GatewayOAuthOverrides),
             FinishLogin = (context, callbackUri, state) => finishLogin(context, callbackUri, state, GatewayOAuthOverrides),
             Refresh = (resourceURL, refresh_token) => refreshAccessToken(resourceURL, refresh_token, GatewayOAuthOverrides),
             Label = "OAuth 2.0 (On-Premise Gateway)"
         ],
+*/
         Key = [
             KeyLabel = "API Token",
             Label = "API Token Authentication"
@@ -631,5 +632,6 @@ jiraNavTbl =
                 source, {"Name"}, "Name", "Data", "ItemKind", "ItemName", "IsLeaf"
             )
         in
+            //deBugCredentials;
             //JPDSchemaIntrospection;
             navTable;
